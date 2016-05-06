@@ -8,6 +8,7 @@ var game = new Phaser.Game(600, 900, Phaser.AUTO, '', {
 const distance = 50;
 const margin = 15;
 const squareSize = 50;
+const coinSize = 25;
 
 const backgroundColor = 0x283593,
   playerColor = 0xEEFF41,
@@ -15,11 +16,20 @@ const backgroundColor = 0x283593,
 
 const squareMoveTime = 75,
   instructionFadeTime = 2000,
-  instructionShowTime = 3000;
+  instructionShowTime = 3000,
+  musicUp = 15000;
 
 var square,
+  coin,
   isMoving = false,
+  soundButton,
+  score = 0,
+  bestScore = 0,
+  nextEnemy,
+  enemies,
   music;
+
+var settings = loadSettings();
 
 var upKey;
 var downKey;
@@ -39,6 +49,7 @@ function preload() {
   game.load.audio('coin', ['sounds/jump.wav', 'sounds/jump.mp3']);
   game.load.image('square', 'img/square.png');
   game.load.image('instruction', 'img/instruction.png');
+  game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
 }
 
 function create() {
@@ -62,9 +73,22 @@ function create() {
   square.x = game.world.centerX - squareSize / 2;
   square.y = game.world.centerY - squareSize / 2;
 
+  coin = game.add.sprite(0, 0, 'square');
+  coin.tint = playerColor;
+  coin.width = coinSize;
+  coin.height = coinSize;
+  coin.anchor.setTo(0.5, 0.5);
+
+  var tween = game.add.tween(coin).to({
+    angle: 360
+  }, 1000, 'Linear', true);
+  tween.repeat(-1, 0);
+
   var instruction = game.add.sprite(0, 0, 'instruction');
   instruction.x = game.world.centerX - instruction.width / 2;
   instruction.y = game.world.height - instruction.height - margin;
+
+  nextEnemy = game.time.now;
 
   setTimeout(function() {
     game.add.tween(instruction).to({
@@ -74,6 +98,7 @@ function create() {
 
   addGameName();
   addMusic();
+  addVolumeButton();
 
   var graphics = game.add.graphics(0, 0);
 
@@ -81,8 +106,8 @@ function create() {
 }
 
 function update() {
-  //square.x = game.input.activePointer.x - 50;
-  //square.y = game.input.activePointer.y - 50;
+  game.physics.arcade.overlap(square, coin, takeCoin, null, this);
+  game.physics.arcade.overlap(square, enemies, squareDie, null, this);
 }
 
 function render() {
@@ -231,8 +256,22 @@ function addGameName() {
 function addMusic() {
   music = game.add.audio('music');
   music.loop = true;
-  music.sound = 0.8;
-  music.play();
+  music.volume = 0.0;
+
+  if (!settings.muted)
+    music.play();
+
+  game.add.tween(music).to({
+    volume: 1
+  }, musicUp).start();
+}
+
+function squareDie() {
+
+}
+
+function takeCoin() {
+
 }
 
 function spawnEnemies() {
@@ -366,4 +405,97 @@ function takeCoin() {
     y: 0
   }, 100).start();
   game.time.events.add(500, this.addCoin, this);
+}
+
+function addVolumeButton() {
+  var frames = 1;
+
+  if (settings.muted) {
+    frames = 0;
+  }
+
+  soundButton = game.add.button(5, 5, 'volume', volumeStateChange, this, frames, frames, frames);
+  soundButton.width = 48;
+  soundButton.height = 48;
+}
+
+function volumeStateChange() {
+  if (soundButton.frame === 0) {
+    soundButton.setFrames(1, 1, 1);
+    music.resume();
+
+    settings.muted = false;
+  } else if (soundButton.frame === 1) {
+    soundButton.setFrames(0, 0, 0);
+    music.pause();
+
+    settings.muted = true;
+  }
+
+  saveSettings(settings);
+}
+
+function saveSettings(settings) {
+  localStorage.setItem('250-settings', JSON.stringify(settings));
+}
+
+function loadSettings() {
+  return JSON.parse(localStorage.getItem('250-settings')) || {
+    muted: false
+  };
+}
+
+function addCoin() {
+  var tx = game.rnd.integerInRange(0, 2);
+  var ty = game.rnd.integerInRange(0, 2);
+  
+  // TODO HERE
+  //tx = game.world.centerX - distance
+
+  var coinPosition = [{
+    x: game.width / 2 - 8 * 8,
+    y: game.height / 2 - 8 * 8
+  }, {
+    x: game.width / 2,
+    y: game.height / 2 - 8 * 8
+  }, {
+    x: game.width / 2 + 8 * 8,
+    y: game.height / 2 - 8 * 8
+  }, {
+    x: game.width / 2 - 8 * 8,
+    y: game.height / 2
+  }, {
+    x: game.width / 2,
+    y: game.height / 2
+  }, {
+    x: game.width / 2 + 8 * 8,
+    y: game.height / 2
+  }, {
+    x: game.width / 2 - 8 * 8,
+    y: game.height / 2 + 8 * 8
+  }, {
+    x: game.width / 2,
+    y: game.height / 2 + 8 * 8
+  }, {
+    x: game.width / 2 + 8 * 8,
+    y: game.height / 2 + 8 * 8
+  }, ];
+
+  for (var i = 0; i < coinPosition.length; i++) {
+    if (coinPosition[i].x == this.coin.x && coinPosition[i].y == this.coin.y)
+      coinPosition.splice(i, 1);
+    else if (coinPosition[i].x < this.square.x + 7 * 8 && coinPosition[i].x > this.square.x - 7 * 8 &&
+      coinPosition[i].y < this.square.y + 7 * 8 && coinPosition[i].y > this.square.y - 7 * 8)
+      coinPosition.splice(i, 1);
+  }
+
+  var newPos = coinPosition[game.rnd.integerInRange(0, coinPosition.length - 1)];
+
+  this.coin.reset(newPos.x, newPos.y);
+  game.add.tween(this.coin.scale).to({
+    x: 1,
+    y: 1
+  }, 100).start();
+
+  this.coinTaking = false;
 }
