@@ -140,8 +140,6 @@ function update() {
     }
   });
 
-  console.log(enemies.hash[0].inWorld);
-
   spawnEnemies();
 }
 

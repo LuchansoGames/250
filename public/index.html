@@ -13,7 +13,30 @@
       background: #FFF;
     }
   </style>
+  <div id="vk_ads_75686"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/2.4.7/phaser.js"></script>
   <script src="app.js"></script>
+  <script type="text/javascript">
+    setTimeout(function() {
+      var adsParams = {"ad_unit_id":75686,"ad_unit_hash":"232dff1590ac9d07125fe39844d8d38a"};
+      function vkAdsInit() {
+        VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
+      }
+      if (window.VK && VK.Widgets) {
+        vkAdsInit();
+      } else {
+        if (!window.vkAsyncInitCallbacks) window.vkAsyncInitCallbacks = [];
+        vkAsyncInitCallbacks.push(vkAdsInit);
+        var protocol = ((location.protocol === 'https:') ? 'https:' : 'http:');
+        var adsElem = document.getElementById('vk_ads_75686');
+        var scriptElem = document.createElement('script');
+        scriptElem.type = 'text/javascript';
+        scriptElem.async = true;
+        scriptElem.src = protocol + '//vk.com/js/api/openapi.js?121';
+        adsElem.parentNode.insertBefore(scriptElem, adsElem.nextSibling);
+      }
+    }, 0);
+  </script>
+    
 </body>
 </html>
