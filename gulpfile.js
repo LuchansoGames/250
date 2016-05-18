@@ -18,7 +18,7 @@ gulp.task('html', function() {
 
 gulp.task('js', function() {
   gulp.src('public/js/**/*.js')
-    .pipe(uglify())
+    // .pipe(uglify())
     .on('error', function(err) {
       console.error('Error in compress task', err.toString());
     })
