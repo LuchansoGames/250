@@ -17,7 +17,7 @@ gulp.task('html', function() {
 });
 
 gulp.task('js', function() {
-  gulp.src('public/js/**/*.js')
+  gulp.src(['public/js/menu.js', 'public/js/game.js', 'public/js/app.js'])
     .pipe(uglify())
     .on('error', function(err) {
       console.error('Error in compress task', err.toString());
