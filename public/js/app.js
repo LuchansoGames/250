@@ -56,6 +56,8 @@ function preload() {
   game.load.image('square', 'img/square.png');
   game.load.image('enemy', 'img/enemy.png');
   game.load.image('square-particle', 'img/square-particle.png');
+  game.load.image('achivments-background', 'img/achivments-background.png');
+  game.load.image('+1', 'img/+1.png');
   game.load.image('enemy-particle', 'img/enemy-particle.png');
   game.load.image('instruction', 'img/instruction.png');
   game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
@@ -396,9 +398,47 @@ function takeCoin() {
   game.time.events.add(coinInterval, addCoin, this);
 }
 
+achivments1 = false;
+achivments2 = false;
+achivments3 = false;
+achivments4 = false;
+achivments5 = false;
+achivments6 = false;
+achivments7 = false;
+achivments8 = false;
+achivments9 = false;
 function updateScore() {
   score++;
   scoreLable.text = score;
+
+  if (score > 1 && score < 5 && !achivments1) {
+    achivments1 = true;
+    Achivment.show('Ехуу, первые шаги!', '+1');
+  } else if (score > 5 && score < 10 && !achivments2) {
+    achivments2 = true;
+    Achivment.show('Реакция младенца', '+1');
+  } else if (score > 10 && score < 20 && !achivments3) {
+    achivments3 = true;
+    Achivment.show('Реакция велосепедиста', '+1');
+  } else if (score > 20 && score < 30 && !achivments4) {
+    achivments4 = true;
+    Achivment.show('Реакция автомобилиста', '+1');
+  } else if (score > 30 && score < 40 && !achivments5) {
+    achivments5 = true;
+    Achivment.show('Реакция пилота', '+1');
+  } else if (score > 40 && score < 45 && !achivments6) {
+    achivments6 = true;
+    Achivment.show('Реакция космонавта', '+1');
+  } else if (score > 45 && score < 50 && !achivments7) {
+    achivments7 = true;
+    Achivment.show('Реакция каратиста с чёрным поясом', '+1');
+  } else if (score > 50 && score < 75 && !achivments8) {
+    achivments8 = true;
+    Achivment.show('Задрот', '+1');
+  } else if (score > 75 && !achivments9) {
+    achivments9 = true;
+    Achivment.show('Читер', '+1');
+  }
 }
 
 function addEmitter() {
