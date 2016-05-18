@@ -138,6 +138,4 @@ var Menu = {
   btnOut: function() {
     game.add.tween(this).to({alpha: 0}, 150).start();
   },
-
-  
 }
