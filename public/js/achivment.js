@@ -3,6 +3,7 @@ var Achivment = {
     this.group = game.add.group();
     this.background = game.add.image(0, 0, 'achivments-background');
     this.icon = game.add.image(0, 0, img);
+    // this.icon.anchor.set(0.5, 0.5);
 
     var textLeftPadding = 10;
 

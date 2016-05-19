@@ -54,6 +54,9 @@ var GameState = function() {
     this.game.load.image('enemy-particle', 'img/enemy-particle.png');
     this.game.load.image('instruction', 'img/instruction.png');
     this.game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
+    
+    this.game.load.image('achivments-background', 'img/achivments-background.png');
+    this.game.load.image('+1', 'img/+1.png');
   }
 
   this.create = function() {
@@ -330,10 +333,10 @@ var GameState = function() {
     music.volume = 0.0;
 
     coinSound = this.game.add.audio('coin');
-    coinSound.volume = 0.36;
+    coinSound.volume = 0.12;
 
     jumpSound = this.game.add.audio('jump');
-    jumpSound.volume = 0.3;
+    jumpSound.volume = 0.25;
 
     dieSound = this.game.add.audio('die');
     dieSound.volume = 0.3;
@@ -342,7 +345,7 @@ var GameState = function() {
       music.play();
 
     this.game.add.tween(music).to({
-      volume: 0.6
+      volume: 0.5
     }, musicUp).start();
   }
 
@@ -401,9 +404,46 @@ var GameState = function() {
     this.game.time.events.add(coinInterval, addCoin, this);
   }
 
+  achivments1 = false;
+  achivments2 = false;
+  achivments3 = false;
+  achivments4 = false;
+  achivments5 = false;
+  achivments6 = false;
+  achivments7 = false;
+  achivments8 = false;
+  achivments9 = false;
   function updateScore() {
     score++;
     scoreLable.text = score;
+    if (score > 1 && score < 5 && !achivments1) {
+      achivments1 = true;
+      Achivment.show('Ехуу, первые шаги!', '+1');
+    } else if (score > 5 && score < 10 && !achivments2) {
+      achivments2 = true;
+      Achivment.show('Реакция младенца', '+1');
+    } else if (score > 10 && score < 20 && !achivments3) {
+      achivments3 = true;
+      Achivment.show('Реакция велосепедиста', '+1');
+    } else if (score > 20 && score < 30 && !achivments4) {
+      achivments4 = true;
+      Achivment.show('Реакция автомобилиста', '+1');
+    } else if (score > 30 && score < 40 && !achivments5) {
+      achivments5 = true;
+      Achivment.show('Реакция пилота', '+1');
+    } else if (score > 40 && score < 45 && !achivments6) {
+      achivments6 = true;
+      Achivment.show('Реакция космонавта', '+1');
+    } else if (score > 45 && score < 50 && !achivments7) {
+      achivments7 = true;
+      Achivment.show('Реакция каратиста с чёрным поясом', '+1');
+    } else if (score > 50 && score < 75 && !achivments8) {
+      achivments8 = true;
+      Achivment.show('Задрот', '+1');
+    } else if (score > 75 && !achivments9) {
+      achivments9 = true;
+      Achivment.show('Читер', '+1');
+    }
   }
 
   function addEmitter() {
@@ -424,9 +464,9 @@ var GameState = function() {
     if (this.game.time.now < nextEnemy)
       return;
 
-    var start = 2000,
-      end = 500,
-      tScore = 30;
+    var start = 1500,
+      end = 600,
+      tScore = 60;
     var delay = Math.max(start - (start - end) * score / tScore, end);
     nextEnemy = this.game.time.now + delay;
 

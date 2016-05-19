@@ -6,6 +6,7 @@ var Menu = {
     game.load.image('help', 'img/ic-help.png');
     game.load.image('list', 'img/ic-list.png');
     game.load.image('score-background', 'img/score-background.png');
+    game.load.image('template-photo', 'img/template-photo.jpg');
     // game.load.image('score-background', 'http://www.html5gamedevs.com/uploads/profile/photo-thumb-7510.png');
   },
 
@@ -114,7 +115,7 @@ var Menu = {
     btn.width = this.buttonSize;
     btn.height = this.buttonSize;
 
-    var btnLable = game.add.text(btnX, btnY + this.btnLablepadding, "Рекорды друзей", this.buttonLableStyle);
+    var btnLable = game.add.text(btnX, btnY + this.btnLablepadding, "Достижения", this.buttonLableStyle);
     btnLable.anchor.set(0.5, 0.5);
     
     btn.onInputOver.add(this.btnOver, btnLable);
@@ -144,9 +145,59 @@ var Menu = {
   },
 
   addScoreTable: function() {
-    var score = new Score();
+
+    const interval = 250;
+    const topPadding = 20;
+    var summ = interval;
+    
+    var score = new Score('template-photo');
     score.anchor.set(0.5, 0.5);
     score.x = game.world.centerX;
-    score.y = game.world.centerY;
+    score.y = game.world.centerY + topPadding - score.height - 10;
+    score.alpha = 0;
+    game.add.tween(score).to({alpha: 1}, 1000).delay(summ).start();
+    summ += interval;
+    
+    var score1 = new Score('template-photo');
+    score1.anchor.set(0.5, 0.5);
+    score1.x = game.world.centerX;
+    score1.y = game.world.centerY + topPadding;
+    score1.alpha = 0;
+    game.add.tween(score1).to({alpha: 1}, 1000).delay(summ).start();
+    summ += interval;
+    
+
+    var score2 = new Score('template-photo');
+    score2.anchor.set(0.5, 0.5);
+    score2.x = game.world.centerX;
+    score2.y = game.world.centerY + topPadding + score.height + 10;
+    score2.alpha = 0;
+    game.add.tween(score2).to({alpha: 1}, 1000).delay(summ).start();
+    summ += interval;
+
+
+    var score3 = new Score('template-photo');
+    score3.anchor.set(0.5, 0.5);
+    score3.x = game.world.centerX;
+    score3.y = game.world.centerY + topPadding + (score.height + 10) * 2;
+    score3.alpha = 0;
+    game.add.tween(score3).to({alpha: 1}, 1000).delay(summ).start();
+    summ += interval;
+
+    var score4 = new Score('template-photo');
+    score4.anchor.set(0.5, 0.5);
+    score4.x = game.world.centerX;
+    score4.y = game.world.centerY + topPadding + (score.height + 10) * 3;
+    score4.alpha = 0;
+    game.add.tween(score4).to({alpha: 1}, 1000).delay(summ).start();
+    summ += interval;
+
+    var score5 = new Score('template-photo');
+    score5.anchor.set(0.5, 0.5);
+    score5.x = game.world.centerX;
+    score5.y = game.world.centerY + topPadding + (score.height + 10) * 4 + 16;
+    score5.alpha = 0;
+    game.add.tween(score5).to({alpha: 1}, 1000).delay(summ).start();
+    summ += interval;
   },
 }
