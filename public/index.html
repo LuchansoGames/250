@@ -4,21 +4,25 @@
   <title>250+ | Game</title>
 </head>
 <body>
-  <style type="text/css">
-    * { 
-      margin: 0; 
-      padding: 0; 
-    }
+  <style type="text/css">    
     body { 
       background: #FFF;
     }
   </style>
-  <div id="game"></div>
   <div id="vk_ads_75686"></div>
+  <div id="game"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/2.4.7/phaser.js"></script>
   <script src="app.js"></script>
   <script type="text/javascript">
+    function isVkEnv() {
+      return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0] === "https://vk.com";
+    }
+
     setTimeout(function() {
+      if (!isVkEnv()) {
+        return;
+      }
+
       var adsParams = {"ad_unit_id":75686,"ad_unit_hash":"232dff1590ac9d07125fe39844d8d38a"};
       function vkAdsInit() {
         VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
