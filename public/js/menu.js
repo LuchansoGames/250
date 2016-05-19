@@ -1,9 +1,12 @@
 var Menu = {
   preload: function() {
+    game.load.crossOrigin = true;
     game.load.image('logo', 'img/logo.png');
     game.load.image('play', 'img/ic-play.png');
     game.load.image('help', 'img/ic-help.png');
     game.load.image('list', 'img/ic-list.png');
+    game.load.image('score-background', 'img/score-background.png');
+    // game.load.image('score-background', 'http://www.html5gamedevs.com/uploads/profile/photo-thumb-7510.png');
   },
 
   create: function() {
@@ -13,6 +16,7 @@ var Menu = {
 
     this.addLogotype();
     this.addControls();
+    this.addScoreTable();
   },
 
   update: function() {
@@ -137,5 +141,12 @@ var Menu = {
 
   btnOut: function() {
     game.add.tween(this).to({alpha: 0}, 150).start();
+  },
+
+  addScoreTable: function() {
+    var score = new Score();
+    score.anchor.set(0.5, 0.5);
+    score.x = game.world.centerX;
+    score.y = game.world.centerY;
   },
 }

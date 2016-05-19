@@ -1,3 +1,761 @@
-var Menu={preload:function(){game.load.image("logo","img/logo.png"),game.load.image("play","img/ic-play.png"),game.load.image("help","img/ic-help.png"),game.load.image("list","img/ic-list.png")},create:function(){game.stage.backgroundColor=2635155,game.scale.pageAlignHorizontally=!0,game.scale.pageAlignVertically=!0,this.addLogotype(),this.addControls()},update:function(){},addLogotype:function(){var t=game.world.centerX,a=100;this.logotype=game.add.sprite(t,a,"logo"),this.logotype.anchor.setTo(.5,.5),this.logotype.alpha=0,game.add.tween(this.logotype).to({alpha:1},1e3).start()},addControls:function(){this.buttonDistance=175,this.buttonSize=125,this.buttonLableStyle={font:"21px Arial",fill:"#fff",boundsAlignH:"center",boundsAlignV:"middle"},this.btnLablepadding=85,this.buttonsGroup=game.add.group(),this.buttonsGroup.add(this.addBtnPlay()),this.buttonsGroup.add(this.addBtnHelp()),this.buttonsGroup.add(this.addBtnList()),this.buttonsGroup.y=this.logotype.y+125,this.buttonsGroup.alpha=0,game.add.tween(this.buttonsGroup).to({alpha:1},1e3).delay(250).start()},addBtnPlay:function(){var t=game.add.group(),a=game.world.centerX-this.buttonDistance,e=0,n=game.add.button(a,e,"play",this.btnPlay_click,this);n.anchor.set(.5,.5),n.width=this.buttonSize,n.height=this.buttonSize;var i=game.add.text(a,e+this.btnLablepadding,"Играть",this.buttonLableStyle);return i.anchor.set(.5,.5),n.onInputOver.add(this.btnOver,i),n.onInputOut.add(this.btnOut,i),i.alpha=0,t.addMultiple([n,i]),t},addBtnHelp:function(){var t=game.add.group(),a=game.world.centerX,e=0,n=game.add.button(a,e,"help",this.btnHelp_click,this);n.anchor.set(.5,.5),n.width=this.buttonSize,n.height=this.buttonSize;var i=game.add.text(a,e+this.btnLablepadding,"Как играть?",this.buttonLableStyle);return i.anchor.set(.5,.5),n.onInputOver.add(this.btnOver,i),n.onInputOut.add(this.btnOut,i),i.alpha=0,t.addMultiple([n,i]),t},addBtnList:function(){var t=game.add.group(),a=game.world.centerX+this.buttonDistance,e=0,n=game.add.button(a,e,"list",this.btnRating_click,this);n.anchor.set(.5,.5),n.width=this.buttonSize,n.height=this.buttonSize;var i=game.add.text(a,e+this.btnLablepadding,"Рекорды друзей",this.buttonLableStyle);return i.anchor.set(.5,.5),n.onInputOver.add(this.btnOver,i),n.onInputOut.add(this.btnOut,i),i.alpha=0,t.addMultiple([n,i]),t},btnPlay_click:function(){game.state.start("Game")},btnHelp_click:function(){},btnOver:function(){game.add.tween(this).to({alpha:1},150).start()},btnOut:function(){game.add.tween(this).to({alpha:0},150).start()}};
-var GameState=function(){function e(e,t){return e.getBounds().width!==e.width?!1:Phaser.Rectangle.intersects(e.getBounds(),t.getBounds())}function t(e){e.lineStyle(5,1713022),e.drawRect(this.game.world.centerX-135,this.game.world.centerY-135,270,270)}function a(){if(!M){Z.muted||O.play();var e,t=R.y-90,a=this.game.world.centerY-90;a>t?(t+=X,e=this.game.add.tween(R).to({y:t},37.5).to({y:R.y},37.5).start()):e=this.game.add.tween(R).to({y:t},A).start(),M=!0,e.onComplete.add(function(){M=!1})}}function i(){if(!M){Z.muted||O.play();var e,t=R.y+90,a=this.game.world.centerY+90;t>a?(t-=X,e=this.game.add.tween(R).to({y:t},37.5).to({y:R.y},37.5).start()):e=this.game.add.tween(R).to({y:t},A).start(),M=!0,e.onComplete.add(function(){M=!1})}}function n(){if(!M){Z.muted||O.play();var e,t=R.x-90,a=this.game.world.centerX-90;a>t?(t+=X,e=this.game.add.tween(R).to({x:t},37.5).to({x:R.x},37.5).start()):e=this.game.add.tween(R).to({x:t},A).start(),M=!0,e.onComplete.add(function(){M=!1})}}function d(){if(!M){Z.muted||O.play();var e,t=R.x+90,a=this.game.world.centerX+90;t>a?(t-=X,e=this.game.add.tween(R).to({x:t},37.5).to({x:R.x},37.5).start()):e=this.game.add.tween(R).to({x:t},A).start(),M=!0,e.onComplete.add(function(){M=!1})}}function s(){var e={font:"48px Arial",fill:"#fff",boundsAlignH:"center",boundsAlignV:"middle"};text=this.game.add.text(0,0,"250+",e),text.x=this.game.world.centerX-text.width/2,text.y=100}function o(){var e={font:"100px Arial",fill:"#fff",boundsAlignH:"center",boundsAlignV:"middle"};scoreLable=this.game.add.text(0,0,"0",e),scoreLable.anchor.setTo(.5,.5),scoreLable.x=this.game.world.centerX,scoreLable.y=this.game.world.centerY,scoreLable.alpha=.25}function r(){N=this.game.add.audio("music"),N.loop=!0,N.volume=0,F=this.game.add.audio("coin"),F.volume=.36,O=this.game.add.audio("jump"),O.volume=.3,V=this.game.add.audio("die"),V.volume=.3,Z.muted||N.play(),this.game.add.tween(N).to({volume:.6},B).start()}function m(e){e.alive&&(z=!0,e.kill(),U>Q&&(Q=U,v(Q)),U=0,scoreLable.text=U,emitter2.x=e.x,emitter2.y=e.y,emitter2.start(!0,200,null,20),Z.muted||V.play(),this.game.time.events.add(300,function(){z=!1},this))}function h(){if(!coinTaking){$=!1,coinTaking=!0,emitter.x=I.x,emitter.y=I.y,emitter.start(!0,800,null,20),Z.muted||F.play(),g();this.game.add.tween(I).to({width:0,height:0},100).start();this.game.time.events.add(q,b,this)}}function g(){U++,scoreLable.text=U}function l(){emitter=this.game.add.emitter(0,0),emitter.makeParticles("square-particle"),emitter.setXSpeed(-150,150),emitter.setYSpeed(-150,150),emitter.setScale(2,0,2,0,800),emitter2=this.game.add.emitter(0,0),emitter2.makeParticles("enemy-particle"),emitter2.setXSpeed(-150,150),emitter2.setYSpeed(-150,150),emitter2.setScale(2,0,2,0,800)}function c(){if(!(this.game.time.now<H)){var e=2e3,t=500,a=30,i=Math.max(e-(e-t)*U/a,t);H=this.game.time.now+i,u()}}function u(){var e=j.getFirstDead();if(e){var t=[{x:-25,y:this.game.world.centerY-90},{x:-25,y:this.game.world.centerY},{x:-25,y:this.game.world.centerY+90},{x:this.game.width+25,y:this.game.world.centerY-90},{x:this.game.width+25,y:this.game.world.centerY},{x:this.game.width+25,y:this.game.world.centerY+90},{x:this.game.world.centerX-90,y:-25},{x:this.game.world.centerX,y:-25},{x:this.game.world.centerX+90,y:-25},{x:this.game.world.centerX-90,y:this.game.height+25},{x:this.game.world.centerX,y:this.game.height+25},{x:this.game.world.centerX+90,y:this.game.height+25}],a=2,i=100,n=t[this.game.rnd.integerInRange(0,t.length-1)];e.reset(n.x,n.y),n.x>this.game.width?e.body.velocity.x=-i*a:n.x<0?e.body.velocity.x=i*a:n.y>this.game.height?e.body.velocity.y=-i*a:n.y<0&&(e.body.velocity.y=i*a),e.anchor.setTo(.5),e.outOfBoundsKill=!0,e.checkWorldBounds=!0}}function y(){var e=1;Z.muted&&(e=0),C=this.game.add.button(5,5,"volume",w,this,e,e,e),C.width=48,C.height=48}function w(){0===C.frame?(C.setFrames(1,1,1),N.paused?N.resume():N.play(),Z.muted=!1):1===C.frame&&(C.setFrames(0,0,0),N.pause(),Z.muted=!0),p(Z)}function p(e){localStorage.setItem("250-settings",JSON.stringify(e))}function f(){return JSON.parse(localStorage.getItem("250-settings"))||{muted:!1}}function b(){var e=this.game.rnd.integerInRange(0,2),t=this.game.rnd.integerInRange(0,2);e=this.game.world.centerX-90+90*e,t=this.game.world.centerY-90+90*t,I.x=e,I.y=t,this.game.add.tween(I).to({width:L,height:L},100).start(),coinTaking=!1}function x(){var e={font:"21px Arial",fill:"#fff",boundsAlignH:"center",boundsAlignV:"middle"};bestScoreLable=this.game.add.text(0,0,"Лучший счёт 0",e),bestScoreLable.anchor.setTo(.5,.5),bestScoreLable.x=this.game.world.centerX,bestScoreLable.y=this.game.world.centerY+90+X,bestScoreLable.alpha=0}function v(e){0===bestScoreLable.alpha&&this.game.add.tween(bestScoreLable).to({alpha:1},1e3).start(),bestScoreLable.text="Лучший счёт: "+e}const S=20,K=50,L=24,X=70,k=2635155,Y=15662913,P=2201331,A=75,D=2e3,T=3e3,B=7500,q=500;var R,I,C,H,j,F,O,V,N,W,E,G,J,M=!1,z=!1,U=0,Q=0,Z=f(),$=!0;this.preload=function(){this.game.stage.backgroundColor=k,this.game.scale.pageAlignHorizontally=!0,this.game.scale.pageAlignVertically=!0,this.game.load.audio("music",["sounds/music.mp3","sounds/music.ogg"]),this.game.load.audio("coin",["sounds/coin.wav","sounds/coin.mp3"]),this.game.load.audio("jump",["sounds/jump.wav","sounds/jump.mp3"]),this.game.load.audio("die",["sounds/die.wav","sounds/die.mp3"]),this.game.load.image("square","img/square.png"),this.game.load.image("enemy","img/enemy.png"),this.game.load.image("square-particle","img/square-particle.png"),this.game.load.image("enemy-particle","img/enemy-particle.png"),this.game.load.image("instruction","img/instruction.png"),this.game.load.spritesheet("volume","img/volume-spritesheet.png",96,96)},this.create=function(){W=this.game.input.keyboard.addKey(Phaser.Keyboard.W),W.onDown.add(a,this),W=this.game.input.keyboard.addKey(Phaser.Keyboard.UP),W.onDown.add(a,this),E=this.game.input.keyboard.addKey(Phaser.Keyboard.S),E.onDown.add(i,this),E=this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN),E.onDown.add(i,this),G=this.game.input.keyboard.addKey(Phaser.Keyboard.A),G.onDown.add(n,this),G=this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT),G.onDown.add(n,this),J=this.game.input.keyboard.addKey(Phaser.Keyboard.D),J.onDown.add(d,this),J=this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),J.onDown.add(d,this),o(),R=this.game.add.sprite(0,0,"square"),R.tint=Y,R.width=K,R.height=K,R.x=this.game.world.centerX,R.y=this.game.world.centerY,R.anchor.setTo(.5,.5),I=this.game.add.sprite(-100,-100,"square"),I.tint=P,I.width=L,I.height=L,I.anchor.setTo(.5,.5);var e=this.game.add.tween(I).to({angle:360},1e3,"Linear",!0);e.repeat(-1,0),j=this.game.add.group(),j.enableBody=!0,j.createMultiple(20,"enemy");var m=this.game.add.sprite(0,0,"instruction");m.x=this.game.world.centerX-m.width/2,m.y=this.game.world.height-m.height-S,H=this.game.time.now,setTimeout(function(){this.game.add.tween(m).to({alpha:0},D).start()},T),s(),r(),y(),b(),x(),l();var h=this.game.add.graphics(0,0);t(h)},this.update=function(){e(R,I)&&h(),j.forEach(function(t){e(R,t)&&m(t)}),$||c()},this.render=function(){var e=R.getBounds(),t=I.getBounds();Phaser.Rectangle.intersection(e,t)}};
-var game=new Phaser.Game(600,900,Phaser.AUTO,"game");game.state.add("Game",GameState),game.state.add("Menu",Menu),game.state.start("Menu");
+var Score = function(userimage, username, url, score, position) {
+  this.sprite = game.add.sprite(0, 0, 'score-background');
+  this.userImage = game.make.sprite(0, 0, userimage);
+  this.userName = game.add.text();
+  this.score = game.add.text();
+
+  this.sprite.addChild(this.userImage);
+
+  return this.sprite;
+}
+var ScoreTable = function(count) {
+  var score = new Score();
+  score.anchor.set(0.5, 0.5);
+  score.x = game.world.centerX;
+  score.y = game.world.centerY;
+}
+var Menu = {
+  preload: function() {
+    game.load.crossOrigin = true;
+    game.load.image('logo', 'img/logo.png');
+    game.load.image('play', 'img/ic-play.png');
+    game.load.image('help', 'img/ic-help.png');
+    game.load.image('list', 'img/ic-list.png');
+    game.load.image('score-background', 'img/score-background.png');
+    // game.load.image('score-background', 'http://www.html5gamedevs.com/uploads/profile/photo-thumb-7510.png');
+  },
+
+  create: function() {
+    game.stage.backgroundColor = 0x283593;
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
+
+    this.addLogotype();
+    this.addControls();
+    this.addScoreTable();
+  },
+
+  update: function() {
+
+  },
+
+  addLogotype: function() {
+    var logoX = game.world.centerX;
+    var logoY = 100;
+
+    this.logotype = game.add.sprite(logoX, logoY, 'logo');
+    this.logotype.anchor.setTo(0.5, 0.5);
+    this.logotype.alpha = 0;
+
+    game.add.tween(this.logotype).to({ alpha: 1 }, 1000).start();
+  },
+
+  addControls: function() {
+    this.buttonDistance = 175;
+    this.buttonSize = 125;
+    this.buttonLableStyle = {
+      font: "21px Arial",
+      fill: "#fff",
+      boundsAlignH: "center",
+      boundsAlignV: "middle"
+    }
+    this.btnLablepadding = 85;
+
+    this.buttonsGroup = game.add.group();
+
+    this.buttonsGroup.add(this.addBtnPlay());
+    this.buttonsGroup.add(this.addBtnHelp());
+    this.buttonsGroup.add(this.addBtnList());
+    this.buttonsGroup.y = this.logotype.y + 125;
+
+    this.buttonsGroup.alpha = 0;
+    game.add.tween(this.buttonsGroup).to({ alpha: 1 }, 1000).delay(250).start();
+  },
+
+  addBtnPlay: function() {
+    var btnBox = game.add.group();
+
+    var btnX = game.world.centerX - this.buttonDistance;
+    var btnY = 0;
+
+    var btn = game.add.button(btnX, btnY, 'play', this.btnPlay_click, this);
+    btn.anchor.set(0.5, 0.5);
+    btn.width = this.buttonSize;
+    btn.height = this.buttonSize;
+
+    var btnLable = game.add.text(btnX, btnY + this.btnLablepadding, "Играть", this.buttonLableStyle);
+    btnLable.anchor.set(0.5, 0.5);
+    
+    btn.onInputOver.add(this.btnOver, btnLable);
+    btn.onInputOut.add(this.btnOut, btnLable);
+    
+    btnLable.alpha = 0;
+
+    btnBox.addMultiple([btn, btnLable]);
+
+    return btnBox;
+  },
+
+  addBtnHelp: function() {
+    var btnBox = game.add.group();
+
+    var btnX = game.world.centerX;
+    var btnY = 0;
+
+    var btn = game.add.button(btnX, btnY, 'help', this.btnHelp_click, this);
+    btn.anchor.set(0.5, 0.5);
+    btn.width = this.buttonSize;
+    btn.height = this.buttonSize;
+
+    var btnLable = game.add.text(btnX, btnY + this.btnLablepadding, "Как играть?", this.buttonLableStyle);
+    btnLable.anchor.set(0.5, 0.5);
+    
+    btn.onInputOver.add(this.btnOver, btnLable);
+    btn.onInputOut.add(this.btnOut, btnLable);
+    
+    btnLable.alpha = 0;
+
+    btnBox.addMultiple([btn, btnLable]);
+
+    return btnBox;
+  },
+
+  addBtnList: function() {
+    var btnBox = game.add.group();
+    var btnX = game.world.centerX + this.buttonDistance;
+    var btnY = 0;
+
+    var btn = game.add.button(btnX, btnY, 'list', this.btnRating_click, this);
+    btn.anchor.set(0.5, 0.5);
+    btn.width = this.buttonSize;
+    btn.height = this.buttonSize;
+
+    var btnLable = game.add.text(btnX, btnY + this.btnLablepadding, "Рекорды друзей", this.buttonLableStyle);
+    btnLable.anchor.set(0.5, 0.5);
+    
+    btn.onInputOver.add(this.btnOver, btnLable);
+    btn.onInputOut.add(this.btnOut, btnLable);
+    
+    btnLable.alpha = 0;
+
+    btnBox.addMultiple([btn, btnLable]);
+
+    return btnBox;
+  },
+
+  btnPlay_click: function() {
+    game.state.start('Game');
+  },
+
+  btnHelp_click: function() {
+
+  },
+
+  btnOver: function() {
+    game.add.tween(this).to({alpha: 1}, 150).start();
+  },
+
+  btnOut: function() {
+    game.add.tween(this).to({alpha: 0}, 150).start();
+  },
+
+  addScoreTable: function() {
+    var score = new Score();
+    score.anchor.set(0.5, 0.5);
+    score.x = game.world.centerX;
+    score.y = game.world.centerY;
+  },
+}
+var GameState = function() {
+  const margin = 20;
+  const squareSize = 50;
+  const coinSize = 24;
+  const distance = squareSize + margin;
+
+  const backgroundColor = 0x283593,
+    playerColor = 0xEEFF41,
+    coinColor = 0x2196F3,
+    enemyColor = 0xFF5252;
+
+  const squareMoveTime = 75,
+    instructionFadeTime = 2000,
+    instructionShowTime = 3000,
+    musicUp = 7500,
+    coinInterval = 500;
+
+  var square,
+    coin,
+    isMoving = false,
+    isDie = false,
+    soundButton,
+    score = 0,
+    bestScore = 0,
+    nextEnemy,
+    enemies,
+    coinSound,
+    jumpSound,
+    dieSound,
+    music;
+
+  var settings = loadSettings();
+
+  var upKey;
+  var downKey;
+  var leftKey;
+  var rightKey;
+  var takingCoin = false;
+  var firstStart = true;
+
+  this.preload = function() {
+    this.game.stage.backgroundColor = backgroundColor;
+
+    this.game.scale.pageAlignHorizontally = true;
+    this.game.scale.pageAlignVertically = true;
+
+    this.game.load.audio('music', ['sounds/music.mp3', 'sounds/music.ogg']);
+    this.game.load.audio('coin', ['sounds/coin.wav', 'sounds/coin.mp3']);
+    this.game.load.audio('jump', ['sounds/jump.wav', 'sounds/jump.mp3']);
+    this.game.load.audio('die', ['sounds/die.wav', 'sounds/die.mp3']);
+    this.game.load.image('square', 'img/square.png');
+    this.game.load.image('enemy', 'img/enemy.png');
+    this.game.load.image('square-particle', 'img/square-particle.png');
+    this.game.load.image('enemy-particle', 'img/enemy-particle.png');
+    this.game.load.image('instruction', 'img/instruction.png');
+    this.game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
+  }
+
+  this.create = function() {
+    upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
+    upKey.onDown.add(up, this);
+    upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    upKey.onDown.add(up, this);
+
+    downKey = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
+    downKey.onDown.add(down, this);
+    downKey = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+    downKey.onDown.add(down, this);
+
+    leftKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+    leftKey.onDown.add(left, this);
+    leftKey = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    leftKey.onDown.add(left, this);
+
+    rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+    rightKey.onDown.add(right, this);
+    rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    rightKey.onDown.add(right, this);
+
+    addScoreLable();
+
+    square = this.game.add.sprite(0, 0, 'square');
+    square.tint = playerColor;
+    square.width = squareSize;
+    square.height = squareSize;
+    square.x = this.game.world.centerX;
+    square.y = this.game.world.centerY;
+    square.anchor.setTo(0.5, 0.5);
+
+    coin = this.game.add.sprite(-100, -100, 'square');
+    coin.tint = coinColor;
+    coin.width = coinSize;
+    coin.height = coinSize;
+    coin.anchor.setTo(0.5, 0.5);
+    var tween = this.game.add.tween(coin).to({
+      angle: 360
+    }, 1000, 'Linear', true);
+    tween.repeat(-1, 0);
+
+    enemies = this.game.add.group();
+    enemies.enableBody = true;
+    enemies.createMultiple(20, 'enemy');
+
+    var instruction = this.game.add.sprite(0, 0, 'instruction');
+    instruction.x = this.game.world.centerX - instruction.width / 2;
+    instruction.y = this.game.world.height - instruction.height - margin;
+
+    nextEnemy = this.game.time.now;
+
+    setTimeout(function() {
+      this.game.add.tween(instruction).to({
+        alpha: 0
+      }, instructionFadeTime).start();
+    }, instructionShowTime);
+
+    addGameName();
+    addSounds();
+    addVolumeButton();
+    addCoin();
+    addBestScore();
+    addEmitter();
+
+    var graphics = this.game.add.graphics(0, 0);
+
+    drawBorder(graphics);
+  }
+
+  this.update = function() {
+    if (overlap(square, coin)) {
+      takeCoin();
+    }
+
+    enemies.forEach(function(enemy) {
+      if (overlap(square, enemy)) {
+        squareDie(enemy);
+      }
+    });
+
+    if (!firstStart)
+      spawnEnemies();
+  }
+
+  function overlap(obj1, obj2) {
+    if (obj1.getBounds().width !== obj1.width) {
+      return false;
+    }
+
+    return Phaser.Rectangle.intersects(obj1.getBounds(), obj2.getBounds());
+  }
+
+  this.render = function() {
+    var recA = square.getBounds();
+    var recB = coin.getBounds();
+
+    var intersects = Phaser.Rectangle.intersection(recA, recB);
+  }
+
+  function drawBorder(graphics) {
+    graphics.lineStyle(5, 0x1A237E);
+    graphics.drawRect(
+      this.game.world.centerX - (distance + squareSize / 2 + margin * 2),
+      this.game.world.centerY - (distance + squareSize / 2 + margin * 2),
+      (distance + squareSize / 2 + margin * 2) * 2,
+      (distance + squareSize / 2 + margin * 2) * 2
+    );
+  }
+
+  function up() {
+    if (isMoving)
+      return;
+
+    if (!settings.muted)
+      jumpSound.play();
+
+    var calc = square.y - (distance + margin)
+    var limit = this.game.world.centerY - (distance + margin);
+
+    var tween;
+
+    if (calc < limit) {
+      calc += distance;
+      tween = this.game.add.tween(square).to({
+          y: calc
+        }, squareMoveTime / 2)
+        .to({
+          y: square.y
+        }, squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(square).to({
+        y: calc
+      }, squareMoveTime).start();
+    }
+
+    isMoving = true;
+    tween.onComplete.add(function() {
+      isMoving = false;
+    })
+  }
+
+  function down() {
+    if (isMoving)
+      return;
+
+    if (!settings.muted) {
+      jumpSound.play();
+    }
+
+    var calc = square.y + (distance + margin)
+    var limit = this.game.world.centerY + (distance + margin);
+
+    var tween;
+
+    if (calc > limit) {
+      calc -= distance;
+      tween = this.game.add.tween(square).to({
+          y: calc
+        }, squareMoveTime / 2)
+        .to({
+          y: square.y
+        }, squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(square).to({
+        y: calc
+      }, squareMoveTime).start();
+    }
+
+    isMoving = true;
+    tween.onComplete.add(function() {
+      isMoving = false;
+    })
+  }
+
+  function left() {
+    if (isMoving)
+      return;
+
+    if (!settings.muted) {
+      jumpSound.play();
+    }
+
+    var calc = square.x - (distance + margin)
+    var limit = this.game.world.centerX - (distance + margin);
+
+    var tween;
+
+    if (calc < limit) {
+      calc += distance;
+      tween = this.game.add.tween(square).to({
+          x: calc
+        }, squareMoveTime / 2)
+        .to({
+          x: square.x
+        }, squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(square).to({
+        x: calc
+      }, squareMoveTime).start();
+    }
+
+    isMoving = true;
+    tween.onComplete.add(function() {
+      isMoving = false;
+    })
+  }
+
+  function right() {
+    if (isMoving)
+      return;
+
+    if (!settings.muted) {
+      jumpSound.play();
+    }
+
+    var calc = square.x + (distance + margin)
+    var limit = this.game.world.centerX + (distance + margin);
+
+    var tween;
+
+    if (calc > limit) {
+      calc -= distance;
+      tween = this.game.add.tween(square).to({
+          x: calc
+        }, squareMoveTime / 2)
+        .to({
+          x: square.x
+        }, squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(square).to({
+        x: calc
+      }, squareMoveTime).start();
+    }
+
+    isMoving = true;
+    tween.onComplete.add(function() {
+      isMoving = false;
+    })
+  }
+
+  function addGameName() {
+    var style = {
+      font: "48px Arial",
+      fill: "#fff",
+      boundsAlignH: "center",
+      boundsAlignV: "middle"
+    };
+
+    text = this.game.add.text(0, 0, "250+", style);
+    text.x = this.game.world.centerX - text.width / 2;
+    text.y = 100;
+  }
+
+  function addScoreLable() {
+    var style = {
+      font: "100px Arial",
+      fill: "#fff",
+      boundsAlignH: "center",
+      boundsAlignV: "middle"
+    };
+
+    scoreLable = this.game.add.text(0, 0, "0", style);
+    scoreLable.anchor.setTo(0.5, 0.5);
+    scoreLable.x = this.game.world.centerX;
+    scoreLable.y = this.game.world.centerY;
+    scoreLable.alpha = 0.25;
+  }
+
+  function addSounds() {
+    music = this.game.add.audio('music');
+    music.loop = true;
+    music.volume = 0.0;
+
+    coinSound = this.game.add.audio('coin');
+    coinSound.volume = 0.36;
+
+    jumpSound = this.game.add.audio('jump');
+    jumpSound.volume = 0.3;
+
+    dieSound = this.game.add.audio('die');
+    dieSound.volume = 0.3;
+
+    if (!settings.muted)
+      music.play();
+
+    this.game.add.tween(music).to({
+      volume: 0.6
+    }, musicUp).start();
+  }
+
+  function squareDie(enemy) {
+    if (!enemy.alive) {
+      return;
+    }
+
+    isDie = true;
+
+    enemy.kill();
+
+    if (score > bestScore) {
+      bestScore = score;
+      updateBestScore(bestScore);
+    }
+
+    score = 0;
+    scoreLable.text = score;
+
+
+    emitter2.x = enemy.x;
+    emitter2.y = enemy.y;
+    emitter2.start(true, 200, null, 20);
+
+    if (!settings.muted) {
+      dieSound.play();
+    }
+
+    this.game.time.events.add(300, function() {
+      isDie = false;
+    }, this);
+  }
+
+  function takeCoin() {
+    if (coinTaking)
+      return;
+
+    firstStart = false;
+
+    coinTaking = true;
+
+    emitter.x = coin.x;
+    emitter.y = coin.y;
+    emitter.start(true, 800, null, 20);
+
+    if (!settings.muted)
+      coinSound.play();
+
+    updateScore();
+
+    var t = this.game.add.tween(coin).to({
+      width: 0,
+      height: 0
+    }, 100).start();
+    this.game.time.events.add(coinInterval, addCoin, this);
+  }
+
+  function updateScore() {
+    score++;
+    scoreLable.text = score;
+  }
+
+  function addEmitter() {
+    emitter = this.game.add.emitter(0, 0);
+    emitter.makeParticles('square-particle');
+    emitter.setXSpeed(-150, 150);
+    emitter.setYSpeed(-150, 150);
+    emitter.setScale(2, 0, 2, 0, 800);
+
+    emitter2 = this.game.add.emitter(0, 0);
+    emitter2.makeParticles('enemy-particle');
+    emitter2.setXSpeed(-150, 150);
+    emitter2.setYSpeed(-150, 150);
+    emitter2.setScale(2, 0, 2, 0, 800);
+  }
+
+  function spawnEnemies() {
+    if (this.game.time.now < nextEnemy)
+      return;
+
+    var start = 2000,
+      end = 500,
+      tScore = 30;
+    var delay = Math.max(start - (start - end) * score / tScore, end);
+    nextEnemy = this.game.time.now + delay;
+
+    addEnemy()
+  }
+
+  function addEnemy() {
+    var enemy = enemies.getFirstDead();
+
+    if (!enemy) {
+      return;
+    }
+
+    var patterns = [{
+      x: -squareSize / 2,
+      y: this.game.world.centerY - (distance + margin)
+    }, {
+      x: -squareSize / 2,
+      y: this.game.world.centerY
+    }, {
+      x: -squareSize / 2,
+      y: this.game.world.centerY + (distance + margin)
+    }, {
+      x: this.game.width + squareSize / 2,
+      y: this.game.world.centerY - (distance + margin)
+    }, {
+      x: this.game.width + squareSize / 2,
+      y: this.game.world.centerY
+    }, {
+      x: this.game.width + squareSize / 2,
+      y: this.game.world.centerY + (distance + margin)
+    }, {
+      x: this.game.world.centerX - (distance + margin),
+      y: -squareSize / 2
+    }, {
+      x: this.game.world.centerX,
+      y: -squareSize / 2
+    }, {
+      x: this.game.world.centerX + (distance + margin),
+      y: -squareSize / 2
+    }, {
+      x: this.game.world.centerX - (distance + margin),
+      y: this.game.height + squareSize / 2
+    }, {
+      x: this.game.world.centerX,
+      y: this.game.height + squareSize / 2
+    }, {
+      x: this.game.world.centerX + (distance + margin),
+      y: this.game.height + squareSize / 2
+    }];
+
+    var speed = 2;
+    var speedRatio = 100;
+
+    var position = patterns[this.game.rnd.integerInRange(0, patterns.length - 1)];
+
+    enemy.reset(position.x, position.y);
+
+    if (position.x > this.game.width) {
+      enemy.body.velocity.x = -speedRatio * speed;
+    } else if (position.x < 0) {
+      enemy.body.velocity.x = speedRatio * speed;
+    } else if (position.y > this.game.height) {
+      enemy.body.velocity.y = -speedRatio * speed;
+    } else if (position.y < 0) {
+      enemy.body.velocity.y = speedRatio * speed;
+    }
+
+    enemy.anchor.setTo(0.5);
+    enemy.outOfBoundsKill = true;
+    enemy.checkWorldBounds = true;
+  }
+
+  function addVolumeButton() {
+    var frames = 1;
+
+    if (settings.muted) {
+      frames = 0;
+    }
+
+    soundButton = this.game.add.button(5, 5, 'volume', volumeStateChange, this, frames, frames, frames);
+    soundButton.width = 48;
+    soundButton.height = 48;
+  }
+
+  function volumeStateChange() {
+    if (soundButton.frame === 0) {
+      soundButton.setFrames(1, 1, 1);
+
+      if (music.paused)
+        music.resume();
+      else
+        music.play();
+
+      settings.muted = false;
+    } else if (soundButton.frame === 1) {
+      soundButton.setFrames(0, 0, 0);
+      music.pause();
+
+      settings.muted = true;
+    }
+
+    saveSettings(settings);
+  }
+
+  function saveSettings(settings) {
+    localStorage.setItem('250-settings', JSON.stringify(settings));
+  }
+
+  function loadSettings() {
+    return JSON.parse(localStorage.getItem('250-settings')) || {
+      muted: false
+    };
+  }
+
+  function addCoin() {
+    var tx = this.game.rnd.integerInRange(0, 2);
+    var ty = this.game.rnd.integerInRange(0, 2);
+
+    tx = this.game.world.centerX - (distance + margin) + tx * (distance + margin);
+    ty = this.game.world.centerY - (distance + margin) + ty * (distance + margin);
+
+    coin.x = tx;
+    coin.y = ty;
+
+    this.game.add.tween(coin).to({
+      width: coinSize,
+      height: coinSize
+    }, 100).start();
+
+    coinTaking = false;
+  }
+
+  function addBestScore() {
+    var style = {
+      font: "21px Arial",
+      fill: "#fff",
+      boundsAlignH: "center",
+      boundsAlignV: "middle"
+    };
+
+    bestScoreLable = this.game.add.text(0, 0, 'Лучший счёт 0', style);
+    bestScoreLable.anchor.setTo(0.5, 0.5);
+    bestScoreLable.x = this.game.world.centerX;
+    bestScoreLable.y = this.game.world.centerY + (distance + margin) + distance;
+    bestScoreLable.alpha = 0;
+  }
+
+  function updateBestScore(score) {
+    if (bestScoreLable.alpha === 0) {
+      this.game.add.tween(bestScoreLable).to({
+        alpha: 1
+      }, 1000).start();
+    }
+    bestScoreLable.text = 'Лучший счёт: ' + score;
+  }
+};
+var game = new Phaser.Game(600, 900, Phaser.AUTO, 'game');
+//var game = new Phaser.Game(600, 900, Phaser.CANVAS, 'game');
+
+game.state.add('Game', GameState);
+game.state.add('Menu', Menu);
+
+game.state.start('Menu');
