@@ -15,6 +15,9 @@ var GameState = function() {
     musicUp = 7500,
     coinInterval = 500;
 
+  var sizeX = 0;
+  var sizeY = 0;
+
   var square,
     coin,
     isMoving = false,
@@ -415,7 +418,7 @@ var GameState = function() {
   achivments9 = false;
   function updateScore() {
     score++;
-    scoreLable.text = score;
+    scoreLable.text = "x" + score;
     if (score > 1 && score < 5 && !achivments1) {
       achivments1 = true;
       Achivment.show('Ехуу, первые шаги!', '+1');

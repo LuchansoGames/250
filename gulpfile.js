@@ -22,7 +22,7 @@ gulp.task('js', function() {
   'public/js/score-table.js',
   'public/js/menu.js',
   'public/js/achivment.js',
-  'public/js/game.js',
+  'public/js/game/game.js',
   'public/js/app.js'
   ];
 
