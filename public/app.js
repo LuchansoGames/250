@@ -1,56 +1,3 @@
-var Score = function(userimage, username, url, score, position) {
-  const margin = 15;
-  // const padding = 23;
-  // const textMarginTop = 19;
-
-  this.sprite = game.add.sprite(0, 0, 'score-background');
-  
-  this.userImage = game.make.sprite(0, 0, userimage);
-  this.userImage.anchor.set(0.5, 0.5);
-  this.userImage.x = -this.sprite.width / 2 + this.userImage.width / 2 + margin;
-
-  var usernameStyle = {
-    font: "17px Arial",
-    fill: "#fff",
-    fontWeight: "bold",
-    boundsAlignH: "center",
-    boundsAlignV: "middle"
-  }
-
-  var scoreStyle = {
-    font: "17px Arial",
-    fill: "#FFEB3B",
-    fontWeight: "bold",
-    boundsAlignH: "center",
-    boundsAlignV: "middle"
-  }
-
-  var positionStyle = {
-    
-  }
-
-  this.username = game.make.text(0, 0, 'Jonh Strive', usernameStyle);
-  this.username.anchor.set(0, 1);
-  this.username.x = this.userImage.x + this.userImage.width / 2 + margin - 5;
-  this.username.y = 5;
-
-  this.score = game.make.text(0, 0, Math.round(Math.random() * 12000), scoreStyle);
-  this.score.x = this.userImage.x + this.userImage.width / 2 + margin - 5;
-  this.score.anchor.set(0, 0);
-  this.score.y = 0;
-
-  this.sprite.addChild(this.userImage);
-  this.sprite.addChild(this.username);
-  this.sprite.addChild(this.score);
-
-  return this.sprite;
-}
-var ScoreTable = function(count) {
-  var score = new Score();
-  score.anchor.set(0.5, 0.5);
-  score.x = game.world.centerX;
-  score.y = game.world.centerY;
-}
 var Menu = {
   preload: function() {
     game.load.crossOrigin = true;
@@ -254,6 +201,60 @@ var Menu = {
     summ += interval;
   },
 }
+var Score = function(userimage, username, url, score, position) {
+  const margin = 15;
+  // const padding = 23;
+  // const textMarginTop = 19;
+
+  this.sprite = game.add.sprite(0, 0, 'score-background');
+  
+  this.userImage = game.make.sprite(0, 0, userimage);
+  this.userImage.anchor.set(0.5, 0.5);
+  this.userImage.x = -this.sprite.width / 2 + this.userImage.width / 2 + margin;
+
+  var usernameStyle = {
+    font: "17px Arial",
+    fill: "#fff",
+    fontWeight: "bold",
+    boundsAlignH: "center",
+    boundsAlignV: "middle"
+  }
+
+  var scoreStyle = {
+    font: "17px Arial",
+    fill: "#FFEB3B",
+    fontWeight: "bold",
+    boundsAlignH: "center",
+    boundsAlignV: "middle"
+  }
+
+  var positionStyle = {
+    
+  }
+
+  this.username = game.make.text(0, 0, 'Jonh Strive', usernameStyle);
+  this.username.anchor.set(0, 1);
+  this.username.x = this.userImage.x + this.userImage.width / 2 + margin - 5;
+  this.username.y = 5;
+
+  this.score = game.make.text(0, 0, Math.round(Math.random() * 12000), scoreStyle);
+  this.score.x = this.userImage.x + this.userImage.width / 2 + margin - 5;
+  this.score.anchor.set(0, 0);
+  this.score.y = 0;
+
+  this.sprite.addChild(this.userImage);
+  this.sprite.addChild(this.username);
+  this.sprite.addChild(this.score);
+
+  return this.sprite;
+}
+var ScoreTable = function(count) {
+  var score = new Score();
+  score.anchor.set(0.5, 0.5);
+  score.x = game.world.centerX;
+  score.y = game.world.centerY;
+}
+
 var Achivment = {
   show: function(msg, img) {
     this.group = game.add.group();
@@ -292,6 +293,84 @@ var Achivment = {
     game.add.tween(this.group).to({alpha: 1, x: game.world.width - this.background.width}, 100).start();
     game.add.tween(this.group).to({alpha: 0, y: this.group.y + 150}, 400).delay(3000).start();
   }
+}
+var Border = function(game) {
+  this.game = game;
+}
+
+Border.prototype = {
+  /**
+   * Функция которая проверяет, может ли объект двигаться дальше
+   * @param  {[type]} square   [description]
+   * @param  {[type]} position [description]
+   * @return {[type]}          [description]
+   */
+  canMove: function(square, position) {
+
+  }
+};
+
+var Controll = function(game) {
+  this.game = game;
+}
+
+Controll.prototype = {
+  create: function(flows, context) {
+    context = context || {};
+
+    var keys = this.game.input.keyboard.addKeys({
+      'up': Phaser.KeyCode.W,
+      'down': Phaser.KeyCode.S,
+      'left': Phaser.KeyCode.A,
+      'right': Phaser.KeyCode.D
+    });
+
+    keys.up.onDown.add(flows.up, context);
+    keys.down.onDown.add(flows.down, context);
+    keys.left.onDown.add(flows.left, context);
+    keys.right.onDown.add(flows.right, context);
+
+    keys = this.game.input.keyboard.addKeys({
+      'up': Phaser.KeyCode.UP,
+      'down': Phaser.KeyCode.DOWN,
+      'left': Phaser.KeyCode.LEFT,
+      'right': Phaser.KeyCode.RIGHT
+    });
+
+    keys.up.onDown.add(flows.up, context);
+    keys.down.onDown.add(flows.down, context);
+    keys.left.onDown.add(flows.left, context);
+    keys.right.onDown.add(flows.right, context);
+  }
+};
+
+
+
+
+var GameStateNew = function(game) {
+  this.game = game;
+  this.border = new Border(game);
+  this.square = new Square(game, this.border);
+  this.controll = new Controll(game);
+}
+
+GameStateNew.prototype = {
+  preload: function() {
+    Settings.load();
+    this.square.preload();
+  },
+
+  create: function() {
+    this.square.create();
+    this.controll.create({
+      up: this.square.moveUp,
+      down: this.square.moveDown,
+      left: this.square.moveLeft,
+      right: this.square.moveRight
+    }, this.square);
+  },
+
+  update: function() {}
 }
 var GameState = function() {
   const margin = 20;
@@ -922,10 +1001,263 @@ var GameState = function() {
     bestScoreLable.text = 'Лучший счёт: ' + score;
   }
 };
+
+var Settings = {
+  isMuted: false,
+  storeName: '250-settings',
+
+  load: function() {
+    var settings = JSON.parse(localStorage.getItem(this.storeName)) || {};
+
+    this.isMuted = settings.isMuted || this.isMuted;
+  },
+
+  save: function() {
+    localStorage.setItem(this.storeName, JSON.stringify(this));
+  },
+
+  set: function(key, value) {
+    this[key] = value;
+    this.save();
+  }
+}
+var SoundManager = {
+  musicFadeInTime: 7500,
+
+  coinSound: null,
+  jumpSound: null,
+  dieSound: null,
+  music: null,
+
+  preload: function() {
+    this.game.load.audio('music', ['sounds/music.mp3', 'sounds/music.ogg']);
+    this.game.load.audio('coin', ['sounds/coin.wav', 'sounds/coin.mp3']);
+    this.game.load.audio('jump', ['sounds/jump.wav', 'sounds/jump.mp3']);
+    this.game.load.audio('die', ['sounds/die.wav', 'sounds/die.mp3']);
+  },
+
+  create: function() {
+    this.music = this.game.add.audio('music');
+    this.music.loop = true;
+    this.music.volume = 0.0;
+
+    this.coinSound = this.game.add.audio('coin');
+    this.coinSound.volume = 0.12;
+
+    this.jumpSound = this.game.add.audio('jump');
+    this.jumpSound.volume = 0.25;
+
+    this.dieSound = this.game.add.audio('die');
+    this.dieSound.volume = 0.3;
+
+    if (!Settings.isMuted)
+      this.music.play();
+
+    this.game.add.tween(this.music).to({
+      volume: 0.5
+    }, this.musicFadeInTime).start();
+  },
+
+  update: function() {
+
+  },
+
+  jumpSoundPlay: function() {
+    if (!Settings.isMuted) {
+      jumpSound.play();
+    }
+  },
+
+  dieSoundPlay: function() {
+    if (!Settings.isMuted) {
+      dieSound.play();
+    }
+  },
+
+  coinSoundPlay: function() {
+    if (!Settings.isMuted) {
+      coinSound.play();
+    }
+  },
+
+  volumeStateChange: function() {
+    if (Settings.isMuted) {
+      Settings.set('isMuted', false);
+      
+
+      if (music.paused)
+        music.resume();
+      else
+        music.play();
+    } else {
+      Settings.set('isMuted', true);
+      
+
+      music.pause();
+    }
+  }
+}
+var Square = function(game, border) {
+  const defaultPlayerColor = 0xEEFF41,
+    defaultSquareMoveTime = 75,
+    defaultSquareSize = 50,
+    defaultMoveDistance = defaultSquareSize + Store.squareMargin;
+
+  this.game = game;
+  this.playerColor = defaultPlayerColor;
+  this.squareMoveTime = defaultSquareMoveTime;
+  this.squareSize = defaultSquareSize;
+  this.moveDistance = defaultMoveDistance;
+  this.square = {};
+  this.isMoving = false;
+  this.border = border;
+
+}
+
+Square.prototype = {
+  preload: function() {
+    this.game.load.image('square', 'img/square.png');
+  },
+
+  create: function() {
+    this.square = this.game.add.sprite(0, 0, 'square');
+    this.square.tint = this.playerColor;
+    this.square.width = this.squareSize;
+    this.square.height = this.squareSize;
+    this.square.x = this.game.world.centerX;
+    this.square.y = this.game.world.centerY;
+    this.square.anchor.setTo(0.5, 0.5);
+  },
+
+  moveUp: function() {
+    if (this.isMoving)
+      return;
+
+    SoundManager.moveSoundPlay();
+
+    var calc = this.square.y - (this.moveDistance + Store.squareMargin);
+    var isCanMove = border.canMove(this.square, new Phaser.Point(this.square.x, calc));
+    var tween;
+
+    if (!isCanMove) {
+      calc += this.moveDistance;
+      tween = this.game.add.tween(this.square).to({
+          y: calc
+        }, this.squareMoveTime / 2)
+        .to({
+          y: this.square.y
+        }, this.squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(this.square).to({
+        y: calc
+      }, this.squareMoveTime).start();
+    }
+
+    var isMoving = this.isMoving = true;
+    tween.onComplate.add(function() {
+      isMoving = false;
+    });
+  },
+
+  moveDown: function() {
+    if (this.isMoving)
+      return;
+
+    SoundManager.moveSoundPlay();
+
+    var calc = this.square.y + (this.moveDistance + Store.squareMargin);
+    var isCanMove = border.canMove(this.square, new Phaser.Point(this.square.x, calc));
+    var tween;
+
+    if (!isCanMove) {
+      calc -= this.moveDistance;
+      tween = this.game.add.tween(this.square).to({
+          y: calc
+        }, this.squareMoveTime / 2)
+        .to({
+          y: this.square.y
+        }, this.squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(this.square).to({
+        y: calc
+      }, this.squareMoveTime).start();
+    }
+
+    var isMoving = this.isMoving = true;
+    tween.onComplate.add(function() {
+      isMoving = false;
+    });
+  },
+
+  moveLeft: function() {
+    if (this.isMoving)
+      return;
+
+    SoundManager.moveSoundPlay();
+
+    var calc = this.square.x - (this.moveDistance + Store.squareMargin);
+    var isCanMove = border.canMove(this.square, new Phaser.Point(this.square.x, calc));
+    var tween;
+
+    if (!isCanMove) {
+      calc += this.moveDistance;
+      tween = this.game.add.tween(this.square).to({
+          x: calc
+        }, this.squareMoveTime / 2)
+        .to({
+          x: this.square.y
+        }, this.squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(this.square).to({
+        x: calc
+      }, this.squareMoveTime).start();
+    }
+
+    var isMoving = this.isMoving = true;
+    tween.onComplate.add(function() {
+      isMoving = false;
+    });
+  },
+
+  moveRight: function() {
+    if (this.isMoving)
+      return;
+
+    SoundManager.moveSoundPlay();
+
+    var calc = this.square.x + (this.moveDistance + Store.squareMargin);
+    var isCanMove = border.canMove(this.square, new Phaser.Point(this.square.x, calc));
+    var tween;
+
+    if (!isCanMove) {
+      calc -= this.moveDistance;
+      tween = this.game.add.tween(this.square).to({
+          x: calc
+        }, this.squareMoveTime / 2)
+        .to({
+          x: this.square.y
+        }, this.squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(this.square).to({
+        x: calc
+      }, this.squareMoveTime).start();
+    }
+
+    var isMoving = this.isMoving = true;
+    tween.onComplate.add(function() {
+      isMoving = false;
+    });
+  }
+};
+var Store = {
+  squareMargin: 20
+}
+
 var game = new Phaser.Game(600, 900, Phaser.AUTO, 'game');
 //var game = new Phaser.Game(600, 900, Phaser.CANVAS, 'game');
 
 game.state.add('Game', GameState);
 game.state.add('Menu', Menu);
 
-game.state.start('Menu');
+game.state.start('Game');
+//# sourceMappingURL=app.js.map
