@@ -4,6 +4,8 @@
 [![Test Coverage](https://codeclimate.com/github/LuchansoGames/250/badges/coverage.svg)](https://codeclimate.com/github/LuchansoGames/250/coverage)
 [![Issue Count](https://codeclimate.com/github/LuchansoGames/250/badges/issue_count.svg)](https://codeclimate.com/github/LuchansoGames/250)
 
+Размеры карты должны быть нечётными
+
 * [ ] Поделиться результатом
 * [ ] Добавить систему рассылки
 * [ ] Добавить рейтинг в меню игры
@@ -22,3 +24,6 @@
 * [ ] Написать серверную обработку на отдачу таблицы рейтинга
 
 * [ ] border.canMove
+* [ ] border.draw
+
+* [ ] border.generate3x3Map

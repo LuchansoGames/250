@@ -15,12 +15,31 @@ var Terrain = function(x, y, borders) {
   this.borders.right = this.borders.right || false;
 
   this.color = Store.borderColor;
-  this.lineStyle = Store.borderLineStyle;
+  this.lineWidth = Store.borderLineWidth;
 
-  var size = (Store.moveDistance + Store.squareSize / 2 + Store.squareMargin * 2) * 2;
-  this.width = size;
-  this.height = size;
+  this.size = (Store.moveDistance + Store.squareMargin);
+  this.width = this.size;
+  this.height = this.size;
 }
 
 Terrain.prototype = {
+  draw: function(graphics) {
+    graphics.lineStyle(this.lineWidth, this.color);
+    if (this.borders.top) {
+      graphics.moveTo(this.x * this.size, this.y * this.size);
+      graphics.lineTo(this.x * this.size + this.size, this.y * this.size);
+    }
+    if (this.borders.bottom) {
+      graphics.moveTo(this.x * this.size, this.y * this.size + this.size);
+      graphics.lineTo(this.x * this.size + this.size, this.y * this.size + this.size);
+    }
+    if (this.borders.left) {
+      graphics.moveTo(this.x * this.size, this.y * this.size);
+      graphics.lineTo(this.x * this.size, this.y * this.size + this.size);
+    }
+    if (this.borders.right) {
+      graphics.moveTo(this.x * this.size + this.size, this.y * this.size);
+      graphics.lineTo(this.x * this.size + this.size, this.y * this.size + this.size);
+    }
+  }
 };

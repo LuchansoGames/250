@@ -9,10 +9,12 @@ var GameStateNew = {
     this.controll = new Controll(this.game);
 
     Settings.load();
+    this.border.preload();
     this.square.preload();
   },
 
   create: function() {
+    this.border.create();
     this.square.create();
 
     this.controll.create({

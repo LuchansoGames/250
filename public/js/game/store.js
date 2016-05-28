@@ -7,6 +7,6 @@ Store.squareSize = 50;
 Store.moveDistance = Store.squareSize + Store.squareMargin;
 
 Store.borderColor = 0x1A237E;
-Store.borderLineStyle = 5;
+Store.borderLineWidth = 5;
 
 Store.backgroundColor = 0x283593;
