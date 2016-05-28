@@ -38,7 +38,6 @@
   "x": 0,
   "y": 2,
   "borders": {
-    "bottom": true,
     "left": true
   }
 }, {
@@ -62,5 +61,13 @@
     "right": true,
     "left": true,
     "top": true
+  }
+}, {
+  "x": 0,
+  "y": 3,
+  "borders": {
+    "bottom": true,
+    "right": true,
+    "left": true
   }
 }]

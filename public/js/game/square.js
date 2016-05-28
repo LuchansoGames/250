@@ -41,30 +41,31 @@ Square.prototype = {
     var calcY = this.sprite.y;
     var isCanMove;
     var tween;
-    var backPosition;
+    var backPositionX = 0;
+    var backPositionY = 0;
 
     switch (direction) {
       case Square.directionType.UP:
         calcY = this.sprite.y - (this.moveDistance + Store.squareMargin);
-        backPosition = +this.moveDistance;
+        backPositionY = +this.moveDistance;
 
         break;
 
       case Square.directionType.DOWN:
         calcY = this.sprite.y + (this.moveDistance + Store.squareMargin);
-        backPosition = -this.moveDistance;
+        backPositionY = -this.moveDistance;
 
         break;
 
       case Square.directionType.LEFT:
         calcX = this.sprite.x - (this.moveDistance + Store.squareMargin);
-        backPosition = +this.moveDistance;
+        backPositionX = +this.moveDistance;
 
         break;
 
       case Square.directionType.RIGHT:
         calcX = this.sprite.x + (this.moveDistance + Store.squareMargin);
-        backPosition = -this.moveDistance;
+        backPositionX = -this.moveDistance;
 
         break;
     }
@@ -77,7 +78,8 @@ Square.prototype = {
         y: calcY
       }, this.squareMoveTime).start();
     } else {
-      calc += backPosition;
+      calcX += backPositionX;
+      calcY += backPositionY;
 
       tween = this.game.add.tween(this.sprite).to({
           x: calcX,
