@@ -1,13 +1,12 @@
-var Store = {
-  squareMargin: 20
-}
+var Store = { };
 
-var defaultParams = { };
+Store.squareMargin = 20;
+Store.playerColor = 0xEEFF41;
+Store.squareMoveTime = 75;
+Store.squareSize = 50;
+Store.moveDistance = Store.squareSize + Store.squareMargin;
 
-defaultParams.playerColor = 0xEEFF41;
-defaultParams.squareMoveTime = 75;
-defaultParams.squareSize = 50;
-defaultParams.moveDistance = defaultParams.squareSize + Store.squareMargin;
+Store.borderColor = 0x1A237E;
+Store.borderLineStyle = 5;
 
-defaultParams.borderColor = 0x1A237E;
-defaultParams.borderLineStyle = 5;
+Store.backgroundColor = 0x283593;

@@ -14,11 +14,12 @@ var Terrain = function(x, y, borders) {
   this.borders.left = this.borders.left || false;
   this.borders.right = this.borders.right || false;
 
-  this.color = defaultParams.borderColor;
-  this.lineStyle = defaultParams.borderLineStyle;
+  this.color = Store.borderColor;
+  this.lineStyle = Store.borderLineStyle;
 
-  this.width = (defaultParams.moveDistance + defaultParams.squareSize / 2 + Store.squareMargin * 2) * 2;
-  this.height = (defaultParams.moveDistance + defaultParams.squareSize / 2 + Store.squareMargin * 2) * 2;
+  var size = (Store.moveDistance + Store.squareSize / 2 + Store.squareMargin * 2) * 2;
+  this.width = size;
+  this.height = size;
 }
 
 Terrain.prototype = {

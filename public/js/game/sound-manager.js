@@ -72,5 +72,9 @@ var SoundManager = {
 
       music.pause();
     }
+  },
+
+  moveSoundPlay: function() {
+    
   }
 }
