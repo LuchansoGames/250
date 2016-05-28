@@ -14,6 +14,7 @@ var GameStateNew = {
     this.border.preload();
     this.square.preload();
     this.coin.preload();
+    EnemySpawn.preload();
   },
 
   create: function() {
