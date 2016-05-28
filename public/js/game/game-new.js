@@ -1,12 +1,9 @@
-var GameStateNew = function(game) {
-  this.game = game;
-  this.border = new Border(game);
-  this.square = new Square(game, this.border);
-  this.controll = new Controll(game);
-}
-
-GameStateNew.prototype = {
+var GameStateNew = {
   preload: function() {
+    this.border = new Border(game);
+    this.square = new Square(game, this.border);
+    this.controll = new Controll(game);
+
     Settings.load();
     this.square.preload();
   },

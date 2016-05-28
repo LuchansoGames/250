@@ -294,8 +294,9 @@ var Achivment = {
     game.add.tween(this.group).to({alpha: 0, y: this.group.y + 150}, 400).delay(3000).start();
   }
 }
-var Border = function(game) {
+var Border = function(game, map) {
   this.game = game;
+  this.map = map;
 }
 
 Border.prototype = {
@@ -306,9 +307,46 @@ Border.prototype = {
    * @return {[type]}          [description]
    */
   canMove: function(square, position) {
+    return true;
+  },
 
+  draw: function(graphics) {
+    var self = this;
+    
+    this.map.forEach(function(terrain) {
+      graphics.lineStyle(terrain.lineStyle, terrain.color);
+      graphics.drawRect(terrain.x, terrain.y, terrain.width, terrain.height);
+    });
   }
 };
+
+/**
+ * Создаёт карту 3x3
+ * @return {[type]} [description]
+ */
+Border.generate3x3Map = function() {
+  var terrains = [];
+
+  for (var x = 0; x < 3; x++) {
+    for (var y = 0; y < 3; y++) {
+      var border = {};
+
+      if (x === 0)
+        border.left = true;
+
+      if (y === 0)
+        border.top = true;
+
+      if (x === 2)
+        border.right = true;
+
+      if (y === 2)
+        border.bottom = true;
+      
+      var terrain = new Terrain(x, y);
+    }
+  }
+}
 
 var Controll = function(game) {
   this.game = game;
@@ -347,15 +385,12 @@ Controll.prototype = {
 
 
 
-var GameStateNew = function(game) {
-  this.game = game;
-  this.border = new Border(game);
-  this.square = new Square(game, this.border);
-  this.controll = new Controll(game);
-}
-
-GameStateNew.prototype = {
+var GameStateNew = {
   preload: function() {
+    this.border = new Border(game);
+    this.square = new Square(game, this.border);
+    this.controll = new Controll(game);
+
     Settings.load();
     this.square.preload();
   },
@@ -1098,20 +1133,14 @@ var SoundManager = {
   }
 }
 var Square = function(game, border) {
-  const defaultPlayerColor = 0xEEFF41,
-    defaultSquareMoveTime = 75,
-    defaultSquareSize = 50,
-    defaultMoveDistance = defaultSquareSize + Store.squareMargin;
-
   this.game = game;
-  this.playerColor = defaultPlayerColor;
-  this.squareMoveTime = defaultSquareMoveTime;
-  this.squareSize = defaultSquareSize;
-  this.moveDistance = defaultMoveDistance;
+  this.playerColor = defaultParams.PlayerColor;
+  this.squareMoveTime = defaultParams.SquareMoveTime;
+  this.squareSize = defaultParams.SquareSize;
+  this.moveDistance = defaultParams.MoveDistance;
   this.square = {};
   this.isMoving = false;
   this.border = border;
-
 }
 
 Square.prototype = {
@@ -1127,6 +1156,36 @@ Square.prototype = {
     this.square.x = this.game.world.centerX;
     this.square.y = this.game.world.centerY;
     this.square.anchor.setTo(0.5, 0.5);
+  },
+
+  moveSoundPlay: function() {
+    if (this.isMoving)
+      return;
+
+    SoundManager.moveSoundPlay();
+
+    var calc = this.square.y - (this.moveDistance + Store.squareMargin);
+    var isCanMove = border.canMove(this.square, new Phaser.Point(this.square.x, calc));
+    var tween;
+
+    if (!isCanMove) {
+      calc += this.moveDistance;
+      tween = this.game.add.tween(this.square).to({
+          y: calc
+        }, this.squareMoveTime / 2)
+        .to({
+          y: this.square.y
+        }, this.squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(this.square).to({
+        y: calc
+      }, this.squareMoveTime).start();
+    }
+
+    var isMoving = this.isMoving = true;
+    tween.onComplate.add(function() {
+      isMoving = false;
+    });
   },
 
   moveUp: function() {
@@ -1253,11 +1312,47 @@ var Store = {
   squareMargin: 20
 }
 
+var defaultParams = { };
+
+defaultParams.playerColor = 0xEEFF41;
+defaultParams.squareMoveTime = 75;
+defaultParams.squareSize = 50;
+defaultParams.moveDistance = defaultParams.squareSize + Store.squareMargin;
+
+defaultParams.borderColor = 0x1A237E;
+defaultParams.borderLineStyle = 5;
+var Terrain = function(x, y, borders) {
+  this.x = x;
+  this.y = y;
+
+  this.borders = borders || {
+    top: false,
+    bottom: false,
+    left: false,
+    right: false
+  };
+
+  this.borders.top = this.borders.top || false;
+  this.borders.bottom = this.borders.bottom || false;
+  this.borders.left = this.borders.left || false;
+  this.borders.right = this.borders.right || false;
+
+  this.color = defaultParams.borderColor;
+  this.lineStyle = defaultParams.borderLineStyle;
+
+  this.width = (defaultParams.moveDistance + defaultParams.squareSize / 2 + Store.squareMargin * 2) * 2;
+  this.height = (defaultParams.moveDistance + defaultParams.squareSize / 2 + Store.squareMargin * 2) * 2;
+}
+
+Terrain.prototype = {
+};
+
 var game = new Phaser.Game(600, 900, Phaser.AUTO, 'game');
 //var game = new Phaser.Game(600, 900, Phaser.CANVAS, 'game');
 
 game.state.add('Game', GameState);
+game.state.add('Game.v2', GameStateNew);
 game.state.add('Menu', Menu);
 
-game.state.start('Game');
+game.state.start('Game.v2');
 //# sourceMappingURL=app.js.map

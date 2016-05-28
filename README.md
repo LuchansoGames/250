@@ -1,5 +1,11 @@
 # Game 250+
 
+[![Code Climate](https://codeclimate.com/github/LuchansoGames/250/badges/gpa.svg)](https://codeclimate.com/github/LuchansoGames/250)
+
+[![Test Coverage](https://codeclimate.com/github/LuchansoGames/250/badges/coverage.svg)](https://codeclimate.com/github/LuchansoGames/250/coverage)
+
+[![Issue Count](https://codeclimate.com/github/LuchansoGames/250/badges/issue_count.svg)](https://codeclimate.com/github/LuchansoGames/250)
+
 * [ ] Поделиться результатом
 * [ ] Добавить систему рассылки
 * [ ] Добавить рейтинг в меню игры

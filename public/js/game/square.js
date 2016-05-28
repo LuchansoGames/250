@@ -1,18 +1,12 @@
 var Square = function(game, border) {
-  const defaultPlayerColor = 0xEEFF41,
-    defaultSquareMoveTime = 75,
-    defaultSquareSize = 50,
-    defaultMoveDistance = defaultSquareSize + Store.squareMargin;
-
   this.game = game;
-  this.playerColor = defaultPlayerColor;
-  this.squareMoveTime = defaultSquareMoveTime;
-  this.squareSize = defaultSquareSize;
-  this.moveDistance = defaultMoveDistance;
+  this.playerColor = defaultParams.PlayerColor;
+  this.squareMoveTime = defaultParams.SquareMoveTime;
+  this.squareSize = defaultParams.SquareSize;
+  this.moveDistance = defaultParams.MoveDistance;
   this.square = {};
   this.isMoving = false;
   this.border = border;
-
 }
 
 Square.prototype = {
@@ -28,6 +22,36 @@ Square.prototype = {
     this.square.x = this.game.world.centerX;
     this.square.y = this.game.world.centerY;
     this.square.anchor.setTo(0.5, 0.5);
+  },
+
+  moveSoundPlay: function() {
+    if (this.isMoving)
+      return;
+
+    SoundManager.moveSoundPlay();
+
+    var calc = this.square.y - (this.moveDistance + Store.squareMargin);
+    var isCanMove = border.canMove(this.square, new Phaser.Point(this.square.x, calc));
+    var tween;
+
+    if (!isCanMove) {
+      calc += this.moveDistance;
+      tween = this.game.add.tween(this.square).to({
+          y: calc
+        }, this.squareMoveTime / 2)
+        .to({
+          y: this.square.y
+        }, this.squareMoveTime / 2).start();
+    } else {
+      tween = this.game.add.tween(this.square).to({
+        y: calc
+      }, this.squareMoveTime).start();
+    }
+
+    var isMoving = this.isMoving = true;
+    tween.onComplate.add(function() {
+      isMoving = false;
+    });
   },
 
   moveUp: function() {
