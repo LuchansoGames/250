@@ -11,11 +11,11 @@ Border.prototype = {
    */
   canMove: function(square, position) {
     var result = false;
-    var x = square.x / this.squareSize; 
-    var y = square.y / this.squareSize;
+    var x = (square.x - this.position.x) / this.squareSize;
+    var y = (square.y - this.position.y) / this.squareSize;
 
-    var targetX = position.x / this.squareSize;
-    var targetY = position.y / this.squareSize;
+    var targetX = (position.x - this.position.x) / this.squareSize;
+    var targetY = (position.y - this.position.y) / this.squareSize;
 
     var direction;
 
@@ -24,11 +24,11 @@ Border.prototype = {
     } else if (x - targetX < 0) {
       direction = 'right';
     } else if (y - targetY > 0) {
-      direction = 'bottom';
-    } else {
       direction = 'top';
+    } else {
+      direction = 'bottom';
     }
-    
+
     var terrain = this.getTerrainByPosition(x, y);
 
     return !terrain.borders[direction];
@@ -54,24 +54,35 @@ Border.prototype = {
   loadDefaultMap: function() {
     var rowMap = this.game.cache.getJSON('3x3');
 
-    rowMap.forEach(function(rowTerrain) {
-      var terrain = new Terrain(rowTerrain.x, rowTerrain.y, rowTerrain.borders);
-
-      this.map[terrain.x + ':' + terrain.y] = terrain;
-    }, this);
+    this.map = rowMap.map(function(rowTerrain) {
+      return new Terrain(rowTerrain.x, rowTerrain.y, rowTerrain.borders);
+    });
 
     this.mapSize = calculateSizeMap(this.map, this.squareSize);
+    this.position = new Phaser.Point(this.game.world.centerX - this.mapSize.width / 2, this.game.world.centerY - this.mapSize.height / 2);
 
-    var graphics = game.add.graphics(
-      this.game.world.centerX - this.mapSize.width / 2,
-      this.game.world.centerY - this.mapSize.height / 2
-    );
+    var graphics = game.add.graphics(this.position.x, this.position.y);
 
     this.draw(graphics);
   },
 
+  /**
+   * Получение позиции площади, по координатам системы
+   * @param  {[type]} x [description]
+   * @param  {[type]} y [description]
+   * @return {[type]}   [description]
+   */
   getTerrainByPosition: function(x, y) {
-    return this.map[terrain.x + ':' + terrain.y];
+    var result;
+
+    this.map.forEach(function(terrain) {
+      var terrainRectangle = new Phaser.Rectangle(terrain.x, terrain.y, 1, 1);
+      if (terrainRectangle.contains(x, y)) {
+        result = terrain;
+      }
+    });
+
+    return result;
   }
 };
 
@@ -79,7 +90,7 @@ function calculateSizeMap(map, squareSize) {
   var minX = 0;
   var minY = 0;
   var maxX = 0;
-  var maxY = 0;  
+  var maxY = 0;
 
   map.forEach(function(terrain) {
     var x = terrain.x;
