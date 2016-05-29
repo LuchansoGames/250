@@ -16,8 +16,6 @@ var GameStateNew = {
     this.coin.preload();
     EnemySpawn.preload(this.game);
     EnemySpawnManager.preload(this.game);
-
-    this.testPreload();
   },
 
   create: function() {
@@ -25,7 +23,7 @@ var GameStateNew = {
     this.border.create();
     this.square.create();
     this.coin.create();
-
+    EnemySpawnManager.create('3x3', this.border);
 
     this.controll.create({
       up: function() { this.square.move(Square.directionType.UP) },
@@ -33,8 +31,6 @@ var GameStateNew = {
       left: function() { this.square.move(Square.directionType.LEFT) },
       right: function() { this.square.move(Square.directionType.RIGHT) }
     }, this);
-    
-    this.testCreate();
   },
 
   update: function() {
@@ -45,13 +41,5 @@ var GameStateNew = {
 
   overlap: function(obj1, obj2) {
     return Phaser.Rectangle.intersects(obj1.getBounds(), obj2.getBounds());
-  },
-  
-  testPreload: function() {
-    EnemySpawnManager.preload(this.game);
-  },
-
-  testCreate: function() {
-    EnemySpawnManager.create('3x3');
   }
 }

@@ -63,8 +63,6 @@ var GameState = function() {
   }
 
   this.create = function() {
-    this.swipe = new Swipe(this.game);
-
     upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
     upKey.onDown.add(up, this);
     upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -134,21 +132,6 @@ var GameState = function() {
   }
 
   this.update = function() {
-    var direction = this.swipe.check();
-    if (direction!==null) {      
-      switch(direction.direction) {
-         case this.swipe.DIRECTION_LEFT:
-          left();
-         case this.swipe.DIRECTION_RIGHT:
-          right();
-         case this.swipe.DIRECTION_UP:
-          up();
-         case this.swipe.DIRECTION_DOWN:
-          down();
-      }
-    }
-
-
     if (overlap(square, coin)) {
       takeCoin();
     }
