@@ -44,7 +44,7 @@ Border.prototype = {
     this.game.load.json('3x3', 'maps/3x3.json');
   },
 
-  create: function() {
+  create: function(lvl) {
     this.squareSize = (Store.moveDistance + Store.squareMargin);
     this.map = [];
 
@@ -52,7 +52,7 @@ Border.prototype = {
   },
 
   loadDefaultMap: function() {
-    var rowMap = this.game.cache.getJSON('3x3');
+    var rowMap = this.game.cache.getJSON('3x3').terrains;
 
     this.map = rowMap.map(function(rowTerrain) {
       return new Terrain(rowTerrain.x, rowTerrain.y, rowTerrain.borders);

@@ -1,73 +1,83 @@
-[{
-  "x": 0,
-  "y": 0,
-  "borders": {
-    "top": true,
-    "left": true
-  }
-}, {
-  "x": 1,
-  "y": 0,
-  "borders": {
-    "top": true
-  }
-}, {
-  "x": 2,
-  "y": 0,
-  "borders": {
-    "top": true,
-    "right": true
-  }
-}, {
-  "x": 0,
-  "y": 1,
-  "borders": {
-    "left": true
-  }
-}, {
-  "x": 1,
-  "y": 1,
-  "borders": {}
-}, {
-  "x": 2,
-  "y": 1,
-  "borders": {
-    "right": true
-  }
-}, {
-  "x": 0,
-  "y": 2,
-  "borders": {
-    "left": true
-  }
-}, {
-  "x": 1,
-  "y": 2,
-  "borders": {
-    "bottom": true
-  }
-}, {
-  "x": 2,
-  "y": 2,
-  "borders": {
-    "bottom": true,
-    "right": true
-  }
-}, {
-  "x": 3,
-  "y": 3,
-  "borders": {
-    "bottom": true,
-    "right": true,
-    "left": true,
-    "top": true
-  }
-}, {
-  "x": 0,
-  "y": 3,
-  "borders": {
-    "bottom": true,
-    "right": true,
-    "left": true
-  }
-}]
+{
+  "terrains": [{
+    "x": 0,
+    "y": 0,
+    "borders": {
+      "top": true,
+      "left": true
+    }
+  }, {
+    "x": 1,
+    "y": 0,
+    "borders": {
+      "top": true
+    }
+  }, {
+    "x": 2,
+    "y": 0,
+    "borders": {
+      "top": true,
+      "right": true
+    }
+  }, {
+    "x": 0,
+    "y": 1,
+    "borders": {
+      "left": true
+    }
+  }, {
+    "x": 1,
+    "y": 1,
+    "borders": {}
+  }, {
+    "x": 2,
+    "y": 1,
+    "borders": {
+      "right": true
+    }
+  }, {
+    "x": 0,
+    "y": 2,
+    "borders": {
+      "left": true
+    }
+  }, {
+    "x": 1,
+    "y": 2,
+    "borders": {
+      "bottom": true
+    }
+  }, {
+    "x": 2,
+    "y": 2,
+    "borders": {
+      "bottom": true,
+      "right": true
+    }
+  }, {
+    "x": 3,
+    "y": 3,
+    "borders": {
+      "bottom": true,
+      "right": true,
+      "left": true,
+      "top": true
+    }
+  }, {
+    "x": 0,
+    "y": 3,
+    "borders": {
+      "bottom": true,
+      "right": true,
+      "left": true
+    }
+  }],
+  "enemySpawns": [{
+    "x": -1,
+    "y": -1,
+    "speed": 1,
+    "angle": 0,
+    "intervalCreate": 1000,
+    "randomSpawn": false
+  }]
+}
