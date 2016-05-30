@@ -14,6 +14,7 @@ var GameStateNew = {
     this.border.preload();
     this.square.preload();
     this.coin.preload();
+    Enemy.preload(this.game);
     EnemySpawn.preload(this.game);
     EnemySpawnManager.preload(this.game);
   },
@@ -36,6 +37,13 @@ var GameStateNew = {
   update: function() {
     if (this.overlap(this.square.sprite, this.coin.sprite)) {
       this.coin.take();
+    }
+
+    for (var i = 0; i < Enemy.allSprites.length; i++) {
+      enemy = Enemy.allSprites[i];
+      if (this.overlap(enemy, this.square.sprite)) {
+        this.square.sprite.tint = this.game.rnd.integer();
+      }
     }
   },
 

@@ -29,6 +29,8 @@ Square.prototype = {
     this.sprite.x = this.game.world.centerX;
     this.sprite.y = this.game.world.centerY;
     this.sprite.anchor.setTo(0.5, 0.5);
+
+    this.game.physics.arcade.enable([this.sprite]);
   },
 
   move: function(direction) {

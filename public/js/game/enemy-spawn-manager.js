@@ -16,11 +16,8 @@ var EnemySpawnManager = {
     this.spawns = rowSpawns.map(function(spawn) {
       return new EnemySpawn(
         this.game,
-        spawn.x * this.squareSize  + this.border.position.x,
-        spawn.y * this.squareSize  + this.border.position.y,
-        spawn.speed,
-        spawn.angle,
-        spawn.intervalCreate
+        spawn,
+        this.border
       );
     }, this);
   }
