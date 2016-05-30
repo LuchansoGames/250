@@ -68,13 +68,14 @@ EnemySpawn.prototype = {
       this.spawn();
       this.startRandomSpawn();
     }, this);
+    this.timer.start();
   },
 
   start: function() {
     this.timer = this.game.time.create(false) || this.timer;
 
     if (this.randomSpawn) {
-      startRandomSpawn();
+      this.startRandomSpawn();
     } else {
       this.timer.loop(this.intervalSpawn, this.spawn, this);
       this.timer.start();

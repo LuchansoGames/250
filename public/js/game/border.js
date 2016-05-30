@@ -48,11 +48,11 @@ Border.prototype = {
     this.squareSize = (Store.moveDistance + Store.squareMargin);
     this.map = [];
 
-    this.loadDefaultMap();
+    this.loadMap(lvl);
   },
 
-  loadDefaultMap: function() {
-    var rowMap = this.game.cache.getJSON('3x3').terrains;
+  loadMap: function(lvl) {
+    var rowMap = this.game.cache.getJSON(lvl).terrains;
 
     this.map = rowMap.map(function(rowTerrain) {
       return new Terrain(rowTerrain.x, rowTerrain.y, rowTerrain.borders);

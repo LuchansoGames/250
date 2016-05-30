@@ -1,4 +1,8 @@
 var GameStateNew = {
+  init: function(lvl) {
+    this.lvl = lvl;
+  },
+
   preload: function() {
     this.game.stage.backgroundColor = Store.backgroundColor;
     this.game.scale.pageAlignHorizontally = true;
@@ -21,10 +25,11 @@ var GameStateNew = {
 
   create: function() {
     SoundManager.create();
-    this.border.create();
+    this.border.create(this.lvl);
     this.square.create();
     this.coin.create();
-    EnemySpawnManager.create('3x3', this.border);
+    EnemySpawnManager.create(this.lvl, this.border);
+    Enemy.create();
 
     this.controll.create({
       up: function() { this.square.move(Square.directionType.UP) },
@@ -39,10 +44,11 @@ var GameStateNew = {
       this.coin.take();
     }
 
-    for (var i = 0; i < Enemy.allSprites.length; i++) {
-      enemy = Enemy.allSprites[i];
-      if (this.overlap(enemy, this.square.sprite)) {
-        this.square.sprite.tint = this.game.rnd.integer();
+    for (var i = 0; i < Enemy.all.length; i++) {
+      enemy = Enemy.all[i];
+      if (this.overlap(enemy.sprite, this.square.sprite)) {
+        // this.square.sprite.tint = this.game.rnd.integer();
+        enemy.die();
       }
     }
   },

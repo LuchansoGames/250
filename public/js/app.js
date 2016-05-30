@@ -5,4 +5,4 @@ game.state.add('Game', GameState);
 game.state.add('Game.v2', GameStateNew);
 game.state.add('Menu', Menu);
 
-game.state.start('Game.v2');
+game.state.start('Game.v2', true, false, '3x3');

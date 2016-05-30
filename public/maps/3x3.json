@@ -77,13 +77,13 @@
     "y": -1,
     "speed": 100,
     "angle": 0,
-    "intervalSpawn": 2000,
-    "randomSpawn": false,
+    "intervalSpawn": 1000,
+    "randomSpawn": true,
     "spawnRotationSpeed": 0,
-    "minIntervalSpawn": 0,
+    "minIntervalSpawn": 1000,
     "spawnVelocity": {
       "x": 0,
-      "y": 50
+      "y": 0
     }
   }, {
     "x": -1,
