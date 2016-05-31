@@ -29,6 +29,7 @@
 * [ ] Написать серверную обработку нового рекорда
 * [ ] Написать серверную обработку на отдачу таблицы рейтинга
 
+* [ ] enemy-spawn.js speedRotation реализовать
 
 * [ ] achivment-manager.js
 * [ ] score.js (aka score-manager.js)

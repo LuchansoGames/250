@@ -15,6 +15,7 @@ var GameStateNew = {
 
     Settings.load();
     SoundManager.preload(this.game);
+    UI.preload(this.game);
     this.border.preload();
     this.square.preload();
     this.coin.preload();
@@ -25,6 +26,7 @@ var GameStateNew = {
 
   create: function() {
     SoundManager.create();
+    UI.create();
     this.border.create(this.lvl);
     this.square.create();
     this.coin.create();

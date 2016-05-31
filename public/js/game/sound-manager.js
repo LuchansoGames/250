@@ -64,15 +64,15 @@ var SoundManager = {
       Settings.set('isMuted', false);
       
 
-      if (music.paused)
-        music.resume();
+      if (SoundManager.music.paused)
+        SoundManager.music.resume();
       else
-        music.play();
+        SoundManager.music.play();
     } else {
       Settings.set('isMuted', true);
       
 
-      music.pause();
+      SoundManager.music.pause();
     }
   }
 }
