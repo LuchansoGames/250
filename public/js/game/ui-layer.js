@@ -23,19 +23,34 @@ var UI = {
     this.scoreLable.anchor.set(1, 0);
   },
 
-  setScore: function(score) {
-    this.game.add.tween(ScoreManager).to({score: score}, 500).onUpdateCallback(function() {
-      this.scoreLable.text = "Очки " + Math.round(ScoreManager.score);
-    }, this).start();
+  setScore: function(newScore, oldScore) {
+    var scoreObj = {
+      score: oldScore
+    }
+
+    var newAnimation = this.game.add.tween(scoreObj).to({score: newScore}, 100).onUpdateCallback(function() {
+      this.scoreLable.text = "Очки " + Math.round(scoreObj.score);
+    }, this);
+
+    newAnimation.onComplete.add(function() {
+      this.scoreLable.text = "Очки " + Math.round(scoreObj.score);
+    }, this);
+
+    if (this.animationScore && this.animationScore.isRunning) {      
+      this.animationScore.chain(newAnimation);
+    } else {
+      this.animationScore = newAnimation;
+      this.animationScore.start();
+    }
   },
 
   addScoreRatioLable: function() {
     var style = {
-      font: "56px Roboto",
+      font: "56px Jura",
       fill: "#FFFFFF"
     }
 
-    this.scoreRatioLable = game.add.text(this.game.world.centerX, this.game.world.centerY, 'x1.1', style);
+    this.scoreRatioLable = game.add.text(this.game.world.centerX, this.game.world.centerY, 'x1', style);
     this.scoreRatioLable.anchor.set(0.5, 0.5);
     this.scoreRatioLable.alpha = 0.2;
   },

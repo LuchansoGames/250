@@ -4,7 +4,7 @@
 [![Test Coverage](https://codeclimate.com/github/LuchansoGames/250/badges/coverage.svg)](https://codeclimate.com/github/LuchansoGames/250/coverage)
 [![Issue Count](https://codeclimate.com/github/LuchansoGames/250/badges/issue_count.svg)](https://codeclimate.com/github/LuchansoGames/250)
 
-Размеры карты должны быть нечётными
+Размеры карты должны быть чётным
 
 * [ ] Поделиться результатом
 * [ ] Добавить систему рассылки

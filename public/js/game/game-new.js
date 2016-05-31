@@ -39,11 +39,16 @@ var GameStateNew = {
       left: function() { this.square.move(Square.directionType.LEFT) },
       right: function() { this.square.move(Square.directionType.RIGHT) }
     }, this);
+
+    this.runTimeScoreUpdate();
   },
 
   update: function() {
     if (this.overlap(this.square.sprite, this.coin.sprite)) {
       this.coin.take();
+      var oldScore = ScoreManager.score;
+      var newScore = ScoreManager.takeCoin();
+      UI.setScore(newScore, oldScore);
     }
 
     for (var i = 0; i < Enemy.all.length; i++) {
@@ -53,6 +58,18 @@ var GameStateNew = {
         enemy.die();
       }
     }
+  },
+
+  runTimeScoreUpdate: function() {
+    this.timer = this.game.time.create(false);
+    this.timer.loop(1000, this.addScoreByTime, this);
+    this.timer.start();
+  },
+
+  addScoreByTime: function() {
+    var oldScore = ScoreManager.score;
+    var newScore = ScoreManager.timerTick();
+    UI.setScore(newScore, oldScore);
   },
 
   overlap: function(obj1, obj2) {

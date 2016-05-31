@@ -51,16 +51,14 @@
     "x": 2,
     "y": 2,
     "borders": {
-      "bottom": true,
-      "right": true
+      "bottom": true
     }
   }, {
     "x": 3,
-    "y": 3,
+    "y": 2,
     "borders": {
       "bottom": true,
       "right": true,
-      "left": true,
       "top": true
     }
   }, {
