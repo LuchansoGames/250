@@ -17,7 +17,7 @@ var Terrain = function(x, y, borders) {
   this.color = Store.borderColor;
   this.lineWidth = Store.borderLineWidth;
 
-  this.size = (Store.moveDistance + Store.squareMargin);
+  this.size = Store.terrainSize;
   this.width = this.size;
   this.height = this.size;
 }
@@ -25,21 +25,38 @@ var Terrain = function(x, y, borders) {
 Terrain.prototype = {
   draw: function(graphics) {
     graphics.lineStyle(this.lineWidth, this.color);
+
     if (this.borders.top) {
-      graphics.moveTo(this.x * this.size, this.y * this.size);
-      graphics.lineTo(this.x * this.size + this.size, this.y * this.size);
+      this.drawTopBorder(graphics);
     }
     if (this.borders.bottom) {
-      graphics.moveTo(this.x * this.size, this.y * this.size + this.size);
-      graphics.lineTo(this.x * this.size + this.size, this.y * this.size + this.size);
+      this.drawBottomBorder(graphics);
     }
     if (this.borders.left) {
-      graphics.moveTo(this.x * this.size, this.y * this.size);
-      graphics.lineTo(this.x * this.size, this.y * this.size + this.size);
+      this.drawLeftBorder(graphics);
     }
     if (this.borders.right) {
-      graphics.moveTo(this.x * this.size + this.size, this.y * this.size);
-      graphics.lineTo(this.x * this.size + this.size, this.y * this.size + this.size);
+      this.drawRightBorder(graphics);
     }
+  },
+
+  drawTopBorder: function(graphics) {
+    graphics.moveTo(this.x * this.size, this.y * this.size);
+    graphics.lineTo(this.x * this.size + this.size, this.y * this.size);
+  },
+
+  drawBottomBorder: function(graphics) {
+    graphics.moveTo(this.x * this.size, this.y * this.size + this.size);
+    graphics.lineTo(this.x * this.size + this.size, this.y * this.size + this.size);
+  },
+
+  drawLeftBorder: function(graphics) {
+    graphics.moveTo(this.x * this.size, this.y * this.size);
+    graphics.lineTo(this.x * this.size, this.y * this.size + this.size);
+  },
+
+  drawRightBorder: function(graphics) {
+    graphics.moveTo(this.x * this.size + this.size, this.y * this.size);
+    graphics.lineTo(this.x * this.size + this.size, this.y * this.size + this.size);
   }
 };
