@@ -49,12 +49,12 @@ var GameStateNew = {
       var oldScore = ScoreManager.score;
       var newScore = ScoreManager.takeCoin();
       UI.setScore(newScore, oldScore);
+      UI.updateRatio(ScoreManager.ratio);
     }
 
     for (var i = 0; i < Enemy.all.length; i++) {
       enemy = Enemy.all[i];
       if (this.overlap(enemy.sprite, this.square.sprite)) {
-        // this.square.sprite.tint = this.game.rnd.integer();
         enemy.die();
       }
     }

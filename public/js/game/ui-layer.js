@@ -3,14 +3,15 @@ var UI = {
     this.game = game;
 
     this.game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
+    this.game.load.image('pause', 'img/ic-pause.png');
   },
 
   create: function() {
+    this.addPauseButton();
     this.addVolumeButton();
 
     this.addScoreLable();
     this.addScoreRatioLable();
-    this.addBestScoreLable();
   },
 
   addScoreLable: function() {
@@ -51,12 +52,12 @@ var UI = {
     }
 
     this.scoreRatioLable = game.add.text(this.game.world.centerX, this.game.world.centerY, 'x1', style);
-    this.scoreRatioLable.anchor.set(0.5, 0.5);
+    this.scoreRatioLable.anchor.set(0.44, 0.5);
     this.scoreRatioLable.alpha = 0.2;
   },
 
-  addBestScoreLable: function() {
-
+  updateRatio: function(ratio) {
+    this.scoreRatioLable.text = 'x' + Math.round(ratio * 100) / 100;
   },
 
   addVolumeButton: function() {
@@ -66,17 +67,28 @@ var UI = {
       frames = 0;
     }
 
-    soundButton = this.game.add.button(5, 5, 'volume', this.volumeButton_click, this, frames, frames, frames);
-    soundButton.width = 48;
-    soundButton.height = 48;
+    this.soundButton = this.game.add.button(5 + this.pauseButton.width, 5, 'volume', this.volumeButton_click, this, frames, frames, frames);
+    this.soundButton.width = 48;
+    this.soundButton.height = 48;
+  },
+
+  addPauseButton: function() {
+    this.pauseButton = this.game.add.button(5, 5, 'pause', this.pauseButton_click, this);
+    this.pauseButton.width = 48;
+    this.pauseButton.height = 48;
   },
 
   volumeButton_click: function() {
     SoundManager.volumeStateChange();
-    if (soundButton.frame === 0) {
-      soundButton.setFrames(1, 1, 1);
-    } else if (soundButton.frame === 1) {
-      soundButton.setFrames(0, 0, 0);
+    if (this.soundButton.frame === 0) {
+      this.soundButton.setFrames(1, 1, 1);
+    } else if (this.soundButton.frame === 1) {
+      this.soundButton.setFrames(0, 0, 0);
     }
+  },
+
+  pauseButton_click: function() {
+    // console.log(this.game.paused);
+    this.game.paused = !this.game.paused;
   }
 }
