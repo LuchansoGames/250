@@ -3,7 +3,6 @@ var Square = function(game, border) {
   this.playerColor = Store.playerColor;
   this.squareMoveTime = Store.squareMoveTime;
   this.squareSize = Store.squareSize;
-  this.moveDistance = Store.moveDistance;
   this.sprite = {};
   this.isMoving = false;
   this.border = border;
@@ -39,38 +38,14 @@ Square.prototype = {
 
     SoundManager.moveSoundPlay();
 
-    var calcX = this.sprite.x;
-    var calcY = this.sprite.y;
+    var XYDirection = this.calcDirection(direction, this.sprite);
+
+    var calcX = XYDirection.calcX;
+    var calcY = XYDirection.calcY;
     var isCanMove;
     var tween;
-    var backPositionX = 0;
-    var backPositionY = 0;
-
-    switch (direction) {
-      case Square.directionType.UP:
-        calcY = this.sprite.y - (this.moveDistance + Store.squareMargin);
-        backPositionY = +this.moveDistance;
-
-        break;
-
-      case Square.directionType.DOWN:
-        calcY = this.sprite.y + (this.moveDistance + Store.squareMargin);
-        backPositionY = -this.moveDistance;
-
-        break;
-
-      case Square.directionType.LEFT:
-        calcX = this.sprite.x - (this.moveDistance + Store.squareMargin);
-        backPositionX = +this.moveDistance;
-
-        break;
-
-      case Square.directionType.RIGHT:
-        calcX = this.sprite.x + (this.moveDistance + Store.squareMargin);
-        backPositionX = -this.moveDistance;
-
-        break;
-    }
+    var backPositionX = XYDirection.backPositionX;
+    var backPositionY = XYDirection.backPositionY;
 
     isCanMove = this.border.canMove(this.sprite, new Phaser.Point(calcX, calcY));
 
@@ -97,5 +72,45 @@ Square.prototype = {
     tween.onComplete.add(function() {
       this.isMoving = false;
     }, this);
+  },
+
+  calcDirection: function(direction, sprite) {
+    var calcX = sprite.x;
+    var calcY = sprite.y;
+    var backPositionX = 0;
+    var backPositionY = 0;
+
+    switch (direction) {
+      case Square.directionType.UP:
+        calcY = sprite.y - Store.terrainSize;
+        backPositionY = +Store.moveDistance;
+
+        break;
+
+      case Square.directionType.DOWN:
+        calcY = sprite.y + Store.terrainSize;
+        backPositionY = -Store.moveDistance;
+
+        break;
+
+      case Square.directionType.LEFT:
+        calcX = sprite.x - Store.terrainSize;
+        backPositionX = +Store.moveDistance;
+
+        break;
+
+      case Square.directionType.RIGHT:
+        calcX = sprite.x + Store.terrainSize;
+        backPositionX = -Store.moveDistance;
+
+        break;
+    }
+
+    return {
+      calcX: calcX,
+      calcY: calcY,
+      backPositionX: backPositionX,
+      backPositionY: backPositionY
+    }
   }
 };
