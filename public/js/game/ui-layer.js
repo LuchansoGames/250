@@ -29,7 +29,9 @@ var UI = {
       score: oldScore
     }
 
-    var newAnimation = this.game.add.tween(scoreObj).to({score: newScore}, 100).onUpdateCallback(function() {
+    var newAnimation = this.game.add.tween(scoreObj).to({
+      score: newScore
+    }, 100).onUpdateCallback(function() {
       this.scoreLable.text = "Очки " + Math.round(scoreObj.score);
     }, this);
 
@@ -37,7 +39,7 @@ var UI = {
       this.scoreLable.text = "Очки " + Math.round(scoreObj.score);
     }, this);
 
-    if (this.animationScore && this.animationScore.isRunning) {      
+    if (this.animationScore && this.animationScore.isRunning) {
       this.animationScore.chain(newAnimation);
     } else {
       this.animationScore = newAnimation;
@@ -88,7 +90,6 @@ var UI = {
   },
 
   pauseButton_click: function() {
-    // console.log(this.game.paused);
-    this.game.paused = !this.game.paused;
+    
   }
 }

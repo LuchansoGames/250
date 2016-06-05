@@ -1,6 +1,10 @@
 var GameStateNew = {
   init: function(lvl) {
     this.lvl = lvl;
+    this.isPause = false;
+
+    Screenshoot.init(this.game);
+    PauseMenu.init(this.game);
   },
 
   preload: function() {
@@ -20,8 +24,7 @@ var GameStateNew = {
     this.square.preload();
     this.coin.preload();
     Enemy.preload(this.game);
-    EnemySpawn.preload(this.game);
-    EnemySpawnManager.preload(this.game);
+    EnemySpawn.preload(this.game, this.lvl);
   },
 
   create: function() {
@@ -30,7 +33,7 @@ var GameStateNew = {
     this.border.create(this.lvl);
     this.square.create();
     this.coin.create();
-    EnemySpawnManager.create(this.lvl, this.border);
+    EnemySpawn.create(this.border);
     Enemy.create();
 
     this.controll.create({
@@ -40,10 +43,14 @@ var GameStateNew = {
       right: function() { this.square.move(Square.directionType.RIGHT) }
     }, this);
 
-    this.runTimeScoreUpdate();
+    this.runTimeScoreUpdate();    
   },
 
   update: function() {
+    if (this.isPause) {
+      return;
+    }
+
     if (this.overlap(this.square.sprite, this.coin.sprite)) {
       this.coin.take();
       var oldScore = ScoreManager.score;
@@ -74,5 +81,17 @@ var GameStateNew = {
 
   overlap: function(obj1, obj2) {
     return Phaser.Rectangle.intersects(obj1.getBounds(), obj2.getBounds());
+  },  
+
+  render: function() {
+    Screenshoot.render();
+  },
+
+  pause: function() {
+
+  },
+
+  resume: function() {
+
   }
 }

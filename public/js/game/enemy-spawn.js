@@ -36,11 +36,37 @@ var EnemySpawn = function(game, spawn, border) {
   this.start();
 }
 
-EnemySpawn.preload = function(game) {
-  game.load.image('enemySpawn', 'img/enemy-spawn.png');
+EnemySpawn.preload = function(game, lvl) {
+  this.game = game;
+  this.lvl = lvl;
+  this.spawns = [];
+  
+  this.game.load.image('enemySpawn', 'img/enemy-spawn.png');
+  this.game.load.json(this.lvl, 'maps/' + this.lvl + '.json');
+}
+
+EnemySpawn.create = function(border) {
+  var rowSpawns = this.game.cache.getJSON(this.lvl).enemySpawns;
+  this.border = border;
+
+  this.spawns = rowSpawns.map(function(spawn) {
+    return new EnemySpawn(
+      this.game,
+      spawn,
+      this.border
+    );
+  }, this);
 }
 
 EnemySpawn.prototype = {
+  pause: function() {
+    this.timer.pause();
+  },
+
+  resume: function() {
+    this.timer.resume();
+  },
+
   spawn: function() {
     var velocity = new Phaser.Point(0, 0);
     velocity.rotate(0, 0, this.sprite.angle, true, this.speed);
@@ -90,13 +116,5 @@ EnemySpawn.prototype = {
     this.intervalSpawn = time;
     this.stop();
     this.start();
-  },
-
-  /**
-   * Возращает время прошедшее с последнего спауна
-   * @return {[type]} [description]
-   */
-  getDiffSpawTime: function() {
-    return Date.now() - this.lastSpawnTime;
   }
 }
