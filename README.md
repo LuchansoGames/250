@@ -32,9 +32,6 @@
 
 * [ ] achivment-manager.js
 * [ ] score.js (aka score-manager.js)
-* [ ] ui-layer.js
-  * [ ] написать систему паузы
 * [ ] trainig.js
 
 * [ ] Сделать редактор уровней
-* [ ] Связать центральный лейбел в юи с Ratio score в ScoreManager

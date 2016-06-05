@@ -64,7 +64,11 @@ var GameStateNew = {
     for (var i = 0; i < Enemy.all.length; i++) {
       enemy = Enemy.all[i];
       if (this.overlap(enemy.sprite, this.square.sprite)) {
-        enemy.die();
+        enemy.die();        
+        var oldScore = ScoreManager.score;
+        var newScore = ScoreManager.loseScore();
+        UI.setScore(newScore, oldScore);
+        UI.updateRatio(ScoreManager.ratio);
       }
     }
   },

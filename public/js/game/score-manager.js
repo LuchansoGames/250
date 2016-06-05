@@ -42,6 +42,13 @@ var ScoreManager = {
     UI.setScore(newScore, oldScore);
   },
 
+  loseScore: function() {
+    this.score /= 2;
+    this.ratio = 1;
+    
+    return this.score;
+  },
+
   timerTick: function() {
     this.score += this.timeTickScoreAdd * this.ratio;
 
