@@ -5,6 +5,7 @@ var GameStateNew = {
 
     Screenshoot.init(this.game);
     PauseMenu.init(this.game);
+    ScoreManager.init(this.game);
   },
 
   preload: function() {
@@ -29,12 +30,13 @@ var GameStateNew = {
 
   create: function() {
     SoundManager.create();
-    UI.create();
+    UI.create();    
     this.border.create(this.lvl);
     this.square.create();
     this.coin.create();
     EnemySpawn.create(this.border);
     Enemy.create();
+    ScoreManager.create();
 
     this.controll.create({
       up: function() { this.square.move(Square.directionType.UP) },
@@ -43,7 +45,7 @@ var GameStateNew = {
       right: function() { this.square.move(Square.directionType.RIGHT) }
     }, this);
 
-    this.runTimeScoreUpdate();    
+    this.addEventsListener();
   },
 
   update: function() {
@@ -67,31 +69,41 @@ var GameStateNew = {
     }
   },
 
-  runTimeScoreUpdate: function() {
-    this.timer = this.game.time.create(false);
-    this.timer.loop(1000, this.addScoreByTime, this);
-    this.timer.start();
-  },
-
-  addScoreByTime: function() {
-    var oldScore = ScoreManager.score;
-    var newScore = ScoreManager.timerTick();
-    UI.setScore(newScore, oldScore);
+  addEventsListener: function() {
+    UI.onPauseButtonClick.add(this.pause, this);
   },
 
   overlap: function(obj1, obj2) {
     return Phaser.Rectangle.intersects(obj1.getBounds(), obj2.getBounds());
-  },  
+  },
 
   render: function() {
     Screenshoot.render();
   },
 
   pause: function() {
+    this.game.physics.arcade.isPaused = this.isPause = true;
 
+    EnemySpawn.allPause();
+    ScoreManager.pause();
+    UI.pause();
+
+    this.square.pause();
+    this.coin.pause();
+
+    PauseMenu.show();
   },
 
   resume: function() {
+    this.game.physics.arcade.isPaused = this.isPause = false;
 
+    EnemySpawn.allResume();
+    ScoreManager.resume();
+    UI.resume();
+
+    this.square.resume();
+    this.coin.resume();
+
+    PauseMenu.hide();
   }
 }

@@ -8,6 +8,24 @@ var ScoreManager = {
 
   coinsTaked: 0,
 
+  init: function(game) {
+    this.game = game;
+  },
+
+  pause: function() {
+    this.timer.pause();
+  },
+
+  resume: function() {
+    this.timer.resume();
+  },
+
+  create: function() {
+    this.timer = this.game.time.create(false);
+    this.timer.loop(1000, this.addScoreByTime, this);
+    this.timer.start();
+  },
+
   takeCoin: function() {
     this.score += this.coinScoreAdd * this.ratio;
     this.ratio += this.coinRatioAdd;
@@ -15,6 +33,13 @@ var ScoreManager = {
     this.coinsTaked++;
 
     return this.score;
+  },
+
+  addScoreByTime: function() {
+    var oldScore = this.score;
+    var newScore = this.timerTick();
+
+    UI.setScore(newScore, oldScore);
   },
 
   timerTick: function() {

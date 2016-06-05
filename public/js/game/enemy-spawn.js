@@ -58,6 +58,18 @@ EnemySpawn.create = function(border) {
   }, this);
 }
 
+EnemySpawn.allPause = function() {
+  this.spawns.forEach(function(spawn) {
+    spawn.pause();
+  });
+}
+
+EnemySpawn.allResume = function() {
+  this.spawns.forEach(function(spawn) {
+    spawn.resume();
+  });
+}
+
 EnemySpawn.prototype = {
   pause: function() {
     this.timer.pause();

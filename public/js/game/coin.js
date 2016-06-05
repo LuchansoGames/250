@@ -16,6 +16,14 @@ Coin.prototype = {
     this.addCoin();
   },
 
+  pause: function() {
+    this.tweenRotation.pause();
+  },
+
+  resume: function() {
+    this.tweenRotation.resume();
+  },
+
   createParticlesEmitter: function() {
     this.particlesEmitter = this.game.add.emitter(0, 0);
     this.particlesEmitter.makeParticles('square-particle');

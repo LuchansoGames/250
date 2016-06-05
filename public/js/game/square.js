@@ -32,8 +32,16 @@ Square.prototype = {
     this.game.physics.arcade.enable([this.sprite]);
   },
 
+  pause: function() {
+    this.isPause = true;
+  },
+
+  resume: function() {
+    this.isPause = false;
+  },
+
   move: function(direction) {
-    if (this.isMoving)
+    if (this.isMoving || this.isPause)
       return;
 
     SoundManager.moveSoundPlay();

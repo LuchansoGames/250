@@ -3,12 +3,16 @@ var PauseMenu = {
     this.game = game;
   },
 
-  show: function(screen) {
-    this.backgroundSet(screen);
+  show: function() {
+    if (!this.background) {
+      var rowBackground = this.game.add.bitmapData(this.game.width, this.game.height);
+      rowBackground.fill(0, 0, 0, 0.6);
 
-    this.graphics = this.game.add.graphics(0, 0);
-    this.graphics.beginFill(0, 0.6);
-    this.graphics.drawRect(0, 0, this.game.world.width, this.game.world.height);
+      this.background = this.game.add.sprite(0, 0, rowBackground);
+    } else {
+      this.background.visible = true;
+      this.background.bringToTop();
+    }
   },
 
   backgroundSet: function(screen) {
@@ -23,7 +27,6 @@ var PauseMenu = {
   },
 
   hide: function() {
-    this.background.kill();
-    this.graphics.clear();
+    this.background.visible = false;
   }
 }

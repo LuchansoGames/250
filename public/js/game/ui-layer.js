@@ -12,6 +12,22 @@ var UI = {
 
     this.addScoreLable();
     this.addScoreRatioLable();
+
+    this.addEvents();
+  },
+
+  pause: function() {
+    this.pauseButton.inputEnabled = false;
+    this.soundButton.inputEnabled = false;
+  },
+
+  resume: function() {
+    this.pauseButton.inputEnabled = true;
+    this.soundButton.inputEnabled = true;
+  },
+
+  addEvents: function() {
+    this.onPauseButtonClick = new Phaser.Signal();
   },
 
   addScoreLable: function() {
@@ -71,7 +87,7 @@ var UI = {
 
     this.soundButton = this.game.add.button(5 + this.pauseButton.width, 5, 'volume', this.volumeButton_click, this, frames, frames, frames);
     this.soundButton.width = 48;
-    this.soundButton.height = 48;
+    this.soundButton.height = 48;    
   },
 
   addPauseButton: function() {
@@ -81,6 +97,9 @@ var UI = {
   },
 
   volumeButton_click: function() {
+    if (this.isPause)
+      return
+
     SoundManager.volumeStateChange();
     if (this.soundButton.frame === 0) {
       this.soundButton.setFrames(1, 1, 1);
@@ -90,6 +109,6 @@ var UI = {
   },
 
   pauseButton_click: function() {
-    
+    this.onPauseButtonClick.dispatch();
   }
 }
