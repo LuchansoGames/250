@@ -2,8 +2,10 @@ var GameStateNew = {
   init: function(lvl) {
     this.lvl = lvl;
     this.isPause = false;
+    this.screenshoot.init();
+    this.screenshoot = new Screenshoot(this.game);
 
-    Screenshoot.init(this.game);
+    this.screenshoot.init();
     PauseMenu.init(this.game);
     ScoreManager.init(this.game);
 
@@ -86,7 +88,7 @@ var GameStateNew = {
   },
 
   render: function() {
-    Screenshoot.render();
+    this.screenshoot.render();
   },
 
   pause: function() {

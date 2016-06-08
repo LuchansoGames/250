@@ -1,8 +1,8 @@
-Screenshoot = {
-  init: function(game) {
+var Screenshoot = function(game) {
     this.game = game;
-  },
+}
 
+Screenshoot.prototype = {
   takeScreen: function(callback) {
     this.callback = callback;
     this.makeScreenShoot = true;
