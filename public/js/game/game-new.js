@@ -6,6 +6,8 @@ var GameStateNew = {
     Screenshoot.init(this.game);
     PauseMenu.init(this.game);
     ScoreManager.init(this.game);
+
+    PauseMenu.onHide.add(this.resume, this);
   },
 
   preload: function() {
@@ -20,6 +22,7 @@ var GameStateNew = {
 
     Settings.load();
     SoundManager.preload(this.game);
+    PauseMenu.preload();
     UI.preload(this.game);
     this.border.preload();
     this.square.preload();
@@ -30,14 +33,14 @@ var GameStateNew = {
 
   create: function() {
     SoundManager.create();
-    UI.create();    
+    UI.create();
+    PauseMenu.create();
     this.border.create(this.lvl);
     this.square.create();
     this.coin.create();
     EnemySpawn.create(this.border);
     Enemy.create();
     ScoreManager.create();
-
     this.controll.create({
       up: function() { this.square.move(Square.directionType.UP) },
       down: function() { this.square.move(Square.directionType.DOWN) },
@@ -64,7 +67,8 @@ var GameStateNew = {
     for (var i = 0; i < Enemy.all.length; i++) {
       enemy = Enemy.all[i];
       if (this.overlap(enemy.sprite, this.square.sprite)) {
-        enemy.die();        
+        SoundManager.dieSoundPlay();
+        enemy.die();
         var oldScore = ScoreManager.score;
         var newScore = ScoreManager.loseScore();
         UI.setScore(newScore, oldScore);

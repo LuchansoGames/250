@@ -17,3 +17,5 @@ Store.coinInterval = 500;
 Store.backgroundColor = 0x283593;
 
 Store.terrainSize = (Store.moveDistance + Store.squareMargin);
+
+Store.pauseMenuBtnsSize = 150;

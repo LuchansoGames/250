@@ -129,7 +129,7 @@ var Menu = {
   },
 
   btnPlay_click: function() {
-    game.state.start('Game');
+    game.state.start('Game.v2', true, false, '3x3');
   },
 
   btnHelp_click: function() {

@@ -113,7 +113,7 @@
     "x": 3,
     "y": 1,
     "speed": 100,
-    "angle": 135,
+    "angle": 90,
     "intervalSpawn": 1500,
     "randomSpawn": false,
     "spawnRotationSpeed": 0,
