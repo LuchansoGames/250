@@ -1,14 +1,16 @@
-var SoundManager = {
-  musicFadeInTime: 7500,
+var SoundManager = function(game) {
+  this.game = game;
 
-  coinSound: null,
-  jumpSound: null,
-  dieSound: null,
-  music: null,
+  this.musicFadeInTime = 7500;
 
-  preload: function(game) {
-    this.game = game;
+  this.coinSound = null;
+  this.jumpSound = null;
+  this.dieSound = null;
+  this.music = null;
+}
 
+SoundManager.prototype = {
+  preload: function() {
     this.game.load.audio('music', ['sounds/music.mp3', 'sounds/music.ogg']);
     this.game.load.audio('coin', ['sounds/coin.wav', 'sounds/coin.mp3']);
     this.game.load.audio('jump', ['sounds/jump.wav', 'sounds/jump.mp3']);
@@ -37,10 +39,6 @@ var SoundManager = {
     }, this.musicFadeInTime).start();
   },
 
-  update: function() {
-
-  },
-
   moveSoundPlay: function() {
     if (!Settings.isMuted) {
       this.jumpSound.play();
@@ -62,17 +60,15 @@ var SoundManager = {
   volumeStateChange: function() {
     if (Settings.isMuted) {
       Settings.set('isMuted', false);
-      
 
-      if (SoundManager.music.paused)
-        SoundManager.music.resume();
+      if (this.music.paused)
+        this.music.resume();
       else
-        SoundManager.music.play();
+        this.music.play();
     } else {
       Settings.set('isMuted', true);
-      
 
-      SoundManager.music.pause();
+      this.music.pause();
     }
   }
 }

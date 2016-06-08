@@ -30,10 +30,10 @@ Enemy.prototype = {
   }
 };
 
-Enemy.all = [];
-
 Enemy.preload = function(game) {
   this.game = game;
+
+  Enemy.all = [];
 
   game.load.image('enemy', 'img/enemy.png');
   game.load.image('enemy-particle', 'img/enemy-particle.png');

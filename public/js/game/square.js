@@ -1,4 +1,4 @@
-var Square = function(game, border) {
+var Square = function(game, border, soundManager) {
   this.game = game;
   this.playerColor = Store.playerColor;
   this.squareMoveTime = Store.squareMoveTime;
@@ -6,6 +6,7 @@ var Square = function(game, border) {
   this.sprite = {};
   this.isMoving = false;
   this.border = border;
+  this.soundManager = soundManager;
 }
 
 Square.directionType = {
@@ -44,7 +45,7 @@ Square.prototype = {
     if (this.isMoving || this.isPause)
       return;
 
-    SoundManager.moveSoundPlay();
+    this.soundManager.moveSoundPlay();
 
     var XYDirection = this.calcDirection(direction, this.sprite);
 

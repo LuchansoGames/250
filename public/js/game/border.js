@@ -1,5 +1,6 @@
-var Border = function(game) {
+var Border = function(game, lvl) {
   this.game = game;
+  this.lvl =lvl;
 }
 
 Border.prototype = {
@@ -44,11 +45,11 @@ Border.prototype = {
     this.game.load.json('3x3', 'maps/3x3.json');
   },
 
-  create: function(lvl) {
+  create: function() {
     this.squareSize = (Store.moveDistance + Store.squareMargin);
     this.map = [];
 
-    this.loadMap(lvl);
+    this.loadMap(this.lvl);
   },
 
   loadMap: function(lvl) {

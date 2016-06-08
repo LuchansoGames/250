@@ -1,10 +1,13 @@
-var UI = {
-  preload: function(game) {
-    this.game = game;
+var UI = function(game, soundManager) {
+  this.game = game;
+  this.soundManager = soundManager;
+  this.score = 0;
+}
 
+UI.prototype = {
+  preload: function() {
     this.game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
     this.game.load.image('pause', 'img/ic-pause.png');
-    this.score = 0;
   },
 
   create: function() {
@@ -103,7 +106,7 @@ var UI = {
     if (this.isPause)
       return
 
-    SoundManager.volumeStateChange();
+    this.soundManager.volumeStateChange();
     if (this.soundButton.frame === 0) {
       this.soundButton.setFrames(1, 1, 1);
     } else if (this.soundButton.frame === 1) {

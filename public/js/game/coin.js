@@ -1,6 +1,7 @@
-var Coin = function(game, border) {
+var Coin = function(game, border, soundManager) {
   this.game = game;
   this.border = border;
+  this.soundManager = soundManager;
 }
 
 Coin.prototype = {
@@ -47,7 +48,7 @@ Coin.prototype = {
     this.particlesEmitter.y = this.sprite.y;
     this.particlesEmitter.start(true, 800, null, 20);
 
-    SoundManager.coinSoundPlay();
+    this.soundManager.coinSoundPlay();
 
     this.game.add.tween(this.sprite).to({
       width: 0,

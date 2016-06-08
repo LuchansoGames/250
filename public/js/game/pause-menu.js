@@ -2,6 +2,7 @@ var PauseMenu = function(game) {
   this.game = game;
   this.btns = [];
   this.onHide = new Phaser.Signal();
+  this.onShowMainMenu = new Phaser.Signal();
 }
 
 PauseMenu.prototype = {
@@ -59,7 +60,7 @@ PauseMenu.prototype = {
   },
 
   menuBtn_click: function() {
-    this.game.state.start('Menu');
+    this.onShowMainMenu.dispatch();
   },
 
   playBtn_click: function() {
