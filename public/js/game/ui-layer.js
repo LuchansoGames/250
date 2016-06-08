@@ -4,6 +4,7 @@ var UI = {
 
     this.game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
     this.game.load.image('pause', 'img/ic-pause.png');
+    this.score = 0;
   },
 
   create: function() {
@@ -40,10 +41,12 @@ var UI = {
     this.scoreLable.anchor.set(1, 0);
   },
 
-  setScore: function(newScore, oldScore) {
+  setScore: function(newScore) {
     var scoreObj = {
-      score: oldScore
+      score: this.score
     }
+
+    this.score = newScore;
 
     var newAnimation = this.game.add.tween(scoreObj).to({
       score: newScore

@@ -1,15 +1,10 @@
-var PauseMenu = {
-  btnTextStyle: {
-    font: "31px Jura",
-    fill: "#FFFFFF"
-  },
+var PauseMenu = function(game) {
+  this.game = game;
+  this.btns = [];
+  this.onHide = new Phaser.Signal();
+}
 
-  init: function(game) {
-    this.game = game;
-    this.btns = [];
-    this.onHide = new Phaser.Signal();
-  },
-
+PauseMenu.prototype = {
   preload: function() {
     game.load.image('play', 'img/ic-play.png');
     game.load.image('replay', 'img/ic-autorenew.png');
@@ -17,46 +12,46 @@ var PauseMenu = {
   },
 
   create: function() {
-
+    this.addBackground();
+    this.addBtns();
+    this.addScoreLable();
   },
 
-  show: function() {
-    if (!this.background) {
-      var rowBackground = this.game.add.bitmapData(this.game.width, this.game.height);
-      rowBackground.fill(0, 0, 0, 0.95);
+  addBtns: function() {
+    var btnMargin = 100;
+    var menu = this.addBtn(
+      this.game.world.centerX - Store.pauseMenuBtnsSize - btnMargin,
+      this.game.world.centerY,
+      'menu',
+      'В главное меню',
+      this.menuBtn_click
+    );
 
-      this.background = this.game.add.sprite(0, 0, rowBackground);
+    var play = this.addBtn(
+      this.game.world.centerX,
+      this.game.world.centerY,
+      'play',
+      'Продолжить',
+      this.playBtn_click
+    );
 
-      var btnMargin = 100;
-      this.addBtn(
-        this.game.world.centerX - Store.pauseMenuBtnsSize - btnMargin,
-        this.game.world.centerY,
-        'В главное меню',
-        'menu',
-        this.menuBtn_click
-      );
-      this.addBtn(
-        this.game.world.centerX, 
-        this.game.world.centerY, 
-        'Продолжить',
-        'play', 
-        this.playBtn_click
-        );
-      this.addBtn(
-        this.game.world.centerX + Store.pauseMenuBtnsSize + btnMargin, 
-        this.game.world.centerY, 
-        'Начать сначала',
-        'replay', 
-        this.replayBtn_click
-        );
+    var replay = this.addBtn(
+      this.game.world.centerX + Store.pauseMenuBtnsSize + btnMargin,
+      this.game.world.centerY,
+      'replay',
+      'Начать сначала',
+      this.replayBtn_click
+    );
 
-      this.background.addChild(this.btns.menu);
-      this.background.addChild(this.btns.play);
-      this.background.addChild(this.btns.replay);
-    } else {
-      this.background.visible = true;
-      this.background.bringToTop();      
-    }
+    this.background.addChild(menu);
+    this.background.addChild(play);
+    this.background.addChild(replay);
+  },
+
+  show: function(score) {
+    this.scoreLable.text = "Счёт " + Math.round(score);
+    this.background.visible = true;
+    this.background.bringToTop();
   },
 
   hide: function() {
@@ -75,36 +70,56 @@ var PauseMenu = {
     this.onHide.dispatch();
   },
 
-  backgroundSet: function(screen) {
-    var image = new Image();
-    image.src = screen;
-    this.screen = {
-      image: image,
-      data: screen
-    }
-    this.game.cache.addImage('screen', this.screen.data, this.screen.image);
-    this.background = this.game.add.sprite(0, 0, 'screen');
+  addBackground: function() {
+    var rowBackground = this.game.add.bitmapData(this.game.width, this.game.height);
+    rowBackground.fill(0, 0, 0, 0.95);
+
+    this.background = this.game.add.sprite(0, 0, rowBackground);
+    this.background.visible = false;
   },
 
-  addBtn: function(x, y, text, name, callback) {
-    this.btns[name] = this.game.add.button(x, y, name, callback, this);
-    this.btns[name].width = Store.pauseMenuBtnsSize;
-    this.btns[name].height = Store.pauseMenuBtnsSize;
-    this.btns[name].anchor.setTo(0.5, 0.5);
-
-    this.btns[name].lable = this.game.add.text(0, Store.pauseMenuBtnsSize, text, this.btnTextStyle);
-    this.btns[name].lable.anchor.setTo(0.5);
-    this.btns[name].lable.alpha = 0;
-    this.btns[name].addChild(this.btns[name].lable);
-
+  addBtn: function(x, y, name, text, callback) {
+    var button = this.game.add.button(x, y, name, callback, this);
     const animationLableTime = 100;
+    const btnTextStyle = {
+      font: "31px Jura",
+      fill: "#FFFFFF"
+    };
 
-    this.btns[name].onInputOver.add(function(btn) {      
-      this.game.add.tween(btn.lable).to({alpha: 1}, animationLableTime).start();
+    button.width = Store.pauseMenuBtnsSize;
+    button.height = Store.pauseMenuBtnsSize;
+    button.anchor.setTo(0.5, 0.5);
+
+    button.lable = this.game.add.text(0, Store.pauseMenuBtnsSize, text, btnTextStyle);
+    button.lable.anchor.setTo(0.5);
+    button.lable.alpha = 0;
+    button.addChild(button.lable);
+
+    button.onInputOver.add(function(btn) {
+      this.game.add.tween(btn.lable).to({
+        alpha: 1
+      }, animationLableTime).start();
     }, this);
 
-    this.btns[name].onInputOut.add(function(btn) {
-      this.game.add.tween(btn.lable).to({alpha: 0}, animationLableTime).start();
+    button.onInputOut.add(function(btn) {
+      this.game.add.tween(btn.lable).to({
+        alpha: 0
+      }, animationLableTime).start();
     }, this);
+
+    this.btns.push(button);
+
+    return button;
+  },
+
+  addScoreLable: function() {
+    const scoreLableStyle = {
+      font: "46px Jura",
+      fill: "#FFFFFF"
+    }
+
+    this.scoreLable = this.game.add.text(this.game.world.centerX, this.game.world.centerY / 2, 'Счёт: 0', scoreLableStyle);
+    this.scoreLable.anchor.set(0.5);
+    this.background.addChild(this.scoreLable);
   }
 }

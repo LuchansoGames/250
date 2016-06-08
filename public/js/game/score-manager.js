@@ -1,17 +1,16 @@
-var ScoreManager = {
-  score: 0,
-  ratio: 1.0,
+var ScoreManager = function(game) {
+  this.game = game;
+  this.score = 0;
+  this.ratio = 1.0;
 
-  timeTickScoreAdd: 2,
-  coinScoreAdd: 15,
-  coinRatioAdd: 0.05,
+  this.timeTickScoreAdd = 2;
+  this.coinScoreAdd = 15;
+  this.coinRatioAdd = 0.05;
 
-  coinsTaked: 0,
+  this.coinsTaked = 0;
+}
 
-  init: function(game) {
-    this.game = game;
-  },
-
+ScoreManager.prototype = {
   pause: function() {
     this.timer.pause();
   },

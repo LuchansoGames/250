@@ -2,14 +2,16 @@ var GameStateNew = {
   init: function(lvl) {
     this.lvl = lvl;
     this.isPause = false;
-    this.screenshoot.init();
+
     this.screenshoot = new Screenshoot(this.game);
+    this.pauseMenu = new PauseMenu(this.game);
+    this.border = new Border(this.game);
+    this.square = new Square(this.game, this.border);
+    this.coin = new Coin(this.game, this.border);
+    this.controll = new Controll(this.game);
+    this.scoreManager = new ScoreManager(this.game);
 
-    this.screenshoot.init();
-    PauseMenu.init(this.game);
-    ScoreManager.init(this.game);
-
-    PauseMenu.onHide.add(this.resume, this);
+    this.pauseMenu.onHide.add(this.resume, this);
   },
 
   preload: function() {
@@ -17,14 +19,10 @@ var GameStateNew = {
     this.game.scale.pageAlignHorizontally = true;
     this.game.scale.pageAlignVertically = true;
 
-    this.border = new Border(this.game);
-    this.square = new Square(this.game, this.border);
-    this.coin = new Coin(this.game, this.border);
-    this.controll = new Controll(this.game);
-
     Settings.load();
+    
     SoundManager.preload(this.game);
-    PauseMenu.preload();
+    this.pauseMenu.preload();
     UI.preload(this.game);
     this.border.preload();
     this.square.preload();
@@ -36,13 +34,13 @@ var GameStateNew = {
   create: function() {
     SoundManager.create();
     UI.create();
-    PauseMenu.create();
+    this.pauseMenu.create();
     this.border.create(this.lvl);
     this.square.create();
     this.coin.create();
     EnemySpawn.create(this.border);
     Enemy.create();
-    ScoreManager.create();
+    this.scoreManager.create();
     this.controll.create({
       up: function() { this.square.move(Square.directionType.UP) },
       down: function() { this.square.move(Square.directionType.DOWN) },
@@ -60,10 +58,10 @@ var GameStateNew = {
 
     if (this.overlap(this.square.sprite, this.coin.sprite)) {
       this.coin.take();
-      var oldScore = ScoreManager.score;
-      var newScore = ScoreManager.takeCoin();
+      var oldScore = this.scoreManager.score;
+      var newScore = this.scoreManager.takeCoin();
       UI.setScore(newScore, oldScore);
-      UI.updateRatio(ScoreManager.ratio);
+      UI.updateRatio(this.scoreManager.ratio);
     }
 
     for (var i = 0; i < Enemy.all.length; i++) {
@@ -71,10 +69,10 @@ var GameStateNew = {
       if (this.overlap(enemy.sprite, this.square.sprite)) {
         SoundManager.dieSoundPlay();
         enemy.die();
-        var oldScore = ScoreManager.score;
-        var newScore = ScoreManager.loseScore();
+        var oldScore = this.scoreManager.score;
+        var newScore = this.scoreManager.loseScore();
         UI.setScore(newScore, oldScore);
-        UI.updateRatio(ScoreManager.ratio);
+        UI.updateRatio(this.scoreManager.ratio);
       }
     }
   },
@@ -95,25 +93,25 @@ var GameStateNew = {
     this.game.physics.arcade.isPaused = this.isPause = true;
 
     EnemySpawn.allPause();
-    ScoreManager.pause();
+    this.scoreManager.pause();
     UI.pause();
 
     this.square.pause();
     this.coin.pause();
 
-    PauseMenu.show();
+    this.pauseMenu.show(this.scoreManager.score);
   },
 
   resume: function() {
     this.game.physics.arcade.isPaused = this.isPause = false;
 
     EnemySpawn.allResume();
-    ScoreManager.resume();
+    this.scoreManager.resume();
     UI.resume();
 
     this.square.resume();
     this.coin.resume();
 
-    PauseMenu.hide();
+    this.pauseMenu.hide();
   }
 }
