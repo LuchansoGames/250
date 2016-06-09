@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>250+ | Game</title>
+  <script type="text/javascript">
+    WebFontConfig = {
+      google: { families: [ 'Jura:300:latin,cyrillic' ] }
+    };
+    (function() {
+      var wf = document.createElement('script');
+      wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+      wf.type = 'text/javascript';
+      wf.async = 'false';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(wf, s);
+    })(); 
+  </script>
+  <style type="text/css">
+    body {
+      margin: 0;
+      background: #161D52;
+    }
+  </style>
+</head>
+<body>
+  <p style="font-family: Jura; font-size: 0px; margin: 0px; padding: 0px">Мини костыль</p>
+  <div id="vk_ads_75686"></div>
+  <!-- <div id="game"></div> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/2.4.7/phaser.js"></script>
+  <script src="app.js"></script>
+  <script type="text/javascript">
+    function isVkEnv() {
+      return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0] === "https://vk.com";
+    }
+
+    setTimeout(function() {
+      if (!isVkEnv()) {
+        return;
+      }
+
+      var adsParams = {"ad_unit_id":75686,"ad_unit_hash":"232dff1590ac9d07125fe39844d8d38a"};
+      function vkAdsInit() {
+        VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
+      }
+      if (window.VK && VK.Widgets) {
+        vkAdsInit();
+      } else {
+        if (!window.vkAsyncInitCallbacks) window.vkAsyncInitCallbacks = [];
+        vkAsyncInitCallbacks.push(vkAdsInit);
+        var protocol = ((location.protocol === 'https:') ? 'https:' : 'http:');
+        var adsElem = document.getElementById('vk_ads_75686');
+        var scriptElem = document.createElement('script');
+        scriptElem.type = 'text/javascript';
+        scriptElem.async = true;
+        scriptElem.src = protocol + '//vk.com/js/api/openapi.js?121';
+        adsElem.parentNode.insertBefore(scriptElem, adsElem.nextSibling);
+      }
+    }, 0);
+  </script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-78953087-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
