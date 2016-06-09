@@ -1,4 +1,31 @@
-var Score = function(userimage, username, url, score, position) {
+var ScoreRow = function(game, x, y, userimage, username, url, score, position) {
+  this.game = game;
+  this.url = url;
+
+  var borders = this.game.make.sprite(0, 0, 'score-row');
+  var filter = this.game.make.sprite(0, 0, 'score-filter');
+  var avatar = this.game.make.sprite(0, 0, userimage);
+
+  var bitmap = new Phaser.BitmapData(this.game, null, borders.width, borders.height);
+
+  bitmap.draw(avatar);
+  bitmap.draw(filter);
+  bitmap.draw(borders);
+
+  this.sprite = this.game.add.image(x, y, bitmap);
+  this.sprite.inputEnabled = true;
+  this.sprite.input.useHandCursor = true;
+  this.sprite.onInputUp.add(this.click, this);
+  this.sprite.anchor.setTo(0.5);
+}
+
+ScoreRow.prototype = {
+  click: function() {
+    window.open(this.url, '_blank');
+  }
+}
+
+/*var Score = function() {
   const margin = 15;
   // const padding = 23;
   // const textMarginTop = 19;
@@ -10,7 +37,7 @@ var Score = function(userimage, username, url, score, position) {
   this.userImage.x = -this.sprite.width / 2 + this.userImage.width / 2 + margin;
 
   var usernameStyle = {
-    font: "17px Arial",
+    font: "17px Jura",
     fill: "#fff",
     fontWeight: "bold",
     boundsAlignH: "center",
@@ -18,7 +45,7 @@ var Score = function(userimage, username, url, score, position) {
   }
 
   var scoreStyle = {
-    font: "17px Arial",
+    font: "17px Jura",
     fill: "#FFEB3B",
     fontWeight: "bold",
     boundsAlignH: "center",
@@ -44,4 +71,4 @@ var Score = function(userimage, username, url, score, position) {
   this.sprite.addChild(this.score);
 
   return this.sprite;
-}
+}*/
