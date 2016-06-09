@@ -11,6 +11,7 @@ var GameStateNew = {
     this.square = new Square(this.game, this.border, this.soundManager);
     this.coin = new Coin(this.game, this.border, this.soundManager);
     this.ui = new UI(this.game, this.soundManager, this.scoreManager);
+    ach = this.achivment = new Achivment(this.game);
     this.controll = new Controll(this.game);
 
     this.pauseMenu.onHide.add(this.resume, this);
@@ -30,6 +31,7 @@ var GameStateNew = {
     this.border.preload();
     this.square.preload();
     this.coin.preload();
+    this.achivment.preload();
 
     Enemy.preload(this.game);
     EnemySpawn.preload(this.game, this.lvl);

@@ -5,7 +5,8 @@ game.state.add('Game.v2', GameStateNew);
 game.state.add('Menu', Menu);
 
 function RunGame() {
-  game.state.start('Game.v2', true, false, '3x3');
+  // game.state.start('Game.v2', true, false, '3x3');
+  game.state.start('Menu', Menu);
 }
 
 RunGame();

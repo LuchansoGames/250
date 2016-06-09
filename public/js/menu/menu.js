@@ -32,14 +32,14 @@ var Menu = {
     this.logotype.anchor.setTo(0.5, 0.5);
     this.logotype.alpha = 0;
 
-    game.add.tween(this.logotype).to({ alpha: 1 }, 1000).start();
+    game.add.tween(this.logotype).to({ alpha: 1 }, 250).start();
   },
 
   addControls: function() {
     this.buttonDistance = 175;
     this.buttonSize = 125;
     this.buttonLableStyle = {
-      font: "21px Arial",
+      font: "21px Jura",
       fill: "#fff",
       boundsAlignH: "center",
       boundsAlignV: "middle"
@@ -54,7 +54,7 @@ var Menu = {
     this.buttonsGroup.y = this.logotype.y + 125;
 
     this.buttonsGroup.alpha = 0;
-    game.add.tween(this.buttonsGroup).to({ alpha: 1 }, 1000).delay(250).start();
+    game.add.tween(this.buttonsGroup).to({ alpha: 1 }, 250).delay(150).start();
   },
 
   addBtnPlay: function() {
@@ -137,16 +137,16 @@ var Menu = {
   },
 
   btnOver: function() {
-    game.add.tween(this).to({alpha: 1}, 150).start();
+    game.add.tween(this).to({alpha: 1}, 100).start();
   },
 
   btnOut: function() {
-    game.add.tween(this).to({alpha: 0}, 150).start();
+    game.add.tween(this).to({alpha: 0}, 100).start();
   },
 
   addScoreTable: function() {
 
-    const interval = 250;
+    const interval = 150;
     const topPadding = 20;
     var summ = interval;
     
@@ -155,7 +155,7 @@ var Menu = {
     score.x = game.world.centerX;
     score.y = game.world.centerY + topPadding - score.height - 10;
     score.alpha = 0;
-    game.add.tween(score).to({alpha: 1}, 1000).delay(summ).start();
+    game.add.tween(score).to({alpha: 1}, 250).delay(summ).start();
     summ += interval;
     
     var score1 = new Score('template-photo');
@@ -163,7 +163,7 @@ var Menu = {
     score1.x = game.world.centerX;
     score1.y = game.world.centerY + topPadding;
     score1.alpha = 0;
-    game.add.tween(score1).to({alpha: 1}, 1000).delay(summ).start();
+    game.add.tween(score1).to({alpha: 1}, 250).delay(summ).start();
     summ += interval;
     
 
@@ -172,7 +172,7 @@ var Menu = {
     score2.x = game.world.centerX;
     score2.y = game.world.centerY + topPadding + score.height + 10;
     score2.alpha = 0;
-    game.add.tween(score2).to({alpha: 1}, 1000).delay(summ).start();
+    game.add.tween(score2).to({alpha: 1}, 250).delay(summ).start();
     summ += interval;
 
 
@@ -181,7 +181,7 @@ var Menu = {
     score3.x = game.world.centerX;
     score3.y = game.world.centerY + topPadding + (score.height + 10) * 2;
     score3.alpha = 0;
-    game.add.tween(score3).to({alpha: 1}, 1000).delay(summ).start();
+    game.add.tween(score3).to({alpha: 1}, 250).delay(summ).start();
     summ += interval;
 
     var score4 = new Score('template-photo');
@@ -189,7 +189,7 @@ var Menu = {
     score4.x = game.world.centerX;
     score4.y = game.world.centerY + topPadding + (score.height + 10) * 3;
     score4.alpha = 0;
-    game.add.tween(score4).to({alpha: 1}, 1000).delay(summ).start();
+    game.add.tween(score4).to({alpha: 1}, 250).delay(summ).start();
     summ += interval;
 
     var score5 = new Score('template-photo');

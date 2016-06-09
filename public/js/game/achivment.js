@@ -1,14 +1,22 @@
-var Achivment = {
-  show: function(msg, img) {
+var Achivment = function(game) {
+  this.game = game;
+}
+
+Achivment.prototype = {
+  preload: function() {
+    this.game.load.image('ach+1', 'img/achivments/ach+1.png');
+    this.game.load.image('achivments-background', 'img/achivments-background.png');
+  },
+
+  show: function(msg, name) {
     this.group = game.add.group();
     this.background = game.add.image(0, 0, 'achivments-background');
-    this.icon = game.add.image(0, 0, img);
-    // this.icon.anchor.set(0.5, 0.5);
+    this.icon = game.add.image(0, 0, 'ach' + name);
 
     var textLeftPadding = 10;
 
     var styleHeader = {
-      font: "16px Arial",
+      font: "16px Jura",
       fill: "#fff",
       fontWeight: "bold",
       boundsAlignH: "center",
@@ -16,7 +24,7 @@ var Achivment = {
     }
 
     var styleBody = {
-      font: "14px Arial",
+      font: "14px Jura",
       fill: "#fff",
       boundsAlignH: "center",
       wordWrap: true,
@@ -34,6 +42,6 @@ var Achivment = {
     this.group.alpha = 1;
 
     game.add.tween(this.group).to({alpha: 1, x: game.world.width - this.background.width}, 100).start();
-    game.add.tween(this.group).to({alpha: 0, y: this.group.y + 150}, 400).delay(3000).start();
+    game.add.tween(this.group).to({alpha: 0, y: this.group.y + 150}, 400).delay(7000).start();
   }
 }
