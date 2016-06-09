@@ -16,6 +16,7 @@ var GameStateNew = {
 
     this.pauseMenu.onHide.add(this.resume, this);
     this.pauseMenu.onShowMainMenu.add(this.onShowMainMenu, this);
+    this.pauseMenu.onRestart.add(this.restartGame, this);
   },
 
   preload: function() {
@@ -134,5 +135,10 @@ var GameStateNew = {
   onShowMainMenu: function() {
     this.resume();
     this.game.state.start('Menu');
+  },
+
+  restartGame: function() {
+    this.resume();
+    this.game.state.restart(true, false, this.lvl);    
   }
 }

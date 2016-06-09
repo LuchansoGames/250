@@ -48,7 +48,7 @@ var Menu = {
     this.buttonDistance = 175;
     this.buttonSize = 125;
     this.buttonLableStyle = {
-      font: "21px Jura",
+      font: "24px Jura",
       fill: "#fff",
       boundsAlignH: "center",
       boundsAlignV: "middle"
@@ -57,9 +57,9 @@ var Menu = {
 
     this.buttonsGroup = this.game.add.group();
 
-    this.buttonsGroup.add(this.addBtnPlay());
-    this.buttonsGroup.add(this.addBtnHelp());
-    this.buttonsGroup.add(this.addBtnList());
+    this.buttonsGroup.add(this.createNewBtn(this.game.world.centerX - this.buttonDistance, 0, 'play', 'Играть', this.btnPlay_click));
+    this.buttonsGroup.add(this.createNewBtn(this.game.world.centerX, 0, 'help', 'Как играть?', this.btnHelp_click));
+    this.buttonsGroup.add(this.createNewBtn(this.game.world.centerX + this.buttonDistance, 0, 'list', 'Достижения', this.btnRating_click));
     this.buttonsGroup.y = this.logotype.y + 125;
 
     this.buttonsGroup.alpha = 0;
@@ -68,65 +68,18 @@ var Menu = {
     }, 250).delay(150).start();
   },
 
-  addBtnPlay: function() {
+  createNewBtn: function(x, y, name, text, callback) {
     var btnBox = this.game.add.group();
 
-    var btnX = this.game.world.centerX - this.buttonDistance;
-    var btnY = 0;
+    var btnX = x;
+    var btnY = y;
 
-    var btn = this.game.add.button(btnX, btnY, 'play', this.btnPlay_click, this);
+    var btn = this.game.add.button(btnX, btnY, name, callback, this);
     btn.anchor.set(0.5, 0.5);
     btn.width = this.buttonSize;
     btn.height = this.buttonSize;
 
-    var btnLable = this.game.add.text(btnX, btnY + this.btnLablepadding, "Играть", this.buttonLableStyle);
-    btnLable.anchor.set(0.5, 0.5);
-
-    btn.onInputOver.add(this.btnOver, btnLable);
-    btn.onInputOut.add(this.btnOut, btnLable);
-
-    btnLable.alpha = 0;
-
-    btnBox.addMultiple([btn, btnLable]);
-
-    return btnBox;
-  },
-
-  addBtnHelp: function() {
-    var btnBox = this.game.add.group();
-
-    var btnX = this.game.world.centerX;
-    var btnY = 0;
-
-    var btn = this.game.add.button(btnX, btnY, 'help', this.btnHelp_click, this);
-    btn.anchor.set(0.5, 0.5);
-    btn.width = this.buttonSize;
-    btn.height = this.buttonSize;
-
-    var btnLable = this.game.add.text(btnX, btnY + this.btnLablepadding, "Как играть?", this.buttonLableStyle);
-    btnLable.anchor.set(0.5, 0.5);
-
-    btn.onInputOver.add(this.btnOver, btnLable);
-    btn.onInputOut.add(this.btnOut, btnLable);
-
-    btnLable.alpha = 0;
-
-    btnBox.addMultiple([btn, btnLable]);
-
-    return btnBox;
-  },
-
-  addBtnList: function() {
-    var btnBox = this.game.add.group();
-    var btnX = this.game.world.centerX + this.buttonDistance;
-    var btnY = 0;
-
-    var btn = this.game.add.button(btnX, btnY, 'list', this.btnRating_click, this);
-    btn.anchor.set(0.5, 0.5);
-    btn.width = this.buttonSize;
-    btn.height = this.buttonSize;
-
-    var btnLable = this.game.add.text(btnX, btnY + this.btnLablepadding, "Достижения", this.buttonLableStyle);
+    var btnLable = this.game.add.text(btnX, btnY + this.btnLablepadding, text, this.buttonLableStyle);
     btnLable.anchor.set(0.5, 0.5);
 
     btn.onInputOver.add(this.btnOver, btnLable);
@@ -159,63 +112,12 @@ var Menu = {
     }, 100).start();
   },
 
-  addScoreTable: function() {
+  addScoreTable: function(data) {
     const topPadding = 20;
-    var x = game.world.centerX;
+    var x = game.world.centerX / 2;
     var y = game.world.centerY;
     var userimage = 'template-photo';
 
-    this.score.add(x, y, userimage);
-
-    // const interval = 150;
-    // var summ = interval;
-
-    // var score = new Score('template-photo');
-    // score.anchor.set(0.5, 0.5);
-    // score.x = game.world.centerX;
-    // score.y = game.world.centerY + topPadding - score.height - 10;
-    // score.alpha = 0;
-    // game.add.tween(score).to({alpha: 1}, 250).delay(summ).start();
-    // summ += interval;
-
-    // var score1 = new Score('template-photo');
-    // score1.anchor.set(0.5, 0.5);
-    // score1.x = game.world.centerX;
-    // score1.y = game.world.centerY + topPadding;
-    // score1.alpha = 0;
-    // game.add.tween(score1).to({alpha: 1}, 250).delay(summ).start();
-    // summ += interval;    
-
-    // var score2 = new Score('template-photo');
-    // score2.anchor.set(0.5, 0.5);
-    // score2.x = game.world.centerX;
-    // score2.y = game.world.centerY + topPadding + score.height + 10;
-    // score2.alpha = 0;
-    // game.add.tween(score2).to({alpha: 1}, 250).delay(summ).start();
-    // summ += interval;
-
-    // var score3 = new Score('template-photo');
-    // score3.anchor.set(0.5, 0.5);
-    // score3.x = game.world.centerX;
-    // score3.y = game.world.centerY + topPadding + (score.height + 10) * 2;
-    // score3.alpha = 0;
-    // game.add.tween(score3).to({alpha: 1}, 250).delay(summ).start();
-    // summ += interval;
-
-    // var score4 = new Score('template-photo');
-    // score4.anchor.set(0.5, 0.5);
-    // score4.x = game.world.centerX;
-    // score4.y = game.world.centerY + topPadding + (score.height + 10) * 3;
-    // score4.alpha = 0;
-    // game.add.tween(score4).to({alpha: 1}, 250).delay(summ).start();
-    // summ += interval;
-
-    // var score5 = new Score('template-photo');
-    // score5.anchor.set(0.5, 0.5);
-    // score5.x = game.world.centerX;
-    // score5.y = game.world.centerY + topPadding + (score.height + 10) * 4 + 16;
-    // score5.alpha = 0;
-    // game.add.tween(score5).to({alpha: 1}, 1000).delay(summ).start();
-    // summ += interval;
+    this.score.add(x, y, userimage, 'Тестовое Имя', 'https://vk.com/id161236502', Math.round(Math.random() * 999999), 12);
   }
 }
