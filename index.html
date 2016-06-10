@@ -35,13 +35,16 @@
 
     function ADSOnLoad(callback) {
       var adsTimer = setInterval(function() {
-        console.log(document.getElementById('vk_ads_75686').style);
+        var isLoaded = document.getElementById('vk_ads_75686').style.background === 'none';
 
-        if (false) {
+        if (isLoaded) {
           clearInterval(adsTimer);
+          callback();
         }
       }, 1000);
     }
+
+    function onLoad();
 
     setTimeout(function() {
       if (!isVkEnv()) {
@@ -50,7 +53,7 @@
 
       var adsParams = {"ad_unit_id":75686,"ad_unit_hash":"232dff1590ac9d07125fe39844d8d38a"};
       function vkAdsInit() {
-        ADSOnLoad();
+        ADSOnLoad(onLoad);
         VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
       }
       if (window.VK && VK.Widgets) {
