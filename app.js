@@ -15,7 +15,7 @@ function isVkEnv() {
 
     function onLoad() {
       console.log('test');
-      document.getElementById('vk_ads_75686').style.display = '';
+      document.getElementById('vk_ads_75686').style['max-height'] = '';
     }
 
     setTimeout(function() {
