@@ -13,7 +13,9 @@ function isVkEnv() {
       }, 1000);
     }
 
-    function onLoad();
+    function onLoad() {
+      console.log('test');
+    }
 
     setTimeout(function() {
       if (!isVkEnv()) {
