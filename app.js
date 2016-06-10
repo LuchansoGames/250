@@ -15,7 +15,7 @@ function isVkEnv() {
 
     function onLoad() {
       console.log('test');
-      document.getElementById('vk_ads_75686').style.display = 'block'
+      document.getElementById('vk_ads_75686').style.display = '';
     }
 
     setTimeout(function() {
