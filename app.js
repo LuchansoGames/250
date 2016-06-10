@@ -1,51 +1,90 @@
+var FullScreen = function(game) {
+  this.game = game;
+}
+
+FullScreen.isFullScreen = false;
+
+FullScreen.prototype = {
+  preload: function() {
+    this.game.load.spritesheet('fullscreen', 'img/ic-fullscreen.png', 192, 192);
+  },
+
+  create: function() {
+    this.btn = this.game.add.button(this.game.world.width, this.game.world.height, 'fullscreen', this.fullscreen_click, this, 0, 0, 0);
+    this.btn.width = 50;
+    this.btn.height = 50;
+    this.btn.anchor.setTo(1);
+
+    if (FullScreen.isFullScreen) {
+      this.btn.setFrames(1, 1, 1);
+    }
+  },
+
+  fullscreen_click: function() {
+    if (this.btn.frame === 0) {
+      this.btn.setFrames(1, 1, 1);
+      game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+      game.scale.startFullScreen(true);
+      FullScreen.isFullScreen = true;
+    } else {
+      this.btn.setFrames(0, 0, 0);
+      game.scale.stopFullScreen();
+      FullScreen.isFullScreen = false;
+    }
+  }
+}
 function isVkEnv() {
-      return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0] === "https://vk.com";
+  return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0] === "https://vk.com";
+}
+
+function ADSOnLoad(callback) {
+  var adsTimer = setInterval(function() {
+    var isLoaded = document.getElementById('vk_ads_75686').style.background === 'none';
+
+    if (isLoaded) {
+      clearInterval(adsTimer);
+      callback();
     }
+  }, 3000);
+}
 
-    function ADSOnLoad(callback) {
-      var adsTimer = setInterval(function() {
-        var isLoaded = document.getElementById('vk_ads_75686').style.background === 'none';
+function onLoad() {
+  document.getElementById('vk_ads_75686').style['max-height'] = '';
+}
 
-        if (isLoaded) {
-          clearInterval(adsTimer);
-          callback();
-        }
-      }, 1000);
-    }
+setTimeout(function() {
+  if (!isVkEnv()) {
+    return;
+  }
 
-    function onLoad() {
-      console.log('test');
-      document.getElementById('vk_ads_75686').style['max-height'] = '';
-    }
+  var adsParams = {
+    "ad_unit_id": 75686,
+    "ad_unit_hash": "232dff1590ac9d07125fe39844d8d38a"
+  };
 
-    setTimeout(function() {
-      if (!isVkEnv()) {
-        return;
-      }
+  function vkAdsInit() {
+    ADSOnLoad(onLoad);
+    VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
+  }
+  if (window.VK && VK.Widgets) {
+    vkAdsInit();
+  } else {
+    if (!window.vkAsyncInitCallbacks) window.vkAsyncInitCallbacks = [];
+    vkAsyncInitCallbacks.push(vkAdsInit);
+    var protocol = ((location.protocol === 'https:') ? 'https:' : 'http:');
+    var adsElem = document.getElementById('vk_ads_75686');
+    var scriptElem = document.createElement('script');
+    scriptElem.type = 'text/javascript';
+    scriptElem.async = true;
+    scriptElem.src = protocol + '//vk.com/js/api/openapi.js?121';
+    adsElem.parentNode.insertBefore(scriptElem, adsElem.nextSibling);
+  }
 
-      var adsParams = {"ad_unit_id":75686,"ad_unit_hash":"232dff1590ac9d07125fe39844d8d38a"};
-      function vkAdsInit() {
-        ADSOnLoad(onLoad);
-        VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
-      }
-      if (window.VK && VK.Widgets) {
-        vkAdsInit();
-      } else {
-        if (!window.vkAsyncInitCallbacks) window.vkAsyncInitCallbacks = [];
-        vkAsyncInitCallbacks.push(vkAdsInit);
-        var protocol = ((location.protocol === 'https:') ? 'https:' : 'http:');
-        var adsElem = document.getElementById('vk_ads_75686');
-        var scriptElem = document.createElement('script');
-        scriptElem.type = 'text/javascript';
-        scriptElem.async = true;
-        scriptElem.src = protocol + '//vk.com/js/api/openapi.js?121';
-        adsElem.parentNode.insertBefore(scriptElem, adsElem.nextSibling);
-      }
-
-    }, 0);
+}, 0);
 var Menu = {
   init: function() {
     this.score = new ScoreBuilder(this.game);
+    this.fullScreen = new FullScreen(this.game);
   },
 
   preload: function() {
@@ -58,11 +97,13 @@ var Menu = {
     this.game.load.image('play', 'img/ic-play.png');
     this.game.load.image('help', 'img/ic-help.png');
     this.game.load.image('list', 'img/ic-list.png');
-    // this.game.load.image('score-background', 'img/score-background.png');
-    this.game.load.image('template-photo', 'img/template-photo.jpg');
+    this.game.load.image('unknown-user', 'img/unknown-user.png');
+    // this.game.load.image('score-background', 'img/score-background.png');    
+    // this.game.load.image('template-photo', 'img/template-photo.jpg');
     // this.game.load.image('score-background', 'http://www.html5gamedevs.com/uploads/profile/photo-thumb-7510.png');
     
     this.score.preload();
+    this.fullScreen.preload();
   },
 
   create: function() {
@@ -70,7 +111,43 @@ var Menu = {
 
     this.addLogotype();
     this.addControls();
-    this.addScoreTable();
+    this.addScoreTable([{
+      id: 161236502,
+      username: 'Олег Лучанский',
+      url: 'https://vk.com/id161236502',
+      score: 123423,
+      avatar: 'https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg',
+      position: 1
+    }, {
+      id: 210700286,
+      username: 'Lindsey Stirling',
+      url: 'https://vk.com/id161236502',
+      score: 3423,
+      avatar: 'https://pp.vk.me/c631329/v631329286/23f6e/4-funfNRMwg.jpg',
+      position: 2
+    }, {
+      id: 1,
+      username: 'Дуров Павел',
+      url: 'https://vk.com/id1',
+      score: 231,
+      avatar: 'https://pp.vk.me/c629231/v629231001/c543/FfB--bOEVOY.jpg',
+      position: 3
+    }, {
+      id: 161236502,
+      username: 'Лучанский Олег',
+      url: 'https://vk.com/id161236502',
+      score: 123423,
+      avatar: 'https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg',
+      position: 4
+    }, {
+      id: 161236502,
+      username: 'Лучанский Олег',
+      url: 'https://vk.com/id161236502',
+      score: 123423,
+      avatar: 'https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg',
+      position: 5
+    }]);
+    this.fullScreen.create();
   },
 
   update: function() {
@@ -147,6 +224,10 @@ var Menu = {
 
   },
 
+  addTestingData() {
+
+  },
+
   btnOver: function() {
     game.add.tween(this).to({
       alpha: 1
@@ -162,10 +243,24 @@ var Menu = {
   addScoreTable: function(data) {
     const topPadding = 20;
     var x = game.world.centerX / 2;
-    var y = game.world.centerY;
-    var userimage = 'template-photo';
+    var y = game.world.centerY - 150;    
+    var loader = new Phaser.Loader(this.game);
+    loader.crossOrigin = true;
+    
+    data.forEach(function(row) {
+      var userimage = 'img-id' + row.id;
+      loader.image(userimage, row.avatar);
 
-    this.score.add(x, y, userimage, 'Тестовое Имя', 'https://vk.com/id161236502', Math.round(Math.random() * 999999), 12);
+      loader.onLoadComplete.add(function() {
+        this.score.add(x, y + row.position * 50, userimage, row.username, row.url, row.score, row.position);
+      }, this);
+      loader.onFileError.add(function() {
+        this.score.add(x, y + row.position * 50, 'unknown-user', row.username, row.url, row.score, row.position);
+      }, this);
+      // y += 50;
+    }, this);
+
+    loader.start();
   }
 }
 var ScoreBuilder = function(game) {
@@ -179,7 +274,12 @@ ScoreBuilder.prototype = {
   },
 
   add: function(x, y, userimage, username, url, score, position) {
-    return new ScoreRow(this.game, x, y, userimage, username, url, score, position);
+    var score = new ScoreRow(this.game, x, y, userimage, username, url, score, position);
+
+    score.sprite.alpha = 0;
+    this.game.add.tween(score.sprite).to({alpha: 1}, 300).delay(this.game.rnd.between(100, 300)).start();
+
+    return score;
   }
 }
 var ScoreRow = function(game, x, y, userimage, username, url, score, position) {
@@ -777,6 +877,9 @@ var GameStateNew = {
     this.pauseMenu.onHide.add(this.resume, this);
     this.pauseMenu.onShowMainMenu.add(this.onShowMainMenu, this);
     this.pauseMenu.onRestart.add(this.restartGame, this);
+
+    this.scale.width = 500;
+    this.scale.height = 500;
   },
 
   preload: function() {
@@ -1927,6 +2030,9 @@ Square.prototype = {
 };
 var Store = { };
 
+Store.width = 1000;
+Store.height = 900;
+
 Store.squareMargin = 20;
 Store.playerColor = 0xEEFF41;
 Store.squareMoveTime = 75;
@@ -2013,12 +2119,14 @@ var UI = function(game, soundManager) {
   this.game = game;
   this.soundManager = soundManager;
   this.score = 0;
+  this.fullScreen = new FullScreen(this.game);
 }
 
 UI.prototype = {
   preload: function() {
     this.game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
     this.game.load.image('pause', 'img/ic-pause.png');
+    this.fullScreen.preload();
   },
 
   create: function() {
@@ -2028,6 +2136,7 @@ UI.prototype = {
     this.addScoreLable();
     this.addScoreRatioLable();
 
+    this.fullScreen.create();
     this.addEvents();
   },
 
@@ -2129,7 +2238,7 @@ UI.prototype = {
     this.onPauseButtonClick.dispatch();
   }
 }
-var game = new Phaser.Game(1000, 900, Phaser.AUTO, 'game');
+var game = new Phaser.Game(Store.width, Store.height, Phaser.AUTO, 'game');
 
 game.state.add('Game', GameState);
 game.state.add('Game.v2', GameStateNew);
