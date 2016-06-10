@@ -33,6 +33,16 @@
       return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0] === "https://vk.com";
     }
 
+    function ADSOnLoad(callback) {
+      var adsTimer = setInterval(function() {
+        console.log(document.getElementById('vk_ads_75686').style);
+
+        if (false) {
+          clearInterval(adsTimer);
+        }
+      }, 1000);
+    }
+
     setTimeout(function() {
       if (!isVkEnv()) {
         return;
@@ -40,8 +50,8 @@
 
       var adsParams = {"ad_unit_id":75686,"ad_unit_hash":"232dff1590ac9d07125fe39844d8d38a"};
       function vkAdsInit() {
+        ADSOnLoad();
         VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
-         console.log(VK);
       }
       if (window.VK && VK.Widgets) {
         vkAdsInit();
@@ -56,6 +66,7 @@
         scriptElem.src = protocol + '//vk.com/js/api/openapi.js?121';
         adsElem.parentNode.insertBefore(scriptElem, adsElem.nextSibling);
       }
+
     }, 0);
   </script>
   <script>
