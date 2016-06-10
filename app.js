@@ -1,3 +1,45 @@
+function isVkEnv() {
+      return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0] === "https://vk.com";
+    }
+
+    function ADSOnLoad(callback) {
+      var adsTimer = setInterval(function() {
+        var isLoaded = document.getElementById('vk_ads_75686').style.background === 'none';
+
+        if (isLoaded) {
+          clearInterval(adsTimer);
+          callback();
+        }
+      }, 1000);
+    }
+
+    function onLoad();
+
+    setTimeout(function() {
+      if (!isVkEnv()) {
+        return;
+      }
+
+      var adsParams = {"ad_unit_id":75686,"ad_unit_hash":"232dff1590ac9d07125fe39844d8d38a"};
+      function vkAdsInit() {
+        ADSOnLoad(onLoad);
+        VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
+      }
+      if (window.VK && VK.Widgets) {
+        vkAdsInit();
+      } else {
+        if (!window.vkAsyncInitCallbacks) window.vkAsyncInitCallbacks = [];
+        vkAsyncInitCallbacks.push(vkAdsInit);
+        var protocol = ((location.protocol === 'https:') ? 'https:' : 'http:');
+        var adsElem = document.getElementById('vk_ads_75686');
+        var scriptElem = document.createElement('script');
+        scriptElem.type = 'text/javascript';
+        scriptElem.async = true;
+        scriptElem.src = protocol + '//vk.com/js/api/openapi.js?121';
+        adsElem.parentNode.insertBefore(scriptElem, adsElem.nextSibling);
+      }
+
+    }, 0);
 var Menu = {
   init: function() {
     this.score = new ScoreBuilder(this.game);
