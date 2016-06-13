@@ -1302,8 +1302,10 @@ var GameStateNew = {
   },
 
   preload: function() {
-    this.game.scale.pageAlignHorizontally = true;
-    this.game.scale.pageAlignVertically = true;
+    if (!isVkEnv()) {
+      this.game.scale.pageAlignHorizontally = true;
+      this.game.scale.pageAlignVertically = true;
+    }
 
     this.enemySpawnBulder.preload();
     this.soundManager.preload();
