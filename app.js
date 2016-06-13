@@ -6,7 +6,7 @@ FullScreen.isFullScreen = false;
 
 FullScreen.prototype = {
   preload: function() {
-    this.game.load.spritesheet('fullscreen', 'img/ic-fullscreen.png', 192, 192);
+    this.game.load.spritesheet('fullscreen', 'img/ui/ic-fullscreen.png', 192, 192);
   },
 
   create: function() {
@@ -83,25 +83,29 @@ setTimeout(function() {
 }, 0);
 var Menu = {
   init: function() {
-    this.score = new ScoreBuilder(this.game);
+    this.score = new ScoreBuilder(this.game, this.game.world.centerX, game.world.centerY - ScoreBuilder.basePositionY);
     this.fullScreen = new FullScreen(this.game);
+    this.soundManager = SoundManager.getInstance(this.game);
   },
 
   preload: function() {
+    Settings.load();
+
     if (!isVkEnv()) {
-      game.scale.pageAlignHorizontally = true;
-      game.scale.pageAlignVertically = true;
+      this.game.scale.pageAlignHorizontally = true;
+      this.game.scale.pageAlignVertically = true;
     }
     this.game.load.crossOrigin = true;
-    this.game.load.image('logo', 'img/logo.png');
-    this.game.load.image('play', 'img/ic-play.png');
-    this.game.load.image('help', 'img/ic-help.png');
-    this.game.load.image('list', 'img/ic-list.png');
-    this.game.load.image('unknown-user', 'img/unknown-user.png');
-    // this.game.load.image('score-background', 'img/score-background.png');    
-    // this.game.load.image('template-photo', 'img/template-photo.jpg');
-    // this.game.load.image('score-background', 'http://www.html5gamedevs.com/uploads/profile/photo-thumb-7510.png');
-    
+    this.game.load.image('logo', 'img/ui/logo.png');
+    this.game.load.image('play', 'img/ui/ic-play.png');
+    this.game.load.image('help', 'img/ui/ic-help.png');
+    this.game.load.image('list', 'img/ui/ic-list.png');
+    this.game.load.image('unknown-user', 'img/ui/unknown-user.png');
+    this.game.load.spritesheet('volume', 'img/ui/volume-spritesheet.png', 96, 96);
+    this.game.load.json('rating-data', 'api/hydra/rating');
+
+    this.soundManager.preload();
+
     this.score.preload();
     this.fullScreen.preload();
   },
@@ -109,49 +113,45 @@ var Menu = {
   create: function() {
     this.game.stage.backgroundColor = Store.backgroundColor;
 
+    var rating = this.game.cache.getJSON('rating-data').users;
+
+    this.score.create();
+
+    this.addVolumeButton();
     this.addLogotype();
     this.addControls();
-    this.addScoreTable([{
-      id: 161236502,
-      username: 'Олег Лучанский',
-      url: 'https://vk.com/id161236502',
-      score: 123423,
-      avatar: 'https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg',
-      position: 1
-    }, {
-      id: 210700286,
-      username: 'Lindsey Stirling',
-      url: 'https://vk.com/id161236502',
-      score: 3423,
-      avatar: 'https://pp.vk.me/c631329/v631329286/23f6e/4-funfNRMwg.jpg',
-      position: 2
-    }, {
-      id: 1,
-      username: 'Дуров Павел',
-      url: 'https://vk.com/id1',
-      score: 231,
-      avatar: 'https://pp.vk.me/c629231/v629231001/c543/FfB--bOEVOY.jpg',
-      position: 3
-    }, {
-      id: 161236502,
-      username: 'Лучанский Олег',
-      url: 'https://vk.com/id161236502',
-      score: 123423,
-      avatar: 'https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg',
-      position: 4
-    }, {
-      id: 161236502,
-      username: 'Лучанский Олег',
-      url: 'https://vk.com/id161236502',
-      score: 123423,
-      avatar: 'https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg',
-      position: 5
-    }]);
+    this.addScoreTable(rating);
     this.fullScreen.create();
+
+    this.soundManager.create();
   },
 
   update: function() {
+  },
 
+  volumeButton_click: function() {
+    if (this.isPause)
+      return
+
+    if (this.soundButton.frame === 0) {
+      Settings.isMuted = false;
+      this.soundButton.setFrames(1, 1, 1);
+    } else if (this.soundButton.frame === 1) {
+      Settings.isMuted = true;
+      this.soundButton.setFrames(0, 0, 0);
+    }
+  },
+
+  addVolumeButton: function() {
+    var frames = 1;
+
+    if (Settings.isMuted) {
+      frames = 0;
+    }
+
+    this.soundButton = this.game.add.button(5, 5, 'volume', this.volumeButton_click, this, frames, frames, frames);
+    this.soundButton.width = 48;
+    this.soundButton.height = 48;
   },
 
   addLogotype: function() {
@@ -169,7 +169,7 @@ var Menu = {
   },
 
   addControls: function() {
-    this.buttonDistance = 175;
+    this.buttonDistance = 250;
     this.buttonSize = 125;
     this.buttonLableStyle = {
       font: "24px Jura",
@@ -224,10 +224,6 @@ var Menu = {
 
   },
 
-  addTestingData() {
-
-  },
-
   btnOver: function() {
     game.add.tween(this).to({
       alpha: 1
@@ -241,45 +237,136 @@ var Menu = {
   },
 
   addScoreTable: function(data) {
-    const topPadding = 20;
-    var x = game.world.centerX / 2;
-    var y = game.world.centerY - 150;    
     var loader = new Phaser.Loader(this.game);
     loader.crossOrigin = true;
-    
+
     data.forEach(function(row) {
       var userimage = 'img-id' + row.id;
       loader.image(userimage, row.avatar);
 
+      var loaded = function(userimage) {
+        if (row.isPlayer) {
+          this.score.addPlayerScore(userimage, row.username, row.url, row.score, row.position);
+        } else {
+          this.score.add(userimage, row.username, row.url, row.score, row.position);
+        }
+      }
+
       loader.onLoadComplete.add(function() {
-        this.score.add(x, y + row.position * 50, userimage, row.username, row.url, row.score, row.position);
+        loaded.bind(this)(userimage);
       }, this);
+
       loader.onFileError.add(function() {
-        this.score.add(x, y + row.position * 50, 'unknown-user', row.username, row.url, row.score, row.position);
+        loaded.bind(this)('unknow-user');
       }, this);
-      // y += 50;
     }, this);
 
     loader.start();
+    loader.onLoadComplete.add(function() {
+      this.score.runScrolling();
+    }, this);
   }
 }
-var ScoreBuilder = function(game) {
+var ScoreBuilder = function(game, x, y) {
   this.game = game;
+  this.rows = [];
+  /**
+   * Скорость скролинга, 50 пикселей в 2 секунды (25px/sec)
+   * @type {[type]}
+   */
+  this.scrollSpeed = 50 / 2000;
+  this.x = x;
+  this.y = y;
+  this.fadeTween = null;
 }
+
+ScoreBuilder.basePositionY = 125;
+ScoreBuilder.startScrollingDelay = 3000;
 
 ScoreBuilder.prototype = {
   preload: function() {
-    this.game.load.image('score-row',  'img/menu/score-row.png');
-    this.game.load.image('score-filter',  'img/menu/score-filter.png');
+    this.game.load.image('score-row', 'img/menu/score-row.png');
+    this.game.load.image('score-filter', 'img/menu/score-filter.png');
+    this.game.load.image('score-hover-effect', 'img/menu/score-hover-effect.png');
+    this.game.load.image('score-hover-effect-2', 'img/menu/score-hover-effect-2.png');
   },
 
-  add: function(x, y, userimage, username, url, score, position) {
-    var score = new ScoreRow(this.game, x, y, userimage, username, url, score, position);
+  create: function() {
+    this.backgroundScoreRow = this.game.make.image(0, 0, 'score-row');
+    var rowBitmap = new Phaser.BitmapData(this.game, null, this.backgroundScoreRow.width, 1);
+    this.tableRatingSprite = this.game.add.sprite(this.x - this.backgroundScoreRow.width / 2, this.y, rowBitmap);    
 
-    score.sprite.alpha = 0;
-    this.game.add.tween(score.sprite).to({alpha: 1}, 300).delay(this.game.rnd.between(100, 300)).start();
+    this.addLableTop100();
+  },
 
-    return score;
+  add: function(userimage, username, url, score, position) {
+    var y = 0;
+
+    if (this.rows.length === 0) {
+      y = ScoreBuilder.basePositionY;
+    } else {
+      y = this.rows[this.rows.length - 1].sprite.y + this.backgroundScoreRow.height;
+    }
+
+    var scoreRow = new ScoreRow(this.game, 0, y, userimage, username, url, score, position);
+
+    this.rows.push(scoreRow);
+    this.tableRatingSprite.addChild(scoreRow.sprite);
+
+    return scoreRow;
+  },
+
+  addPlayerScore: function(userimage, username, url, score, position) {
+    var scoreRow = new ScoreRow(this.game, 0, 0, userimage, username, url, score, position);
+
+    this.tableRatingSprite.addChild(scoreRow.sprite);
+    this.add(userimage, username, url, score, position);
+
+    return scoreRow;
+  },
+
+  runScrolling: function() {
+    this.rows.forEach(function(scoreRow) {
+      this.addScrolling(scoreRow.sprite, ScoreBuilder.startScrollingDelay);
+    }, this);
+  },
+
+  addScrolling: function(sprite, delay) {
+    delay = delay || 0;
+
+    this.addSpeed(sprite, delay);
+    this.addFadeOutTrigger(sprite, delay);
+  },
+
+  addSpeed: function(sprite, delay) {
+    var timeScrolling = (sprite.y / this.scrollSpeed);
+
+    this.game.add.tween(sprite).to({
+      y: 0
+    }, timeScrolling).delay(delay).start();
+  },
+
+  addFadeOutTrigger: function(sprite, delay) {
+    var timeTrigger = ((sprite.y - ScoreBuilder.basePositionY) / this.scrollSpeed);
+
+    this.game.add.tween(sprite).to({
+      alpha: 0
+    }, 1000).delay(timeTrigger + delay).start().onComplete.add(function() {
+      sprite.inputEnabled = false;
+    }, this);
+  },
+
+  addLableTop100: function() {
+    var style = {
+      font: '21px Jura',
+      fontWeight: 'Bold',
+      fill: '#fff'
+    }
+    
+    var lable = this.game.make.text(this.tableRatingSprite.width / 2, ScoreBuilder.basePositionY / 2, 'Рейтинг - TOP 100', style);
+    lable.anchor.setTo(0.5, 0);
+    
+    this.tableRatingSprite.addChild(lable);
   }
 }
 var ScoreRow = function(game, x, y, userimage, username, url, score, position) {
@@ -312,10 +399,45 @@ ScoreRow.prototype = {
     bitmap.draw(filter);
     bitmap.draw(borders);
 
-    this.sprite = this.game.add.image(this.x, this.y, bitmap);
+    this.sprite = this.game.make.image(this.x, this.y, bitmap);
     this.sprite.inputEnabled = true;
     this.sprite.input.useHandCursor = true;
     this.sprite.events.onInputUp.add(this.click, this);
+    this.sprite.events.onInputOver.add(this.over, this);
+    this.sprite.events.onInputOut.add(this.out, this);
+
+    this.hoverEffeect = this.game.make.image(this.sprite.width - 15, 0, 'score-hover-effect');
+    this.hoverEffeect2 = this.game.make.image(35, 0, 'score-hover-effect-2');
+
+    this.hoverEffeect.alpha = 0;
+    this.hoverEffeect2.alpha = 0;
+
+    this.sprite.addChild(this.hoverEffeect);
+    this.sprite.addChild(this.hoverEffeect2);
+  },
+
+  over: function() {    
+    if (this.hoverEffeectFadeOut)
+      this.hoverEffeectFadeOut.stop();
+
+    if (this.hoverEffeect2FadeOut)
+      this.hoverEffeect2FadeOut.stop();
+
+    if (this.hoverTween2)
+      this.hoverTween2.stop();
+    
+    this.hoverEffeect.alpha = 1;
+    this.hoverEffeect2.alpha = 1;
+    this.hoverEffeect2.x = 35;
+
+    this.hoverTween2 = this.game.add.tween(this.hoverEffeect2).to({x: this.sprite.width - 15}, 5000).start();
+    this.hoverTween2.repeat(-1, 0);
+  },
+
+  out: function() {
+    this.hoverEffeectFadeOut = this.game.add.tween(this.hoverEffeect).to({alpha: 0}, 500).start();    
+    
+    this.hoverEffeect2FadeOut = this.game.add.tween(this.hoverEffeect2).to({alpha: 0}, 500).start();
   },
 
   addLabels: function() {
@@ -354,49 +476,22 @@ ScoreRow.prototype = {
     this.sprite.addChild(this.lableUsername);
     this.sprite.addChild(this.lableScore);
     this.sprite.addChild(this.lablePosition);
+  },
+
+  hide: function() {
+    this.game.tween(this).to({alpha: 0}, 100).start();
+  },
+
+  show: function() {
+    this.game.tween(this).to({alpha: 1}, 100).start();
   }
 }
-
-/*var Score = function() {
-  const margin = 15;
-  // const padding = 23;
-  // const textMarginTop = 19;
-
-  this.sprite = game.add.sprite(0, 0, 'score-background');
-  
-  this.userImage = game.make.sprite(0, 0, userimage);
-  this.userImage.anchor.set(0.5, 0.5);
-  this.userImage.x = -this.sprite.width / 2 + this.userImage.width / 2 + margin;
-
-  
-
-  var positionStyle = {
-    
-  }
-
-  this.username = game.make.text(0, 0, 'Jonh Strive', usernameStyle);
-  this.username.anchor.set(0, 1);
-  this.username.x = this.userImage.x + this.userImage.width / 2 + margin - 5;
-  this.username.y = 5;
-
-  this.score = game.make.text(0, 0, Math.round(Math.random() * 12000), scoreStyle);
-  this.score.x = this.userImage.x + this.userImage.width / 2 + margin - 5;
-  this.score.anchor.set(0, 0);
-  this.score.y = 0;
-
-  this.sprite.addChild(this.userImage);
-  this.sprite.addChild(this.username);
-  this.sprite.addChild(this.score);
-
-  return this.sprite;
-}*/
 var ScoreTable = function(count) {
   var score = new Score();
   score.anchor.set(0.5, 0.5);
   score.x = game.world.centerX;
   score.y = game.world.centerY;
 }
-
 var Achivment = function(game) {
   this.game = game;
 }
@@ -404,7 +499,7 @@ var Achivment = function(game) {
 Achivment.prototype = {
   preload: function() {
     this.game.load.image('ach+1', 'img/achivments/ach+1.png');
-    this.game.load.image('achivments-background', 'img/achivments-background.png');
+    this.game.load.image('achivments-background', 'img/achivments/achivments-background.png');
   },
 
   show: function(msg, name) {
@@ -444,6 +539,318 @@ Achivment.prototype = {
     game.add.tween(this.group).to({alpha: 0, y: this.group.y + 150}, 400).delay(7000).start();
   }
 }
+var PauseMenu = function(game) {
+  this.game = game;
+  this.btns = [];
+  this.onHide = new Phaser.Signal();
+  this.onShowMainMenu = new Phaser.Signal();
+  this.onRestart = new Phaser.Signal();
+}
+
+PauseMenu.prototype = {
+  preload: function() {
+    game.load.image('play', 'img/ui/ic-play.png');
+    game.load.image('replay', 'img/ui/ic-autorenew.png');
+    game.load.image('menu', 'img/ui/ic-reply.png');
+  },
+
+  create: function() {
+    this.addBackground();
+    this.addBtns();
+    this.addScoreLable();
+  },
+
+  addBtns: function() {
+    var btnMargin = 100;
+    var menu = this.addBtn(
+      this.game.world.centerX - Store.pauseMenuBtnsSize - btnMargin,
+      this.game.world.centerY,
+      'menu',
+      'В главное меню',
+      this.menuBtn_click
+    );
+
+    var play = this.addBtn(
+      this.game.world.centerX,
+      this.game.world.centerY,
+      'play',
+      'Продолжить',
+      this.playBtn_click
+    );
+
+    var replay = this.addBtn(
+      this.game.world.centerX + Store.pauseMenuBtnsSize + btnMargin,
+      this.game.world.centerY,
+      'replay',
+      'Начать сначала',
+      this.replayBtn_click
+    );
+
+    this.background.addChild(menu);
+    this.background.addChild(play);
+    this.background.addChild(replay);
+  },
+
+  show: function(score) {
+    this.scoreLable.text = "Счёт " + Math.round(score);
+    this.background.visible = true;
+    this.background.bringToTop();
+  },
+
+  hide: function() {
+    this.background.visible = false;
+  },
+
+  menuBtn_click: function() {
+    this.onShowMainMenu.dispatch();
+  },
+
+  playBtn_click: function() {
+    this.onHide.dispatch();
+  },
+
+  replayBtn_click: function() {
+    this.onRestart.dispatch();
+  },
+
+  addBackground: function() {
+    var rowBackground = this.game.add.bitmapData(this.game.width, this.game.height);
+    rowBackground.fill(0, 0, 0, 0.95);
+
+    this.background = this.game.add.sprite(0, 0, rowBackground);
+    this.background.visible = false;
+  },
+
+  addBtn: function(x, y, name, text, callback) {
+    var button = this.game.add.button(x, y, name, callback, this);
+    const animationLableTime = 100;
+    const btnTextStyle = {
+      font: "31px Jura",
+      fill: "#FFFFFF"
+    };
+
+    button.width = Store.pauseMenuBtnsSize;
+    button.height = Store.pauseMenuBtnsSize;
+    button.anchor.setTo(0.5, 0.5);
+
+    button.lable = this.game.add.text(0, Store.pauseMenuBtnsSize, text, btnTextStyle);
+    button.lable.anchor.setTo(0.5);
+    button.lable.alpha = 0;
+    button.addChild(button.lable);
+
+    button.onInputOver.add(function(btn) {
+      this.game.add.tween(btn.lable).to({
+        alpha: 1
+      }, animationLableTime).start();
+    }, this);
+
+    button.onInputOut.add(function(btn) {
+      this.game.add.tween(btn.lable).to({
+        alpha: 0
+      }, animationLableTime).start();
+    }, this);
+
+    this.btns.push(button);
+
+    return button;
+  },
+
+  addScoreLable: function() {
+    const scoreLableStyle = {
+      font: "46px Jura",
+      fill: "#FFFFFF"
+    }
+
+    this.scoreLable = this.game.add.text(this.game.world.centerX, this.game.world.centerY / 2, 'Счёт: 0', scoreLableStyle);
+    this.scoreLable.anchor.set(0.5);
+    this.background.addChild(this.scoreLable);
+  }
+}
+var ProgressBar = function(game) {
+  this.game = game;
+  this.value = 0;
+}
+
+ProgressBar.prototype = {
+  preload: function() {
+    this.game.load.image('progress-bar', 'img/ui/progress-bar.png');
+    this.game.load.image('progress-bar-head', 'img/ui/progress-bar-head.png');
+  },
+
+  create: function() {
+    this.body = this.game.add.sprite(0, 0, 'progress-bar');
+    this.head = this.game.add.sprite(this.body.width, 0, 'progress-bar-head');
+
+    this.body.tint = Store.progressBarColor;
+    this.head.tint = Store.progressBarColor;
+
+    this.minWidth = this.body.width;
+    this.maxWidth = this.game.width - this.body.width - this.minWidth - 50;
+
+    this.setValue(0.5);
+  },
+
+  setValue: function(value) {
+    this.value = value;
+
+    var bodyWidth = this.minWidth + this.value * this.maxWidth;
+
+    this.game.add.tween(this.body)
+    .to({width: bodyWidth}, 1000, Phaser.Easing.Exponential.Out)
+    .start();
+
+    this.game.add.tween(this.head)
+    .to({x: bodyWidth}, 1000, Phaser.Easing.Exponential.Out)
+    .start();
+  }
+}
+var Screenshoot = function(game) {
+    this.game = game;
+}
+
+Screenshoot.prototype = {
+  takeScreen: function(callback) {
+    this.callback = callback;
+    this.makeScreenShoot = true;
+  },
+
+  render: function() {
+    if (this.makeScreenShoot) {
+      this.makeScreenShoot = false;
+      var data = this.game.canvas.toDataURL();
+      this.callback(data);
+    }
+  }
+}
+var UI = function(game, soundManager) {
+  this.game = game;
+  this.soundManager = soundManager;
+  this.score = 0;
+  this.fullScreen = new FullScreen(this.game);
+  progressBar = this.progressBar = new ProgressBar(this.game);
+}
+
+UI.prototype = {
+  preload: function() {
+    this.game.load.spritesheet('volume', 'img/ui/volume-spritesheet.png', 96, 96);
+    this.game.load.image('pause', 'img/ui/ic-pause.png');
+    
+    this.fullScreen.preload();
+    this.progressBar.preload();
+  },
+
+  create: function() {
+    this.addPauseButton();
+    this.addVolumeButton();
+
+    this.addScoreLable();
+    this.addScoreRatioLable();
+
+    this.progressBar.create();
+
+    this.fullScreen.create();
+    this.addEvents();
+  },
+
+  pause: function() {
+    this.pauseButton.inputEnabled = false;
+    this.soundButton.inputEnabled = false;
+  },
+
+  resume: function() {
+    this.pauseButton.inputEnabled = true;
+    this.soundButton.inputEnabled = true;
+  },
+
+  addEvents: function() {
+    this.onPauseButtonClick = new Phaser.Signal();
+  },
+
+  addScoreLable: function() {
+    var style = {
+      font: "30px Jura",
+      fill: "#fff"
+    }
+
+    this.scoreLable = game.add.text(this.game.world.width - 4, 5, 'Очки 0', style);
+    this.scoreLable.anchor.set(1, 0);
+  },
+
+  setScore: function(newScore) {
+    var scoreObj = {
+      score: this.score
+    }
+
+    this.score = newScore;
+
+    var newAnimation = this.game.add.tween(scoreObj).to({
+      score: newScore
+    }, 100).onUpdateCallback(function() {
+      this.scoreLable.text = "Очки " + Math.round(scoreObj.score);
+    }, this);
+
+    newAnimation.onComplete.add(function() {
+      this.scoreLable.text = "Очки " + Math.round(scoreObj.score);
+    }, this);
+
+    if (this.animationScore && this.animationScore.isRunning) {
+      this.animationScore.chain(newAnimation);
+    } else {
+      this.animationScore = newAnimation;
+      this.animationScore.start();
+    }
+  },
+
+  addScoreRatioLable: function() {
+    var style = {
+      font: "56px Jura",
+      fill: "#FFFFFF"
+    }
+
+    this.scoreRatioLable = game.add.text(this.game.world.centerX, this.game.world.centerY, 'x1', style);
+    this.scoreRatioLable.anchor.set(0.5, 0.5);
+    this.scoreRatioLable.alpha = 0.2;
+  },
+
+  updateRatio: function(ratio) {
+    this.scoreRatioLable.text = 'x' + Math.round(ratio * 100) / 100;
+  },
+
+  addVolumeButton: function() {
+    var frames = 1;
+
+    if (Settings.isMuted) {
+      frames = 0;
+    }
+
+    this.soundButton = this.game.add.button(5 + this.pauseButton.width, 5, 'volume', this.volumeButton_click, this, frames, frames, frames);
+    this.soundButton.width = 48;
+    this.soundButton.height = 48;
+  },
+
+  addPauseButton: function() {
+    this.pauseButton = this.game.add.button(5, 5, 'pause', this.pauseButton_click, this);
+    this.pauseButton.width = 48;
+    this.pauseButton.height = 48;
+  },
+
+  volumeButton_click: function() {
+    if (this.isPause)
+      return
+
+    this.soundManager.volumeStateChange();
+    if (this.soundButton.frame === 0) {
+      this.soundButton.setFrames(1, 1, 1);
+    } else if (this.soundButton.frame === 1) {
+      this.soundButton.setFrames(0, 0, 0);
+    }
+  },
+
+  pauseButton_click: function() {
+    this.onPauseButtonClick.dispatch();
+  }
+}
+
 var Border = function(game, lvl) {
   this.game = game;
   this.lvl =lvl;
@@ -562,8 +969,8 @@ var Coin = function(game, border, soundManager) {
 
 Coin.prototype = {
   preload: function() {
-    this.game.load.image('square', 'img/square.png');
-    this.game.load.image('square-particle', 'img/square-particle.png');
+    this.game.load.image('square', 'img/game/square.png');
+    this.game.load.image('square-particle', 'img/game/square-particle.png');
   },
 
   create: function() {
@@ -595,8 +1002,6 @@ Coin.prototype = {
     this.sprite.width = Store.coinSize;
     this.sprite.height = Store.coinSize;
     this.sprite.anchor.setTo(0.5, 0.5);
-
-    this.startRotate(this.sprite);
   },
 
   take: function() {
@@ -629,16 +1034,19 @@ Coin.prototype = {
       width: Store.coinSize,
       height: Store.coinSize
     }, 100).start();
+
+    this.startRotate(this.sprite);
   },
 
   startRotate: function(sprite) {
     if (this.tweenRotation) {
       this.tweenRotation.stop();
+      sprite.angle = 0;
     }
-
+    
     this.tweenRotation = this.game.add.tween(sprite).to({
-      angle: 360 * game.rnd.pick([-1, 1])
-    }, 1000, 'Linear', true);
+      angle: 360 * this.game.rnd.pick([-1, 1])
+    }, 750).start();
     this.tweenRotation.repeat(-1, 0);
   }
 };
@@ -675,6 +1083,71 @@ Controll.prototype = {
     keys.right.onDown.add(flows.right, context);
   }
 };
+EnemyBulder = function(game) {
+  this.game = game;
+  this.enemys = [];
+}
+
+EnemyBulder.prototype = {
+  preload: function() {
+    this.game.load.image('enemy', 'img/game/enemy.png');
+    this.game.load.image('enemy-particle', 'img/game/enemy-particle.png');
+  },
+
+  create: function() {
+    this.emitter = this.game.add.emitter(0, 0);
+
+    this.emitter.makeParticles('enemy-particle');
+    this.emitter.setXSpeed(-150, 150);
+    this.emitter.setYSpeed(-150, 150);
+    this.emitter.setScale(2, 0, 2, 0, 800);
+  },
+
+  add: function(x, y, velocity) {
+    var enemy = new Enemy(this.game, x, y, velocity, this);
+    this.enemys.push(enemy);
+    return enemy;
+  }
+}
+EnemySpawnBulder = function(game, lvl, border, enemyBulder) {
+  this.game = game;
+  this.lvl = lvl;
+  this.border = border;
+  this.enemyBulder = enemyBulder;
+  this.spawns = [];
+}
+
+EnemySpawnBulder.prototype = {
+  preload: function() {
+    this.game.load.image('enemySpawn', 'img/game/enemy-spawn.png');
+    this.game.load.json(this.lvl, 'maps/' + this.lvl + '.json');
+  },
+
+  create: function() {
+    var rowSpawns = this.game.cache.getJSON(this.lvl).enemySpawns;    
+
+    this.spawns = rowSpawns.map(function(spawn) {
+      return new EnemySpawn(
+        this.game,
+        spawn,
+        this.border,
+        this.enemyBulder
+      );
+    }, this);
+  },
+
+  pause: function() {
+    this.spawns.forEach(function(spawn) {
+      spawn.pause();
+    });
+  },
+
+  resume: function() {
+    this.spawns.forEach(function(spawn) {
+      spawn.resume();
+    });
+  }
+}
 /**
  * Создаёт спаун врагов
  * @param {[type]} game             [description]
@@ -686,14 +1159,15 @@ Controll.prototype = {
  * @param {[type]} randomSpawn      Если правда, то враги спаунятся в случайный момент времени, если ложь, то враги спаунтся переодично
  * @param {[type]} minIntervalSpawn Минимальное время через, которое заспаунится враг, работает только при установке флага randomSpawn = true
  */
-var EnemySpawn = function(game, spawn, border) {
+var EnemySpawn = function(game, spawn, border, enemyBulder) {
   this.game = game;
 
   this.border = border;
-  this.intervalSpawn = spawn.intervalSpawn || 0;
-  this.randomSpawn = spawn.randomSpawn || false;
-  this.minIntervalSpawn = spawn.minIntervalSpawn || 0;
   this.speed = spawn.speed || 0;
+  this.enemyBulder = enemyBulder;
+  this.randomSpawn = spawn.randomSpawn || false;
+  this.intervalSpawn = spawn.intervalSpawn || 0;
+  this.minIntervalSpawn = spawn.minIntervalSpawn || 0;
 
   this.sprite = game.add.sprite(0, 0, 'enemySpawn');
 
@@ -713,40 +1187,6 @@ var EnemySpawn = function(game, spawn, border) {
   this.start();
 }
 
-EnemySpawn.preload = function(game, lvl) {
-  this.game = game;
-  this.lvl = lvl;
-  this.spawns = [];
-  
-  this.game.load.image('enemySpawn', 'img/enemy-spawn.png');
-  this.game.load.json(this.lvl, 'maps/' + this.lvl + '.json');
-}
-
-EnemySpawn.create = function(border) {
-  var rowSpawns = this.game.cache.getJSON(this.lvl).enemySpawns;
-  this.border = border;
-
-  this.spawns = rowSpawns.map(function(spawn) {
-    return new EnemySpawn(
-      this.game,
-      spawn,
-      this.border
-    );
-  }, this);
-}
-
-EnemySpawn.allPause = function() {
-  this.spawns.forEach(function(spawn) {
-    spawn.pause();
-  });
-}
-
-EnemySpawn.allResume = function() {
-  this.spawns.forEach(function(spawn) {
-    spawn.resume();
-  });
-}
-
 EnemySpawn.prototype = {
   pause: function() {
     this.timer.pause();
@@ -760,10 +1200,9 @@ EnemySpawn.prototype = {
     var velocity = new Phaser.Point(0, 0);
     velocity.rotate(0, 0, this.sprite.angle, true, this.speed);
 
-    var enemy = new Enemy(this.game, this.sprite.x, this.sprite.y, velocity);
+    var enemy = this.enemyBulder.add(this.sprite.x, this.sprite.y, velocity);
     enemy.sprite.alpha = 0;
     enemy.sprite.scale.setTo(0.01, 0.01);
-    // enemy.sprite.body.angle = enemy.sprite.angle = this.sprite.angle;
 
     this.game.add.tween(enemy.sprite).to({
       alpha: 1,
@@ -807,8 +1246,9 @@ EnemySpawn.prototype = {
     this.start();
   }
 }
-var Enemy = function(game, x, y, velocity) {
+var Enemy = function(game, x, y, velocity, enemyBulder) {
   this.game = game;
+  this.enemyBulder = enemyBulder;
 
   this.sprite = this.game.add.sprite(x, y, 'enemy');
   this.game.physics.arcade.enable([this.sprite]);
@@ -818,95 +1258,73 @@ var Enemy = function(game, x, y, velocity) {
 
   this.sprite.anchor.setTo(0.5, 0.5);
 
-  Enemy.all.push(this);
-
   this.sprite.events.onOutOfBounds.add(this.destroy, this);
 }
 
 Enemy.prototype = {
   destroy: function() {
-    var position = Enemy.all.indexOf(this);
-    Enemy.all.splice(position, 1);
+    var position = this.enemyBulder.enemys.indexOf(this);
+    this.enemyBulder.enemys.splice(position, 1);
   },
 
   die: function() {
     this.sprite.destroy();
     this.destroy();
 
-    Enemy.emitter.x = this.sprite.x;
-    Enemy.emitter.y = this.sprite.y;
-    Enemy.emitter.start(true, 800, null, 20);
+    this.enemyBulder.emitter.x = this.sprite.x;
+    this.enemyBulder.emitter.y = this.sprite.y;
+    this.enemyBulder.emitter.start(true, 800, null, 20);
   }
 };
-
-Enemy.preload = function(game) {
-  this.game = game;
-
-  Enemy.all = [];
-
-  game.load.image('enemy', 'img/enemy.png');
-  game.load.image('enemy-particle', 'img/enemy-particle.png');
-}
-
-Enemy.create = function() {
-  this.emitter = this.game.add.emitter(0, 0);
-
-  this.emitter.makeParticles('enemy-particle');
-  this.emitter.setXSpeed(-150, 150);
-  this.emitter.setYSpeed(-150, 150);
-  this.emitter.setScale(2, 0, 2, 0, 800);
-}
 var GameStateNew = {
   init: function(lvl) {
-    this.game.stage.backgroundColor = Store.backgroundColor;    
+    this.game.stage.backgroundColor = Store.backgroundColor;
 
     this.lvl = lvl;
     this.isPause = false;
 
-    this.soundManager = new SoundManager(this.game);
+    this.soundManager = new SoundManager.getInstance(this.game);
     this.scoreManager = new ScoreManager(this.game);
     this.screenshoot = new Screenshoot(this.game);
+    this.enemyBulder = new EnemyBulder(this.game);
     this.pauseMenu = new PauseMenu(this.game);
+    this.achivment = new Achivment(this.game);
+    this.controll = new Controll(this.game);
     this.border = new Border(this.game, this.lvl);
     this.square = new Square(this.game, this.border, this.soundManager);
     this.coin = new Coin(this.game, this.border, this.soundManager);
     this.ui = new UI(this.game, this.soundManager, this.scoreManager);
-    ach = this.achivment = new Achivment(this.game);
-    this.controll = new Controll(this.game);
+    this.enemySpawnBulder = new EnemySpawnBulder(this.game, this.lvl, this.border, this.enemyBulder);
 
-    this.pauseMenu.onHide.add(this.resume, this);
     this.pauseMenu.onShowMainMenu.add(this.onShowMainMenu, this);
     this.pauseMenu.onRestart.add(this.restartGame, this);
-
-    this.scale.width = 500;
-    this.scale.height = 500;
+    this.pauseMenu.onHide.add(this.resume, this);
   },
 
   preload: function() {
-    Settings.load();
-    
+    this.game.scale.pageAlignHorizontally = true;
+    this.game.scale.pageAlignVertically = true;
+
+    this.enemySpawnBulder.preload();
     this.soundManager.preload();
+    this.enemyBulder.preload();
     this.pauseMenu.preload();
-    this.ui.preload();
+    this.achivment.preload();
     this.border.preload();
     this.square.preload();
     this.coin.preload();
-    this.achivment.preload();
-
-    Enemy.preload(this.game);
-    EnemySpawn.preload(this.game, this.lvl);
+    this.ui.preload();
   },
 
   create: function() {
     this.soundManager.create();
-    this.ui.create();
+    this.enemyBulder.create();
     this.pauseMenu.create();
     this.border.create();
     this.square.create();
     this.coin.create();
-
-    Enemy.create();
-    EnemySpawn.create(this.border);
+    this.ui.create();
+    this.enemySpawnBulder.create();
 
     this.controll.create({
       up: function() { this.square.move(Square.directionType.UP) },
@@ -916,7 +1334,10 @@ var GameStateNew = {
     }, this);
 
     this.addEventsListener();
-    this.addOneSecondTimer();
+
+    if (!Settings.isMuted && this.soundManager.music.paused) {      
+      this.soundManager.music.play();
+    }
   },
 
   update: function() {
@@ -931,8 +1352,8 @@ var GameStateNew = {
       this.ui.updateRatio(this.scoreManager.ratio);
     }
 
-    for (var i = 0; i < Enemy.all.length; i++) {
-      enemy = Enemy.all[i];
+    for (var i = 0; i < this.enemyBulder.enemys.length; i++) {
+      enemy = this.enemyBulder.enemys[i];
       if (this.overlap(enemy.sprite, this.square.sprite)) {
         this.soundManager.dieSoundPlay();
         enemy.die();
@@ -958,8 +1379,7 @@ var GameStateNew = {
   pause: function() {
     this.game.physics.arcade.isPaused = this.isPause = true;
 
-    this.timer.pause();
-    EnemySpawn.allPause();
+    this.enemySpawnBulder.pause();
     this.ui.pause();
 
     this.square.pause();
@@ -971,8 +1391,7 @@ var GameStateNew = {
   resume: function() {
     this.game.physics.arcade.isPaused = this.isPause = false;
 
-    this.timer.resume();
-    EnemySpawn.allResume();
+    this.enemySpawnBulder.resume();
     this.ui.resume();
 
     this.square.resume();
@@ -981,780 +1400,15 @@ var GameStateNew = {
     this.pauseMenu.hide();
   },
 
-  addOneSecondTimer: function() {
-    this.timer = this.game.time.create(false);
-    this.timer.loop(1000, this.addScoreByTime, this);
-    this.timer.start();
-  },
-
-  addScoreByTime: function() {
-    this.ui.setScore(this.scoreManager.timerTick());
-  },
-
   onShowMainMenu: function() {
     this.resume();
+    this.soundManager.music.pause();
     this.game.state.start('Menu');
   },
 
   restartGame: function() {
     this.resume();
-    this.game.state.restart(true, false, this.lvl);    
-  }
-}
-var GameState = function() {
-  const margin = 20;
-  const squareSize = 50;
-  const coinSize = 24;
-  const distance = squareSize + margin;
-
-  const backgroundColor = 0x283593,
-    playerColor = 0xEEFF41,
-    coinColor = 0x2196F3,
-    enemyColor = 0xFF5252;
-
-  const squareMoveTime = 75,
-    instructionFadeTime = 2000,
-    instructionShowTime = 3000,
-    musicUp = 7500,
-    coinInterval = 500;
-
-  var sizeX = 0;
-  var sizeY = 0;
-
-  var square,
-    coin,
-    isMoving = false,
-    isDie = false,
-    soundButton,
-    score = 0,
-    bestScore = 0,
-    nextEnemy,
-    enemies,
-    coinSound,
-    jumpSound,
-    dieSound,
-    music;
-
-  var settings = loadSettings();
-
-  var upKey;
-  var downKey;
-  var leftKey;
-  var rightKey;
-  var takingCoin = false;
-  var firstStart = true;
-
-  this.preload = function() {
-    this.game.stage.backgroundColor = backgroundColor;
-
-    this.game.scale.pageAlignHorizontally = true;
-    this.game.scale.pageAlignVertically = true;
-
-    this.game.load.audio('music', ['sounds/music.mp3', 'sounds/music.ogg']);
-    this.game.load.audio('coin', ['sounds/coin.wav', 'sounds/coin.mp3']);
-    this.game.load.audio('jump', ['sounds/jump.wav', 'sounds/jump.mp3']);
-    this.game.load.audio('die', ['sounds/die.wav', 'sounds/die.mp3']);
-    this.game.load.image('square', 'img/square.png');
-    this.game.load.image('enemy', 'img/enemy.png');
-    this.game.load.image('square-particle', 'img/square-particle.png');
-    this.game.load.image('enemy-particle', 'img/enemy-particle.png');
-    this.game.load.image('instruction', 'img/instruction.png');
-    this.game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
-    
-    this.game.load.image('achivments-background', 'img/achivments-background.png');
-    this.game.load.image('+1', 'img/+1.png');
-  }
-
-  this.create = function() {
-    upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
-    upKey.onDown.add(up, this);
-    upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
-    upKey.onDown.add(up, this);
-
-    downKey = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
-    downKey.onDown.add(down, this);
-    downKey = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-    downKey.onDown.add(down, this);
-
-    leftKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-    leftKey.onDown.add(left, this);
-    leftKey = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-    leftKey.onDown.add(left, this);
-
-    rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-    rightKey.onDown.add(right, this);
-    rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-    rightKey.onDown.add(right, this);
-
-    addScoreLable();
-
-    square = this.game.add.sprite(0, 0, 'square');
-    square.tint = playerColor;
-    square.width = squareSize;
-    square.height = squareSize;
-    square.x = this.game.world.centerX;
-    square.y = this.game.world.centerY;
-    square.anchor.setTo(0.5, 0.5);
-
-    coin = this.game.add.sprite(-100, -100, 'square');
-    coin.tint = coinColor;
-    coin.width = coinSize;
-    coin.height = coinSize;
-    coin.anchor.setTo(0.5, 0.5);
-    var tween = this.game.add.tween(coin).to({
-      angle: 360
-    }, 1000, 'Linear', true);
-    tween.repeat(-1, 0);
-
-    enemies = this.game.add.group();
-    enemies.enableBody = true;
-    enemies.createMultiple(20, 'enemy');
-
-    var instruction = this.game.add.sprite(0, 0, 'instruction');
-    instruction.x = this.game.world.centerX - instruction.width / 2;
-    instruction.y = this.game.world.height - instruction.height - margin;
-
-    nextEnemy = this.game.time.now;
-
-    setTimeout(function() {
-      this.game.add.tween(instruction).to({
-        alpha: 0
-      }, instructionFadeTime).start();
-    }, instructionShowTime);
-
-    addGameName();
-    addSounds();
-    addVolumeButton();
-    addCoin();
-    addBestScore();
-    addEmitter();
-
-    var graphics = this.game.add.graphics(0, 0);
-
-    drawBorder(graphics);
-  }
-
-  this.update = function() {
-    if (overlap(square, coin)) {
-      takeCoin();
-    }
-
-    enemies.forEach(function(enemy) {
-      if (overlap(square, enemy)) {
-        squareDie(enemy);
-      }
-    });
-
-    if (!firstStart)
-      spawnEnemies();
-  }
-
-  function overlap(obj1, obj2) {
-    if (obj1.getBounds().width !== obj1.width) {
-      return false;
-    }
-
-    return Phaser.Rectangle.intersects(obj1.getBounds(), obj2.getBounds());
-  }
-
-  this.render = function() {
-    var recA = square.getBounds();
-    var recB = coin.getBounds();
-
-    var intersects = Phaser.Rectangle.intersection(recA, recB);
-  }
-
-  function drawBorder(graphics) {
-    graphics.lineStyle(5, 0x1A237E);
-    graphics.drawRect(
-      this.game.world.centerX - (distance + squareSize / 2 + margin * 2),
-      this.game.world.centerY - (distance + squareSize / 2 + margin * 2),
-      (distance + squareSize / 2 + margin * 2) * 2,
-      (distance + squareSize / 2 + margin * 2) * 2
-    );
-  }
-
-  function up() {
-    if (isMoving)
-      return;
-
-    if (!settings.muted)
-      jumpSound.play();
-
-    var calc = square.y - (distance + margin)
-    var limit = this.game.world.centerY - (distance + margin);
-
-    var tween;
-
-    if (calc < limit) {
-      calc += distance;
-      tween = this.game.add.tween(square).to({
-          y: calc
-        }, squareMoveTime / 2)
-        .to({
-          y: square.y
-        }, squareMoveTime / 2).start();
-    } else {
-      tween = this.game.add.tween(square).to({
-        y: calc
-      }, squareMoveTime).start();
-    }
-
-    isMoving = true;
-    tween.onComplete.add(function() {
-      isMoving = false;
-    })
-  }
-
-  function down() {
-    if (isMoving)
-      return;
-
-    if (!settings.muted) {
-      jumpSound.play();
-    }
-
-    var calc = square.y + (distance + margin)
-    var limit = this.game.world.centerY + (distance + margin);
-
-    var tween;
-
-    if (calc > limit) {
-      calc -= distance;
-      tween = this.game.add.tween(square).to({
-          y: calc
-        }, squareMoveTime / 2)
-        .to({
-          y: square.y
-        }, squareMoveTime / 2).start();
-    } else {
-      tween = this.game.add.tween(square).to({
-        y: calc
-      }, squareMoveTime).start();
-    }
-
-    isMoving = true;
-    tween.onComplete.add(function() {
-      isMoving = false;
-    })
-  }
-
-  function left() {
-    if (isMoving)
-      return;
-
-    if (!settings.muted) {
-      jumpSound.play();
-    }
-
-    var calc = square.x - (distance + margin)
-    var limit = this.game.world.centerX - (distance + margin);
-
-    var tween;
-
-    if (calc < limit) {
-      calc += distance;
-      tween = this.game.add.tween(square).to({
-          x: calc
-        }, squareMoveTime / 2)
-        .to({
-          x: square.x
-        }, squareMoveTime / 2).start();
-    } else {
-      tween = this.game.add.tween(square).to({
-        x: calc
-      }, squareMoveTime).start();
-    }
-
-    isMoving = true;
-    tween.onComplete.add(function() {
-      isMoving = false;
-    })
-  }
-
-  function right() {
-    if (isMoving)
-      return;
-
-    if (!settings.muted) {
-      jumpSound.play();
-    }
-
-    var calc = square.x + (distance + margin)
-    var limit = this.game.world.centerX + (distance + margin);
-
-    var tween;
-
-    if (calc > limit) {
-      calc -= distance;
-      tween = this.game.add.tween(square).to({
-          x: calc
-        }, squareMoveTime / 2)
-        .to({
-          x: square.x
-        }, squareMoveTime / 2).start();
-    } else {
-      tween = this.game.add.tween(square).to({
-        x: calc
-      }, squareMoveTime).start();
-    }
-
-    isMoving = true;
-    tween.onComplete.add(function() {
-      isMoving = false;
-    })
-  }
-
-  function addGameName() {
-    var style = {
-      font: "48px Arial",
-      fill: "#fff",
-      boundsAlignH: "center",
-      boundsAlignV: "middle"
-    };
-
-    text = this.game.add.text(0, 0, "250+", style);
-    text.x = this.game.world.centerX - text.width / 2;
-    text.y = 100;
-  }
-
-  function addScoreLable() {
-    var style = {
-      font: "100px Arial",
-      fill: "#fff",
-      boundsAlignH: "center",
-      boundsAlignV: "middle"
-    };
-
-    scoreLable = this.game.add.text(0, 0, "0", style);
-    scoreLable.anchor.setTo(0.5, 0.5);
-    scoreLable.x = this.game.world.centerX;
-    scoreLable.y = this.game.world.centerY;
-    scoreLable.alpha = 0.25;
-  }
-
-  function addSounds() {
-    music = this.game.add.audio('music');
-    music.loop = true;
-    music.volume = 0.0;
-
-    coinSound = this.game.add.audio('coin');
-    coinSound.volume = 0.12;
-
-    jumpSound = this.game.add.audio('jump');
-    jumpSound.volume = 0.25;
-
-    dieSound = this.game.add.audio('die');
-    dieSound.volume = 0.3;
-
-    if (!settings.muted)
-      music.play();
-
-    this.game.add.tween(music).to({
-      volume: 0.5
-    }, musicUp).start();
-  }
-
-  function squareDie(enemy) {
-    if (!enemy.alive) {
-      return;
-    }
-
-    isDie = true;
-
-    enemy.kill();
-
-    if (score > bestScore) {
-      bestScore = score;
-      updateBestScore(bestScore);
-    }
-
-    score = 0;
-    scoreLable.text = score;
-
-
-    emitter2.x = enemy.x;
-    emitter2.y = enemy.y;
-    emitter2.start(true, 200, null, 20);
-
-    if (!settings.muted) {
-      dieSound.play();
-    }
-
-    this.game.time.events.add(300, function() {
-      isDie = false;
-    }, this);
-  }
-
-  function takeCoin() {
-    if (coinTaking)
-      return;
-
-    firstStart = false;
-
-    coinTaking = true;
-
-    emitter.x = coin.x;
-    emitter.y = coin.y;
-    emitter.start(true, 800, null, 20);
-
-    if (!settings.muted)
-      coinSound.play();
-
-    updateScore();
-
-    var t = this.game.add.tween(coin).to({
-      width: 0,
-      height: 0
-    }, 100).start();
-    this.game.time.events.add(coinInterval, addCoin, this);
-  }
-
-  achivments1 = false;
-  achivments2 = false;
-  achivments3 = false;
-  achivments4 = false;
-  achivments5 = false;
-  achivments6 = false;
-  achivments7 = false;
-  achivments8 = false;
-  achivments9 = false;
-  function updateScore() {
-    score++;
-    scoreLable.text = "x" + score;
-    if (score > 1 && score < 5 && !achivments1) {
-      achivments1 = true;
-      Achivment.show('Ехуу, первые шаги!', '+1');
-    } else if (score > 5 && score < 10 && !achivments2) {
-      achivments2 = true;
-      Achivment.show('Реакция младенца', '+1');
-    } else if (score > 10 && score < 20 && !achivments3) {
-      achivments3 = true;
-      Achivment.show('Реакция велосепедиста', '+1');
-    } else if (score > 20 && score < 30 && !achivments4) {
-      achivments4 = true;
-      Achivment.show('Реакция автомобилиста', '+1');
-    } else if (score > 30 && score < 40 && !achivments5) {
-      achivments5 = true;
-      Achivment.show('Реакция пилота', '+1');
-    } else if (score > 40 && score < 45 && !achivments6) {
-      achivments6 = true;
-      Achivment.show('Реакция космонавта', '+1');
-    } else if (score > 45 && score < 50 && !achivments7) {
-      achivments7 = true;
-      Achivment.show('Реакция каратиста с чёрным поясом', '+1');
-    } else if (score > 50 && score < 75 && !achivments8) {
-      achivments8 = true;
-      Achivment.show('Задрот', '+1');
-    } else if (score > 75 && !achivments9) {
-      achivments9 = true;
-      Achivment.show('Читер', '+1');
-    }
-  }
-
-  function addEmitter() {
-    emitter = this.game.add.emitter(0, 0);
-    emitter.makeParticles('square-particle');
-    emitter.setXSpeed(-150, 150);
-    emitter.setYSpeed(-150, 150);
-    emitter.setScale(2, 0, 2, 0, 800);
-
-    emitter2 = this.game.add.emitter(0, 0);
-    emitter2.makeParticles('enemy-particle');
-    emitter2.setXSpeed(-150, 150);
-    emitter2.setYSpeed(-150, 150);
-    emitter2.setScale(2, 0, 2, 0, 800);
-  }
-
-  function spawnEnemies() {
-    if (this.game.time.now < nextEnemy)
-      return;
-
-    var start = 1500,
-      end = 600,
-      tScore = 60;
-    var delay = Math.max(start - (start - end) * score / tScore, end);
-    nextEnemy = this.game.time.now + delay;
-
-    addEnemy()
-  }
-
-  function addEnemy() {
-    var enemy = enemies.getFirstDead();
-
-    if (!enemy) {
-      return;
-    }
-
-    var patterns = [{
-      x: -squareSize / 2,
-      y: this.game.world.centerY - (distance + margin)
-    }, {
-      x: -squareSize / 2,
-      y: this.game.world.centerY
-    }, {
-      x: -squareSize / 2,
-      y: this.game.world.centerY + (distance + margin)
-    }, {
-      x: this.game.width + squareSize / 2,
-      y: this.game.world.centerY - (distance + margin)
-    }, {
-      x: this.game.width + squareSize / 2,
-      y: this.game.world.centerY
-    }, {
-      x: this.game.width + squareSize / 2,
-      y: this.game.world.centerY + (distance + margin)
-    }, {
-      x: this.game.world.centerX - (distance + margin),
-      y: -squareSize / 2
-    }, {
-      x: this.game.world.centerX,
-      y: -squareSize / 2
-    }, {
-      x: this.game.world.centerX + (distance + margin),
-      y: -squareSize / 2
-    }, {
-      x: this.game.world.centerX - (distance + margin),
-      y: this.game.height + squareSize / 2
-    }, {
-      x: this.game.world.centerX,
-      y: this.game.height + squareSize / 2
-    }, {
-      x: this.game.world.centerX + (distance + margin),
-      y: this.game.height + squareSize / 2
-    }];
-
-    var speed = 2;
-    var speedRatio = 100;
-
-    var position = patterns[this.game.rnd.integerInRange(0, patterns.length - 1)];
-
-    enemy.reset(position.x, position.y);
-
-    if (position.x > this.game.width) {
-      enemy.body.velocity.x = -speedRatio * speed;
-    } else if (position.x < 0) {
-      enemy.body.velocity.x = speedRatio * speed;
-    } else if (position.y > this.game.height) {
-      enemy.body.velocity.y = -speedRatio * speed;
-    } else if (position.y < 0) {
-      enemy.body.velocity.y = speedRatio * speed;
-    }
-
-    enemy.anchor.setTo(0.5);
-    enemy.outOfBoundsKill = true;
-    enemy.checkWorldBounds = true;
-  }
-
-  function addVolumeButton() {
-    var frames = 1;
-
-    if (settings.muted) {
-      frames = 0;
-    }
-
-    soundButton = this.game.add.button(5, 5, 'volume', volumeStateChange, this, frames, frames, frames);
-    soundButton.width = 48;
-    soundButton.height = 48;
-  }
-
-  function volumeStateChange() {
-    if (soundButton.frame === 0) {
-      soundButton.setFrames(1, 1, 1);
-
-      if (music.paused)
-        music.resume();
-      else
-        music.play();
-
-      settings.muted = false;
-    } else if (soundButton.frame === 1) {
-      soundButton.setFrames(0, 0, 0);
-      music.pause();
-
-      settings.muted = true;
-    }
-
-    saveSettings(settings);
-  }
-
-  function saveSettings(settings) {
-    localStorage.setItem('250-settings', JSON.stringify(settings));
-  }
-
-  function loadSettings() {
-    return JSON.parse(localStorage.getItem('250-settings')) || {
-      muted: false
-    };
-  }
-
-  function addCoin() {
-    var tx = this.game.rnd.integerInRange(0, 2);
-    var ty = this.game.rnd.integerInRange(0, 2);
-
-    tx = this.game.world.centerX - (distance + margin) + tx * (distance + margin);
-    ty = this.game.world.centerY - (distance + margin) + ty * (distance + margin);
-
-    coin.x = tx;
-    coin.y = ty;
-
-    this.game.add.tween(coin).to({
-      width: coinSize,
-      height: coinSize
-    }, 100).start();
-
-    coinTaking = false;
-  }
-
-  function addBestScore() {
-    var style = {
-      font: "21px Arial",
-      fill: "#fff",
-      boundsAlignH: "center",
-      boundsAlignV: "middle"
-    };
-
-    bestScoreLable = this.game.add.text(0, 0, 'Лучший счёт 0', style);
-    bestScoreLable.anchor.setTo(0.5, 0.5);
-    bestScoreLable.x = this.game.world.centerX;
-    bestScoreLable.y = this.game.world.centerY + (distance + margin) + distance;
-    bestScoreLable.alpha = 0;
-  }
-
-  function updateBestScore(score) {
-    if (bestScoreLable.alpha === 0) {
-      this.game.add.tween(bestScoreLable).to({
-        alpha: 1
-      }, 1000).start();
-    }
-    bestScoreLable.text = 'Лучший счёт: ' + score;
-  }
-};
-var PauseMenu = function(game) {
-  this.game = game;
-  this.btns = [];
-  this.onHide = new Phaser.Signal();
-  this.onShowMainMenu = new Phaser.Signal();
-  this.onRestart = new Phaser.Signal();
-}
-
-PauseMenu.prototype = {
-  preload: function() {
-    game.load.image('play', 'img/ic-play.png');
-    game.load.image('replay', 'img/ic-autorenew.png');
-    game.load.image('menu', 'img/ic-reply.png');
-  },
-
-  create: function() {
-    this.addBackground();
-    this.addBtns();
-    this.addScoreLable();
-  },
-
-  addBtns: function() {
-    var btnMargin = 100;
-    var menu = this.addBtn(
-      this.game.world.centerX - Store.pauseMenuBtnsSize - btnMargin,
-      this.game.world.centerY,
-      'menu',
-      'В главное меню',
-      this.menuBtn_click
-    );
-
-    var play = this.addBtn(
-      this.game.world.centerX,
-      this.game.world.centerY,
-      'play',
-      'Продолжить',
-      this.playBtn_click
-    );
-
-    var replay = this.addBtn(
-      this.game.world.centerX + Store.pauseMenuBtnsSize + btnMargin,
-      this.game.world.centerY,
-      'replay',
-      'Начать сначала',
-      this.replayBtn_click
-    );
-
-    this.background.addChild(menu);
-    this.background.addChild(play);
-    this.background.addChild(replay);
-  },
-
-  show: function(score) {
-    this.scoreLable.text = "Счёт " + Math.round(score);
-    this.background.visible = true;
-    this.background.bringToTop();
-  },
-
-  hide: function() {
-    this.background.visible = false;
-  },
-
-  menuBtn_click: function() {
-    this.onShowMainMenu.dispatch();
-  },
-
-  playBtn_click: function() {
-    this.onHide.dispatch();
-  },
-
-  replayBtn_click: function() {
-    this.onRestart.dispatch();
-  },
-
-  addBackground: function() {
-    var rowBackground = this.game.add.bitmapData(this.game.width, this.game.height);
-    rowBackground.fill(0, 0, 0, 0.95);
-
-    this.background = this.game.add.sprite(0, 0, rowBackground);
-    this.background.visible = false;
-  },
-
-  addBtn: function(x, y, name, text, callback) {
-    var button = this.game.add.button(x, y, name, callback, this);
-    const animationLableTime = 100;
-    const btnTextStyle = {
-      font: "31px Jura",
-      fill: "#FFFFFF"
-    };
-
-    button.width = Store.pauseMenuBtnsSize;
-    button.height = Store.pauseMenuBtnsSize;
-    button.anchor.setTo(0.5, 0.5);
-
-    button.lable = this.game.add.text(0, Store.pauseMenuBtnsSize, text, btnTextStyle);
-    button.lable.anchor.setTo(0.5);
-    button.lable.alpha = 0;
-    button.addChild(button.lable);
-
-    button.onInputOver.add(function(btn) {
-      this.game.add.tween(btn.lable).to({
-        alpha: 1
-      }, animationLableTime).start();
-    }, this);
-
-    button.onInputOut.add(function(btn) {
-      this.game.add.tween(btn.lable).to({
-        alpha: 0
-      }, animationLableTime).start();
-    }, this);
-
-    this.btns.push(button);
-
-    return button;
-  },
-
-  addScoreLable: function() {
-    const scoreLableStyle = {
-      font: "46px Jura",
-      fill: "#FFFFFF"
-    }
-
-    this.scoreLable = this.game.add.text(this.game.world.centerX, this.game.world.centerY / 2, 'Счёт: 0', scoreLableStyle);
-    this.scoreLable.anchor.set(0.5);
-    this.background.addChild(this.scoreLable);
+    this.game.state.restart(true, false, this.lvl);
   }
 }
 var ScoreManager = function(game) {
@@ -1762,7 +1416,6 @@ var ScoreManager = function(game) {
   this.score = 0;
   this.ratio = 1.0;
 
-  this.timeTickScoreAdd = 2;
   this.coinScoreAdd = 15;
   this.coinRatioAdd = 0.05;
 
@@ -1786,28 +1439,16 @@ ScoreManager.prototype = {
     return this.score;
   },
 
-  timerTick: function() {
-    this.score += this.timeTickScoreAdd * this.ratio;
+  loseRateByTime: function() {
+    this.ratio = 1;
 
-    return this.score;
-  }
-}
-var Screenshoot = function(game) {
-    this.game = game;
-}
-
-Screenshoot.prototype = {
-  takeScreen: function(callback) {
-    this.callback = callback;
-    this.makeScreenShoot = true;
+    return this.ratio;
   },
 
-  render: function() {
-    if (this.makeScreenShoot) {
-      this.makeScreenShoot = false;
-      var data = this.game.canvas.toDataURL();
-      this.callback(data);
-    }
+  doubleRatio: function() {
+    this.ratio *= 2;
+
+    return this.ratio;
   }
 }
 var Settings = {
@@ -1829,7 +1470,7 @@ var Settings = {
     this.save();
   }
 }
-var SoundManager = function(game) {
+var SoundManagerClass = function(game) {
   this.game = game;
 
   this.musicFadeInTime = 7500;
@@ -1838,10 +1479,15 @@ var SoundManager = function(game) {
   this.jumpSound = null;
   this.dieSound = null;
   this.music = null;
+
+  this.isCreated = false;
 }
 
-SoundManager.prototype = {
+SoundManagerClass.prototype = {
   preload: function() {
+    if (this.isCreated)
+      return;
+
     this.game.load.audio('music', ['sounds/music.mp3', 'sounds/music.ogg']);
     this.game.load.audio('coin', ['sounds/coin.wav', 'sounds/coin.mp3']);
     this.game.load.audio('jump', ['sounds/jump.wav', 'sounds/jump.mp3']);
@@ -1849,6 +1495,9 @@ SoundManager.prototype = {
   },
 
   create: function() {
+    if (this.isCreated)
+      return;
+
     this.music = this.game.add.audio('music');
     this.music.loop = true;
     this.music.volume = 0.0;
@@ -1862,12 +1511,11 @@ SoundManager.prototype = {
     this.dieSound = this.game.add.audio('die');
     this.dieSound.volume = 0.3;
 
-    if (!Settings.isMuted)
-      this.music.play();
-
     this.game.add.tween(this.music).to({
       volume: 0.5
     }, this.musicFadeInTime).start();
+
+    this.isCreated = true;
   },
 
   moveSoundPlay: function() {
@@ -1903,6 +1551,25 @@ SoundManager.prototype = {
     }
   }
 }
+
+var SoundManager = (function() {
+  var instance;
+
+  function createInstance(game) {
+    var soundManagerClass = new SoundManagerClass(game);
+    return soundManagerClass;
+  }
+
+  return {
+    getInstance: function(game) {
+      if (!instance) {
+        instance = createInstance(game);
+      }
+      return instance;
+    }
+  };
+
+})();
 var Square = function(game, border, soundManager) {
   this.game = game;
   this.playerColor = Store.playerColor;
@@ -1923,7 +1590,7 @@ Square.directionType = {
 
 Square.prototype = {
   preload: function() {
-    this.game.load.image('square', 'img/square.png');
+    this.game.load.image('square', 'img/game/square.png');
   },
 
   create: function() {
@@ -2052,6 +1719,8 @@ Store.backgroundColor = 0x283593;
 Store.terrainSize = (Store.moveDistance + Store.squareMargin);
 
 Store.pauseMenuBtnsSize = 150;
+
+Store.progressBarColor = 0xFF9800;
 var Terrain = function(x, y, borders) {
   this.x = x;
   this.y = y;
@@ -2115,137 +1784,13 @@ Terrain.prototype = {
   }
 };
 
-var UI = function(game, soundManager) {
-  this.game = game;
-  this.soundManager = soundManager;
-  this.score = 0;
-  this.fullScreen = new FullScreen(this.game);
-}
-
-UI.prototype = {
-  preload: function() {
-    this.game.load.spritesheet('volume', 'img/volume-spritesheet.png', 96, 96);
-    this.game.load.image('pause', 'img/ic-pause.png');
-    this.fullScreen.preload();
-  },
-
-  create: function() {
-    this.addPauseButton();
-    this.addVolumeButton();
-
-    this.addScoreLable();
-    this.addScoreRatioLable();
-
-    this.fullScreen.create();
-    this.addEvents();
-  },
-
-  pause: function() {
-    this.pauseButton.inputEnabled = false;
-    this.soundButton.inputEnabled = false;
-  },
-
-  resume: function() {
-    this.pauseButton.inputEnabled = true;
-    this.soundButton.inputEnabled = true;
-  },
-
-  addEvents: function() {
-    this.onPauseButtonClick = new Phaser.Signal();
-  },
-
-  addScoreLable: function() {
-    var style = {
-      font: "30px Jura",
-      fill: "#fff"
-    }
-
-    this.scoreLable = game.add.text(this.game.world.width - 4, 0, 'Очки 0', style);
-    this.scoreLable.anchor.set(1, 0);
-  },
-
-  setScore: function(newScore) {
-    var scoreObj = {
-      score: this.score
-    }
-
-    this.score = newScore;
-
-    var newAnimation = this.game.add.tween(scoreObj).to({
-      score: newScore
-    }, 100).onUpdateCallback(function() {
-      this.scoreLable.text = "Очки " + Math.round(scoreObj.score);
-    }, this);
-
-    newAnimation.onComplete.add(function() {
-      this.scoreLable.text = "Очки " + Math.round(scoreObj.score);
-    }, this);
-
-    if (this.animationScore && this.animationScore.isRunning) {
-      this.animationScore.chain(newAnimation);
-    } else {
-      this.animationScore = newAnimation;
-      this.animationScore.start();
-    }
-  },
-
-  addScoreRatioLable: function() {
-    var style = {
-      font: "56px Jura",
-      fill: "#FFFFFF"
-    }
-
-    this.scoreRatioLable = game.add.text(this.game.world.centerX, this.game.world.centerY, 'x1', style);
-    this.scoreRatioLable.anchor.set(0.44, 0.5);
-    this.scoreRatioLable.alpha = 0.2;
-  },
-
-  updateRatio: function(ratio) {
-    this.scoreRatioLable.text = 'x' + Math.round(ratio * 100) / 100;
-  },
-
-  addVolumeButton: function() {
-    var frames = 1;
-
-    if (Settings.isMuted) {
-      frames = 0;
-    }
-
-    this.soundButton = this.game.add.button(5 + this.pauseButton.width, 5, 'volume', this.volumeButton_click, this, frames, frames, frames);
-    this.soundButton.width = 48;
-    this.soundButton.height = 48;    
-  },
-
-  addPauseButton: function() {
-    this.pauseButton = this.game.add.button(5, 5, 'pause', this.pauseButton_click, this);
-    this.pauseButton.width = 48;
-    this.pauseButton.height = 48;
-  },
-
-  volumeButton_click: function() {
-    if (this.isPause)
-      return
-
-    this.soundManager.volumeStateChange();
-    if (this.soundButton.frame === 0) {
-      this.soundButton.setFrames(1, 1, 1);
-    } else if (this.soundButton.frame === 1) {
-      this.soundButton.setFrames(0, 0, 0);
-    }
-  },
-
-  pauseButton_click: function() {
-    this.onPauseButtonClick.dispatch();
-  }
-}
 var game = new Phaser.Game(Store.width, Store.height, Phaser.AUTO, 'game');
 
-game.state.add('Game', GameState);
 game.state.add('Game.v2', GameStateNew);
 game.state.add('Menu', Menu);
 
 function RunGame() {
-  // game.state.start('Game.v2', true, false, '3x3');
+  // game.state.start('Game.v2', true, false, '3x3');  
   game.state.start('Menu', Menu);  
 }
 

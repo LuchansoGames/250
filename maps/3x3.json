@@ -73,7 +73,7 @@
   "enemySpawns": [{
     "x": -1,
     "y": -1,
-    "speed": 100,
+    "speed": 500,
     "angle": 0,
     "intervalSpawn": 1000,
     "randomSpawn": true,
