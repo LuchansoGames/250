@@ -1,0 +1,88 @@
+{
+  "users": [{
+    "id": 210700286,
+    "username": "Lindsey Stirling",
+    "url": "https://vk.com/id161236502",
+    "score": 123423,
+    "avatar": "https://pp.vk.me/c631329/v631329286/23f6e/4-funfNRMwg.jpg",
+    "position": 1
+  }, {
+    "id": 161236502,
+    "isPlayer": true,
+    "username": "Олег Лучанский",
+    "url": "https://vk.com/id161236502",
+    "score": 3423,
+    "avatar": "https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg",
+    "position": 2
+  }, {
+    "id": 1,
+    "username": "Дуров Павел",
+    "url": "https://vk.com/id1",
+    "score": 231,
+    "avatar": "https://pp.vk.me/c629231/v629231001/c543/FfB--bOEVOY.jpg",
+    "position": 3
+  }, {
+    "id": 161236502,
+    "username": "Лучанский Олег",
+    "url": "https://vk.com/id161236502",
+    "score": 123423,
+    "avatar": "https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg",
+    "position": 4
+  }, {
+    "id": 161236502,
+    "username": "Лучанский Олег",
+    "url": "https://vk.com/id161236502",
+    "score": 123423,
+    "avatar": "https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg",
+    "position": 5
+  }, {
+    "id": 210700286,
+    "username": "Lindsey Stirling",
+    "url": "https://vk.com/id161236502",
+    "score": 3423,
+    "avatar": "https://pp.vk.me/c631329/v631329286/23f6e/4-funfNRMwg.jpg",
+    "position": 6
+  }, {
+    "id": 1,
+    "username": "Дуров Павел",
+    "url": "https://vk.com/id1",
+    "score": 231,
+    "avatar": "https://pp.vk.me/c629231/v629231001/c543/FfB--bOEVOY.jpg",
+    "position": 7
+  }, {
+    "id": 161236502,
+    "username": "Лучанский Олег",
+    "url": "https://vk.com/id161236502",
+    "score": 123423,
+    "avatar": "https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg",
+    "position": 8
+  }, {
+    "id": 161236502,
+    "username": "Лучанский Олег",
+    "url": "https://vk.com/id161236502",
+    "score": 123423,
+    "avatar": "https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg",
+    "position": 9
+  }, {
+    "id": 161236502,
+    "username": "Лучанский Олег",
+    "url": "https://vk.com/id161236502",
+    "score": 123423,
+    "avatar": "https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg",
+    "position": 10
+  }, {
+    "id": 161236502,
+    "username": "Лучанский Олег",
+    "url": "https://vk.com/id161236502",
+    "score": 123423,
+    "avatar": "https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg",
+    "position": 11
+  }, {
+    "id": 161236502,
+    "username": "Лучанский Олег",
+    "url": "https://vk.com/id161236502",
+    "score": 123423,
+    "avatar": "https://pp.vk.me/c630229/v630229502/30e8c/YEXmeT2HbdA.jpg",
+    "position": 12
+  }]
+}
