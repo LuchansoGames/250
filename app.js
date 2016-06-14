@@ -54,6 +54,9 @@ function onLoad() {
 
 setTimeout(function() {
   if (!isVkEnv()) {
+    console.log(isVkEnv());
+    console.log(location.ancestorOrigins.length);
+    console.log(location.ancestorOrigins[0]);
     return;
   }
 
