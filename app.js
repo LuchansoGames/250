@@ -34,7 +34,7 @@ FullScreen.prototype = {
   }
 }
 function isVkEnv() {
-  return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0] === "https://vk.com";
+  return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0].indexOf('vk') !== -1);
 }
 
 function ADSOnLoad(callback) {
@@ -1367,7 +1367,9 @@ var GameStateNew = {
   },
 
   addEventsListener: function() {
-    this.ui.onPauseButtonClick.add(this.pause, this);
+    this.ui.onPauseButtonClick.add(function() {
+      this.pause(true);
+    }, this);
   },
 
   overlap: function(obj1, obj2) {
@@ -1378,7 +1380,7 @@ var GameStateNew = {
     this.screenshoot.render();
   },
 
-  pause: function() {
+  pause: function(isShowPauseMenu) {
     this.game.physics.arcade.isPaused = this.isPause = true;
 
     this.enemySpawnBulder.pause();
@@ -1387,7 +1389,8 @@ var GameStateNew = {
     this.square.pause();
     this.coin.pause();
 
-    this.pauseMenu.show(this.scoreManager.score);
+    if (isShowPauseMenu)
+      this.pauseMenu.show(this.scoreManager.score);
   },
 
   resume: function() {
@@ -1411,6 +1414,17 @@ var GameStateNew = {
   restartGame: function() {
     this.resume();
     this.game.state.restart(true, false, this.lvl);
+  },
+
+  screenFadeInWhite: function() {
+    this.pause();
+
+    var graphics = this.game.add.graphics(0, 0);
+    graphics.beginFill(0xFFFFFF);
+    graphics.drawRect(0, 0, this.game.width, this.game.height);
+    graphics.alpha = 0;
+
+    this.game.add.tween(graphics).to({alpha: 1}, 750/*, Phaser.*/).start();
   }
 }
 var ScoreManager = function(game) {
