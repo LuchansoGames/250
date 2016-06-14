@@ -34,7 +34,7 @@ FullScreen.prototype = {
   }
 }
 function isVkEnv() {
-  return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0].indexOf('vk') !== -1);
+  return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0].indexOf('vk') !== -1;
 }
 
 function ADSOnLoad(callback) {
