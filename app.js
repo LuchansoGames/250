@@ -33,8 +33,10 @@ FullScreen.prototype = {
     }
   }
 }
-function isVkEnv() {
-  return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0].indexOf('vk') !== -1;
+function isVkEnv() {    
+  console.log(location.ancestorOrigins.length !== 0);
+  console.log(location.ancestorOrigins[0].indexOf('vk') !== -1);
+  return (location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0].indexOf('vk') !== -1);
 }
 
 function ADSOnLoad(callback) {
@@ -54,9 +56,6 @@ function onLoad() {
 
 setTimeout(function() {
   if (!isVkEnv()) {
-    console.log(isVkEnv());
-    console.log(location.ancestorOrigins.length !== 0);
-    console.log(location.ancestorOrigins[0].indexOf('vk') !== -1);
     return;
   }
 
