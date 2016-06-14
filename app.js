@@ -33,9 +33,7 @@ FullScreen.prototype = {
     }
   }
 }
-function isVkEnv() {    
-  console.log(location.ancestorOrigins.length !== 0);
-  console.log(location.ancestorOrigins[0].indexOf('vk') !== -1);
+function isVkEnv() {
   return (location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0].indexOf('vk') !== -1);
 }
 
@@ -1813,7 +1811,3 @@ function RunGame() {
 }
 
 RunGame();
-
-function isVkEnv() {
-  return location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0] === "https://vk.com";
-}
