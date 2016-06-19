@@ -75,22 +75,21 @@ setTimeout(function() {
   function vkAdsInit() {
     ADSOnLoad(onLoad);
     VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
-    VK.init( function(){
-      var user_id = 161236502;   //id пользователя 
-      var app_id = 5448474;  //id вашего приложения
-      var a = new VKAdman();
-       a.onNoAds(function(){console.log("Adman: No ads");});
-       a.onStarted(function(){console.log("Adman: Started");});
-       a.onCompleted(function(){console.log("Adman: Completed");});
-       a.onSkipped(function(){console.log("Adman: Skipped");});
-       a.onClicked(function(){console.log("Adman: Clicked");});
-       
-       // Для проверки корректности работы рекламы
-       a.setupPreroll(app_id, {preview: 8});
-       
-       a.setupPreroll(app_id);
-       admanStat(app_id, user_id);
-    });
+    
+    var user_id = 161236502;   //id пользователя 
+    var app_id = 5448474;  //id вашего приложения
+    var a = new VKAdman();
+    a.onNoAds(function(){console.log("Adman: No ads");});
+    a.onStarted(function(){console.log("Adman: Started");});
+    a.onCompleted(function(){console.log("Adman: Completed");});
+    a.onSkipped(function(){console.log("Adman: Skipped");});
+    a.onClicked(function(){console.log("Adman: Clicked");});
+
+    // Для проверки корректности работы рекламы
+    a.setupPreroll(app_id, {preview: 8});
+
+    a.setupPreroll(app_id);
+    admanStat(app_id, user_id);
   }
   if (window.VK && VK.Widgets) {
     vkAdsInit();
