@@ -77,7 +77,7 @@ setTimeout(function() {
 
     VK.init({
       apiId: 5448474
-    })
+    });
     
     VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
     
@@ -94,6 +94,7 @@ setTimeout(function() {
     admanStat(app_id, user_id);
     console.log('test');
   }
+
   if (window.VK && VK.Widgets) {
     vkAdsInit();
   } else {
