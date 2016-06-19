@@ -55,7 +55,7 @@ function ADSOnLoad(callback) {
       clearInterval(adsTimer);
       callback();
     }
-  }, 3000);
+  }, 1);
 }
 
 function onLoad() {
