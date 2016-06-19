@@ -55,7 +55,7 @@ function ADSOnLoad(callback) {
       clearInterval(adsTimer);
       callback();
     }
-  }, 1);
+  }, 3000);
 }
 
 function onLoad() {
@@ -91,7 +91,7 @@ setTimeout(function() {
     a.onClicked(function(){console.log("Adman: Clicked");});
     setTimeout(function() {
       a.setupPreroll(app_id, {preview: 8});
-    }, 3000);
+    }, 20);
     admanStat(app_id, user_id);
     console.log('test');
   }
