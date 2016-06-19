@@ -89,8 +89,8 @@ setTimeout(function() {
     a.onCompleted(function(){console.log("Adman: Completed");});
     a.onSkipped(function(){console.log("Adman: Skipped");});
     a.onClicked(function(){console.log("Adman: Clicked");});
+    a.setupPreroll(app_id, {preview: 8});
     // setTimeout(function() {
-    //   a.setupPreroll(app_id, {preview: 8});
     // }, 20);
     admanStat(app_id, user_id);
     console.log('test');
