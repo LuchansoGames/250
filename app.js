@@ -91,7 +91,7 @@ setTimeout(function() {
     vkPreroll.onCompleted(function(){console.log("Adman: Completed");});
     vkPreroll.onSkipped(function(){console.log("Adman: Skipped");});
     vkPreroll.onClicked(function(){console.log("Adman: Clicked");});
-    // vkPreroll.setupPreroll(app_id, {preview: 8});
+    vkPreroll.setupPreroll(app_id, {preview: 8});
     // setTimeout(function() {
     // }, 20);
     admanStat(app_id, user_id);
