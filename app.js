@@ -72,27 +72,26 @@ setTimeout(function() {
     "ad_unit_hash": "232dff1590ac9d07125fe39844d8d38a"
   };
 
+  // apiId: 5448474
   function vkAdsInit() {
     ADSOnLoad(onLoad);
 
-    VK.init({
-      apiId: 5448474
+    VK.init(function() {
+      console.log('test 2');
+      var user_id = null;   //id пользователя 
+      var app_id = 5448474;  //id вашего приложения
+      var a = new VKAdman();
+      a.onNoAds(function(){console.log("Adman: No ads");});
+      a.onStarted(function(){console.log("Adman: Started");});
+      a.onCompleted(function(){console.log("Adman: Completed");});
+      a.onSkipped(function(){console.log("Adman: Skipped");});
+      a.onClicked(function(){console.log("Adman: Clicked");});
+      a.setupPreroll(app_id, {preview: 8});
+      admanStat(app_id, user_id);
+      console.log('test');
     });
     
     VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
-    
-    console.log('test 2');
-    var user_id = null;   //id пользователя 
-    var app_id = 5448474;  //id вашего приложения
-    var a = new VKAdman();
-    a.onNoAds(function(){console.log("Adman: No ads");});
-    a.onStarted(function(){console.log("Adman: Started");});
-    a.onCompleted(function(){console.log("Adman: Completed");});
-    a.onSkipped(function(){console.log("Adman: Skipped");});
-    a.onClicked(function(){console.log("Adman: Clicked");});
-    // a.setupPreroll(app_id, {preview: 8});
-    admanStat(app_id, user_id);
-    console.log('test');
   }
 
   if (window.VK && VK.Widgets) {
