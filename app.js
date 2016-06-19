@@ -43,6 +43,8 @@ FullScreen.prototype = {
     }
   }
 }
+var vkPreroll = {};
+
 function isVkEnv() {
   return (location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0].indexOf('vk') !== -1);
 }
@@ -83,13 +85,13 @@ setTimeout(function() {
     console.log('test 2');
     var user_id = null;   //id пользователя 
     var app_id = 5448474;  //id вашего приложения
-    var a = new VKAdman();
-    a.onNoAds(function(){console.log("Adman: No ads");});
-    a.onStarted(function(){console.log("Adman: Started");});
-    a.onCompleted(function(){console.log("Adman: Completed");});
-    a.onSkipped(function(){console.log("Adman: Skipped");});
-    a.onClicked(function(){console.log("Adman: Clicked");});
-    // a.setupPreroll(app_id, {preview: 8});
+    vkPreroll = new VKAdman();
+    vkPreroll.onNoAds(function(){console.log("Adman: No ads");});
+    vkPreroll.onStarted(function(){console.log("Adman: Started");});
+    vkPreroll.onCompleted(function(){console.log("Adman: Completed");});
+    vkPreroll.onSkipped(function(){console.log("Adman: Skipped");});
+    vkPreroll.onClicked(function(){console.log("Adman: Clicked");});
+    // vkPreroll.setupPreroll(app_id, {preview: 8});
     // setTimeout(function() {
     // }, 20);
     admanStat(app_id, user_id);
