@@ -72,11 +72,12 @@ setTimeout(function() {
     "ad_unit_hash": "232dff1590ac9d07125fe39844d8d38a"
   };
 
-  // apiId: 5448474
   function vkAdsInit() {
     ADSOnLoad(onLoad);
 
-    // VK.init();
+    VK.init({
+      apiId: 5448474      
+    });
 
     console.log('test 2');
     var user_id = null;   //id пользователя 
