@@ -76,7 +76,7 @@ setTimeout(function() {
     ADSOnLoad(onLoad);
 
     VK.init({
-      apiId: 5448474      
+      apiId: 5514423      
     });
 
     console.log('test 2');
