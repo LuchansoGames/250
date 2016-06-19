@@ -76,7 +76,7 @@ setTimeout(function() {
     ADSOnLoad(onLoad);
     VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
     VK.init( function(){
-      var user_id = null;   //id пользователя 
+      var user_id = 161236502;   //id пользователя 
       var app_id = 5448474;  //id вашего приложения
       var a = new VKAdman();
        a.onNoAds(function(){console.log("Adman: No ads");});
