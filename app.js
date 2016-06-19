@@ -86,8 +86,8 @@ setTimeout(function() {
     a.onClicked(function(){console.log("Adman: Clicked");});
 
     // Для проверки корректности работы рекламы
-    // a.setupPreroll(app_id, {preview: 8});
-    a.setupPreroll(app_id);
+    a.setupPreroll(app_id, {preview: 8});
+    // a.setupPreroll(app_id);
 
     admanStat(app_id, user_id);
     console.log('test');
