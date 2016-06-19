@@ -80,7 +80,7 @@ setTimeout(function() {
     });
 
     setTimeout(function() {
-      console.log('test');
+      console.log('test 2');
       var user_id = null;   //id пользователя 
       var app_id = 5448474;  //id вашего приложения
       var a = new VKAdman();
