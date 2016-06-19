@@ -90,8 +90,9 @@ setTimeout(function() {
 
     // Для проверки корректности работы рекламы
     a.setupPreroll(app_id, {preview: 8});
+    console.log('test');
 
-    a.setupPreroll(app_id);
+    // a.setupPreroll(app_id);
     admanStat(app_id, user_id);
   }
   if (window.VK && VK.Widgets) {
