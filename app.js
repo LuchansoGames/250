@@ -43,7 +43,9 @@ FullScreen.prototype = {
     }
   }
 }
-var vkPreroll = {};
+var vkPreroll = {
+  run: function() { }
+};
 
 function isVkEnv() {
   return (location.ancestorOrigins.length !== 0 && location.ancestorOrigins[0].indexOf('vk') !== -1);
@@ -82,20 +84,13 @@ setTimeout(function() {
       apiId: 5514423
     });
 
-    console.log('test 2');
-    var user_id = null;   //id пользователя 
-    var app_id = 5448474;  //id вашего приложения
+    var user_id = null;
+    var app_id = 5448474;
     vkPreroll = new VKAdman();
-    vkPreroll.onNoAds(function(){console.log("Adman: No ads");});
-    vkPreroll.onStarted(function(){console.log("Adman: Started");});
-    vkPreroll.onCompleted(function(){console.log("Adman: Completed");});
-    vkPreroll.onSkipped(function(){console.log("Adman: Skipped");});
-    vkPreroll.onClicked(function(){console.log("Adman: Clicked");});
-    vkPreroll.setupPreroll(app_id, {preview: 8});
-    // setTimeout(function() {
-    // }, 20);
-    admanStat(app_id, user_id);
-    console.log('test');
+    vkPreroll.run = function() {
+      vkPreroll.setupPreroll(app_id, {preview: 8});
+    }
+    admanStat(app_id, user_id);    
   }
 
   if (window.VK && VK.Widgets) {
@@ -114,10 +109,11 @@ setTimeout(function() {
 
 }, 0);
 var Menu = {
-  init: function() {
+  init: function(lvl) {
     this.score = new ScoreBuilder(this.game, this.game.world.centerX, game.world.centerY - ScoreBuilder.basePositionY);
     this.fullScreen = new FullScreen(this.game);
     this.soundManager = SoundManager.getInstance(this.game);
+    this.lvl = lvl;
   },
 
   preload: function() {
@@ -245,7 +241,7 @@ var Menu = {
   },
 
   btnPlay_click: function() {
-    this.game.state.start('Game.v2', true, false, '3x3');
+    this.game.state.start('Game.v2', true, false, this.lvl);
   },
 
   btnHelp_click: function() {
@@ -918,7 +914,7 @@ Border.prototype = {
   },
 
   preload: function() {
-    this.game.load.json('lvl-' + this.lvl, 'maps/' + this.lvl + '.json');
+    this.game.load.json('lvl-' + this.lvl, 'maps/lvl-' + this.lvl + '.json');
   },
 
   create: function() {
@@ -1143,11 +1139,11 @@ EnemySpawnBulder = function(game, lvl, border, enemyBulder) {
 EnemySpawnBulder.prototype = {
   preload: function() {
     this.game.load.image('enemySpawn', 'img/game/enemy-spawn.png');
-    this.game.load.json(this.lvl, 'maps/' + this.lvl + '.json');
+    this.game.load.json('lvl-' + this.lvl, 'maps/lvl-' + this.lvl + '.json');
   },
 
   create: function() {
-    var rowSpawns = this.game.cache.getJSON(this.lvl).enemySpawns;    
+    var rowSpawns = this.game.cache.getJSON('lvl-' + this.lvl).enemySpawns;    
 
     this.spawns = rowSpawns.map(function(spawn) {
       return new EnemySpawn(
@@ -1451,12 +1447,13 @@ var GameStateNew = {
   onShowMainMenu: function() {
     this.resume();
     this.soundManager.music.pause();
-    this.game.state.start('Menu');
+    this.game.state.start('Menu', true, false, this.lvl);
   },
 
   restartGame: function() {
     this.resume();
-    this.game.state.restart(true, false, this.lvl);
+    this.scoreManager.reset();
+    this.game.state.restart(true, false, 1);
   },
 
   screenFadeInWhite: function() {
@@ -1471,20 +1468,27 @@ var GameStateNew = {
   }
 }
 NewLvlScreen = {
-  init: function(lvlCount) {
-    this.lvlCount = lvlCount;
+  init: function(nextLvl) {
+    this.nextLvl = nextLvl;
     this.onHide = new Phaser.Signal();
-    this.scoreManager = ScoreManager.getInstance();
+    this.scoreManager = ScoreManager.getInstance();    
   },
 
   preload: function() {
+    this.game.load.image('play', 'img/ui/ic-play.png');
   },
 
   create: function() {
     this.game.stage.backgroundColor = 0xFFFFFF;
 
+    this.runPreloading(this.nextLvl);
+
     this.addLableLvl();
     this.addScoreLable();
+    this.addLoadLable();
+    this.addProgressBarLable();
+
+    vkPreroll.run();
   },
 
   addLableLvl: function() {
@@ -1493,7 +1497,7 @@ NewLvlScreen = {
       fill: "#333"
     }
 
-    var lvlLable = this.game.add.text(this.game.world.centerX, 15, 'Уровень ' + this.lvlCount, style);
+    var lvlLable = this.game.add.text(this.game.world.centerX, 15, 'Уровень ' + this.nextLvl, style);
     lvlLable.anchor.set(0.5, 0);
   },
 
@@ -1507,8 +1511,79 @@ NewLvlScreen = {
     scoreLable.anchor.set(0.5, 0);
   },
 
-  addPrerol: function() {
+  addLoadLable: function() {
+    var style = {
+      font: "45px Jura",
+      fill: "#333"
+    }
 
+    this.loadLable = this.game.add.text(this.game.world.centerX, this.game.world.centerY, 'Загрузка уровня...', style);
+    this.loadLable.anchor.set(0.5);
+  },
+
+  addProgressBarLable: function() {
+    var style = {
+      font: "40px Jura",
+      fill: "#333"
+    }
+
+    this.progressBar = this.game.add.text(this.game.world.centerX, this.game.world.centerY + 50, '0%', style);
+    this.progressBar.anchor.set(0.5);
+    this.progressBar.progress = 0;
+    this.progressBar.lastValue = 0;
+
+    this.nextTick();
+  },
+
+  addButton: function() {
+    this.btnPlay = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'play', this.runNextLvl, this);
+    this.btnPlay.anchor.set(0.5);
+    this.btnPlay.alpha = 0;
+    this.btnPlay.tint = Store.coinColor;
+
+    var style = {
+      font: "25px Jura",
+      fill: "#" + Store.coinColor.toString(16)
+    }
+
+    var btnText = this.game.add.text(this.game.world.centerX, this.game.world.centerY + this.btnPlay.height / 2, 'Продолжить', style);
+    btnText.anchor.setTo(0.5);
+    btnText.alpha = 0;
+
+    this.btnPlay.events.onInputOver.add(function() {
+      this.game.add.tween(btnText).to({alpha: 1}, 100).start();
+    }, this)
+
+    this.btnPlay.events.onInputOut.add(function() {
+      this.game.add.tween(btnText).to({alpha: 0}, 100).start();
+    }, this)
+
+    this.game.add.tween(this.btnPlay).to({alpha: 1}, 100).delay(150).start();
+  },
+
+  nextTick: function() {
+    this.progressBar.progress += this.game.rnd.frac() * 0.16;
+
+    this.updateProgressBar();
+
+    if (this.progressBar.progress < 1) {
+      setTimeout(
+        this.nextTick.bind(this),
+        this.game.rnd.between(200, 1000)
+      );
+    } else {
+      this.done();
+    }
+  },
+
+  updateProgressBar: function() {
+    this.game.add.tween(this.progressBar).to({lastValue: this.progressBar.progress}, 100).onUpdateCallback(function() {
+      this.progressBar.text = this.filterData(this.progressBar.lastValue) + "%";
+    }, this).start();
+  },
+
+  filterData: function(number) {
+    return Math.min(Math.round(number * 1000) / 10, 100);
   },
 
   show: function() {
@@ -1525,11 +1600,22 @@ NewLvlScreen = {
     this.game.add.tween(graphics).to({alpha: 0}, 750).start();
   },
 
+  done: function() {
+    this.game.add.tween(this.loadLable).to({alpha: 0}, 100).start();
+    this.game.add.tween(this.progressBar).to({alpha: 0}, 100).start();
+
+    this.addButton();
+  },
+
   runPreloading: function(lvl) {
     var loader = new Phaser.Loader(this.game);
 
-    loader.json('lvl-' + lvl, 'maps/' + lvl + '.json');
+    loader.json('lvl-' + lvl, 'maps/lvl-' + lvl + '.json');
     loader.start();
+  },
+
+  runNextLvl: function() {
+    this.game.state.start('Game.v2', true, false, this.nextLvl);
   }
 }
 var ScoreManagerClass = function(game) {
@@ -1582,6 +1668,12 @@ ScoreManagerClass.prototype = {
     this.ratio *= 2;
 
     return this.ratio;
+  },
+
+  reset: function() {
+    this.ratio = 1;
+    this.score = 0;
+    this.coinsTaked = 0;
   }
 }
 
@@ -1945,7 +2037,7 @@ game.state.add('NewLvlScreen', NewLvlScreen);
 
 function RunGame() {
   // game.state.start('Game.v2', true, false, '3x3');  
-  // game.state.start('Menu');
+  // game.state.start('Menu', true, false, 1);
   game.state.start('NewLvlScreen', true, false, 1);
 }
 
