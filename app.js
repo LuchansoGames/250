@@ -90,7 +90,7 @@ setTimeout(function() {
     a.onSkipped(function(){console.log("Adman: Skipped");});
     a.onClicked(function(){console.log("Adman: Clicked");});
     setTimeout(function() {
-      a.setupPreroll(app_id, {preview: 80});
+      a.setupPreroll(app_id, {preview: 8});
     }, 3000);
     admanStat(app_id, user_id);
     console.log('test');
