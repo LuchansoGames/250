@@ -1,3 +1,13 @@
+var Boot = {
+  create: function() {
+    if (!isVkEnv()) {
+      this.game.scale.pageAlignHorizontally = true;
+      this.game.scale.pageAlignVertically = true;
+    }
+
+    RunGame();
+  }
+}
 var FullScreen = function(game) {
   this.game = game;
 }
@@ -65,6 +75,22 @@ setTimeout(function() {
   function vkAdsInit() {
     ADSOnLoad(onLoad);
     VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
+    VK.init( function(){
+      var user_id = null;   //id пользователя 
+      var app_id = 5448474;  //id вашего приложения
+      var a = new VKAdman();
+       a.onNoAds(function(){console.log("Adman: No ads");});
+       a.onStarted(function(){console.log("Adman: Started");});
+       a.onCompleted(function(){console.log("Adman: Completed");});
+       a.onSkipped(function(){console.log("Adman: Skipped");});
+       a.onClicked(function(){console.log("Adman: Clicked");});
+       
+       // Для проверки корректности работы рекламы
+       a.setupPreroll(app_id, {preview: 8});
+       
+       a.setupPreroll(app_id);
+       admanStat(app_id, user_id);
+    });
   }
   if (window.VK && VK.Widgets) {
     vkAdsInit();
@@ -90,11 +116,7 @@ var Menu = {
 
   preload: function() {
     Settings.load();
-
-    if (!isVkEnv()) {
-      this.game.scale.pageAlignHorizontally = true;
-      this.game.scale.pageAlignVertically = true;
-    }
+    
     this.game.load.crossOrigin = true;
     this.game.load.image('logo', 'img/ui/logo.png');
     this.game.load.image('play', 'img/ui/ic-play.png');
@@ -1299,11 +1321,6 @@ var GameStateNew = {
   },
 
   preload: function() {
-    if (!isVkEnv()) {
-      this.game.scale.pageAlignHorizontally = true;
-      this.game.scale.pageAlignVertically = true;
-    }
-
     this.enemySpawnBulder.preload();
     this.soundManager.preload();
     this.enemyBulder.preload();
@@ -1448,27 +1465,44 @@ var GameStateNew = {
   }
 }
 NewLvlScreen = {
-  init: function(game, lvlCount) {
-    this.game = game;
+  init: function(lvlCount) {
     this.lvlCount = lvlCount;
     this.onHide = new Phaser.Signal();
+    this.scoreManager = ScoreManager.getInstance();
   },
 
   preload: function() {
-
   },
 
   create: function() {
+    this.game.stage.backgroundColor = 0xFFFFFF;
+
     this.addLableLvl();
+    this.addScoreLable();
   },
 
   addLableLvl: function() {
     var style = {
-      font: "30px jura",
-      fill: "#ffffff"
+      font: "45px Jura",
+      fill: "#333"
     }
 
-    this.game.add.text(0,0, 'Уровень ' + this.lvlCount, style);
+    var lvlLable = this.game.add.text(this.game.world.centerX, 15, 'Уровень ' + this.lvlCount, style);
+    lvlLable.anchor.set(0.5, 0);
+  },
+
+  addScoreLable: function() {
+    var style = {
+      font: "26px Jura",
+      fill: "#333"
+    }
+
+    var scoreLable = this.game.add.text(this.game.world.centerX, 60, 'Очки ' + this.scoreManager.score, style);
+    scoreLable.anchor.set(0.5, 0);
+  },
+
+  addPrerol: function() {
+
   },
 
   show: function() {
@@ -1898,12 +1932,15 @@ Terrain.prototype = {
 
 var game = new Phaser.Game(Store.width, Store.height, Phaser.AUTO, 'game');
 
+game.state.add('Boot', Boot);
 game.state.add('Game.v2', GameStateNew);
 game.state.add('Menu', Menu);
+game.state.add('NewLvlScreen', NewLvlScreen);
 
 function RunGame() {
   // game.state.start('Game.v2', true, false, '3x3');  
-  game.state.start('Menu', Menu);  
+  // game.state.start('Menu');
+  game.state.start('NewLvlScreen', true, false, 1);
 }
 
-RunGame();
+game.state.start('Boot');
