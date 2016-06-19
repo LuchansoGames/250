@@ -74,7 +74,9 @@ setTimeout(function() {
 
   function vkAdsInit() {
     ADSOnLoad(onLoad);
+    
     VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
+    
     console.log('test 2');
     var user_id = null;   //id пользователя 
     var app_id = 5448474;  //id вашего приложения
