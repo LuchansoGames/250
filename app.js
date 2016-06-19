@@ -78,7 +78,8 @@ setTimeout(function() {
     VK.init({
       apiId:5448474
     },
-    function(){
+    function() {
+      console.log('test');
       var user_id = 161236502;   //id пользователя 
       var app_id = 5448474;  //id вашего приложения
       var a = new VKAdman();
