@@ -74,9 +74,10 @@ setTimeout(function() {
 
   function vkAdsInit() {
     ADSOnLoad(onLoad);
+    VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
 
     VK.init({
-      apiId: 5514423      
+      apiId: 5514423
     });
 
     console.log('test 2');
@@ -88,11 +89,11 @@ setTimeout(function() {
     a.onCompleted(function(){console.log("Adman: Completed");});
     a.onSkipped(function(){console.log("Adman: Skipped");});
     a.onClicked(function(){console.log("Adman: Clicked");});
-    a.setupPreroll(app_id, {preview: 8});
+    setTimeout(function() {
+      a.setupPreroll(app_id, {preview: 8});      
+    }, 3000);
     admanStat(app_id, user_id);
     console.log('test');
-    
-    VK.Widgets.Ads('vk_ads_75686', {}, adsParams);
   }
 
   if (window.VK && VK.Widgets) {
