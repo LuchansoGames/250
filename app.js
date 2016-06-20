@@ -5,6 +5,8 @@ var Boot = {
       this.game.scale.pageAlignVertically = true;
     }
 
+    Settings.load();
+
     RunGame();
   }
 }
@@ -116,9 +118,7 @@ var Menu = {
     this.lvl = lvl;
   },
 
-  preload: function() {
-    Settings.load();
-    
+  preload: function() {    
     this.game.load.crossOrigin = true;
     this.game.load.image('logo', 'img/ui/logo.png');
     this.game.load.image('play', 'img/ui/ic-play.png');
@@ -1355,8 +1355,9 @@ var GameStateNew = {
 
     this.addEventsListener();
 
-    if (!Settings.isMuted && this.soundManager.music.paused) {      
+    if (!Settings.isMuted && !this.soundManager.music.firstPlay) {
       this.soundManager.music.play();
+      this.soundManager.music.firstPlay = false;
     }
   },
 
@@ -1465,6 +1466,11 @@ var GameStateNew = {
     graphics.alpha = 0;
 
     this.game.add.tween(graphics).to({alpha: 1}, 750/*, Phaser.*/).start();
+  },
+
+  shutdown: function() {
+    this.game.onBlur.remove(this.focusLost, this);
+    this.resume();
   }
 }
 NewLvlScreen = {
@@ -1745,6 +1751,7 @@ SoundManagerClass.prototype = {
     this.music = this.game.add.audio('music');
     this.music.loop = true;
     this.music.volume = 0.0;
+    this.music.firstPlay = false;
 
     this.coinSound = this.game.add.audio('coin');
     this.coinSound.volume = 0.12;
