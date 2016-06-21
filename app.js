@@ -706,7 +706,7 @@ ProgressBar.prototype = {
     this.minWidth = this.body.width;
     this.maxWidth = this.game.width - this.body.width - this.minWidth - 50;
 
-    this.setValue(0.5);
+    this.setValue(0);
   },
 
   setValue: function(value) {
@@ -746,7 +746,7 @@ var UI = function(game, soundManager) {
   this.soundManager = soundManager;
   this.score = 0;
   this.fullScreen = new FullScreen(this.game);
-  progressBar = this.progressBar = new ProgressBar(this.game);
+  this.progressBar = new ProgressBar(this.game);
 }
 
 UI.prototype = {
@@ -1303,7 +1303,7 @@ var GameStateNew = {
     this.isPause = false;
 
     this.soundManager = new SoundManager.getInstance(this.game);
-    this.scoreManager = new ScoreManager.getInstance(this.game);
+    score = this.scoreManager = new ScoreManager.getInstance(this.game);
     this.screenshoot = new Screenshoot(this.game);
     this.enemyBulder = new EnemyBulder(this.game);
     this.pauseMenu = new PauseMenu(this.game);
@@ -1364,6 +1364,7 @@ var GameStateNew = {
   refreshUi: function() {
     this.ui.setScore(this.scoreManager.score);
     this.ui.updateRatio(this.scoreManager.ratio);
+    this.updateProgressBar();
   },
 
   focusLost: function() {
@@ -1380,6 +1381,8 @@ var GameStateNew = {
 
       this.ui.setScore(this.scoreManager.takeCoin());
       this.ui.updateRatio(this.scoreManager.ratio);
+      this.sheckNextLvl();
+      this.updateProgressBar();
     }
 
     for (var i = 0; i < this.enemyBulder.enemys.length; i++) {
@@ -1390,26 +1393,41 @@ var GameStateNew = {
 
         this.ui.setScore(this.scoreManager.loseScore());
         this.ui.updateRatio(this.scoreManager.ratio);
-
-        if (this.lvlIsWin()) {
-          this.nextLvl();
-        }
+        this.sheckNextLvl();
+        this.updateProgressBar();
       }
     }
   },
 
-  lvlIsWin: function() {
-    
+  updateProgressBar: function() {
+    var needScore = this.scoreManager.calcScoreByLvl(this.lvl);
+    var progress = this.scoreManager.score / needScore;
+    this.ui.progressBar.setValue(progress);
   },
 
-  nextLvl: function() {
+  sheckNextLvl: function() {
+    if (this.lvlIsWin() && Store.maxLvl > this.lvl) {
+      this.nextLvl();
+    }
+  },
 
+  lvlIsWin: function() {
+    return this.scoreManager.score > this.scoreManager.calcScoreByLvl(this.lvl);
   },
 
   addEventsListener: function() {
     this.ui.onPauseButtonClick.add(function() {
       this.pause(true);
     }, this);
+  },
+
+  nextLvl: function() {
+    this.pause();
+
+    this.screenFadeInWhite()
+    .then((function() {
+      this.game.state.start('NewLvlScreen', true, false, this.lvl + 1);
+    }).bind(this));
   },
 
   overlap: function(obj1, obj2) {
@@ -1421,6 +1439,7 @@ var GameStateNew = {
   },
 
   pause: function(isShowPauseMenu) {
+    this.game.onBlur.remove(this.focusLost, this);
     this.game.physics.arcade.isPaused = this.isPause = true;
 
     this.enemySpawnBulder.pause();
@@ -1434,6 +1453,7 @@ var GameStateNew = {
   },
 
   resume: function() {
+    this.game.onBlur.add(this.focusLost, this);
     this.game.physics.arcade.isPaused = this.isPause = false;
 
     this.enemySpawnBulder.resume();
@@ -1458,14 +1478,18 @@ var GameStateNew = {
   },
 
   screenFadeInWhite: function() {
-    this.pause();
+    return new Promise((function(res, rej) {
+      this.pause();
 
-    var graphics = this.game.add.graphics(0, 0);
-    graphics.beginFill(0xFFFFFF);
-    graphics.drawRect(0, 0, this.game.width, this.game.height);
-    graphics.alpha = 0;
+      var graphics = this.game.add.graphics(0, 0);
+      graphics.beginFill(0xFFFFFF);
+      graphics.drawRect(0, 0, this.game.width, this.game.height);
+      graphics.alpha = 0;
 
-    this.game.add.tween(graphics).to({alpha: 1}, 750/*, Phaser.*/).start();
+      this.game.add.tween(graphics).to({alpha: 1}, 750).start().onComplete.add(function() {
+        res();
+      }, this);
+    }).bind(this));
   },
 
   shutdown: function() {
@@ -1513,7 +1537,7 @@ NewLvlScreen = {
       fill: "#333"
     }
 
-    var scoreLable = this.game.add.text(this.game.world.centerX, 60, 'Очки ' + this.scoreManager.score, style);
+    var scoreLable = this.game.add.text(this.game.world.centerX, 60, 'Очки ' + Math.round(this.scoreManager.score), style);
     scoreLable.anchor.set(0.5, 0);
   },
 
@@ -1568,14 +1592,14 @@ NewLvlScreen = {
   },
 
   nextTick: function() {
-    this.progressBar.progress += this.game.rnd.frac() * 0.16;
+    this.progressBar.progress += this.game.rnd.frac() * 0.06;
 
     this.updateProgressBar();
 
     if (this.progressBar.progress < 1) {
       setTimeout(
         this.nextTick.bind(this),
-        this.game.rnd.between(200, 1000)
+        this.game.rnd.between(10, 100)
       );
     } else {
       this.done();
@@ -1632,7 +1656,7 @@ var ScoreManagerClass = function(game) {
   this.ratioSaveTime = 1.0;
 
   this.coinScoreAdd = 15;
-  this.coinRatioAdd = 0.05;
+  this.coinRatioAdd = 0.075;
   this.ratioSaveTimeAdd = 0.05;
   this.ratioSaveTimeSub = 0.01;
 
@@ -1659,7 +1683,7 @@ ScoreManagerClass.prototype = {
 
   loseScore: function() {
     this.score /= 2;
-    this.ratio = 1;
+    this.ratio = 1 + (this.ratio - 1) / 2;
     
     return this.score;
   },
@@ -1680,7 +1704,12 @@ ScoreManagerClass.prototype = {
     this.ratio = 1;
     this.score = 0;
     this.coinsTaked = 0;
-  }
+  },
+
+  calcScoreByLvl: function(lvl) {
+    var result = 1000 + 500 * ((2 + lvl) * (lvl - 1)) / 2;
+    return result;
+  },
 }
 
 var ScoreManager = (function() {
@@ -1948,6 +1977,8 @@ Square.prototype = {
 };
 var Store = { };
 
+Store.maxLvl = 2;
+
 Store.width = 1000;
 Store.height = 900;
 
@@ -2043,9 +2074,9 @@ game.state.add('Menu', Menu);
 game.state.add('NewLvlScreen', NewLvlScreen);
 
 function RunGame() {
-  // game.state.start('Game.v2', true, false, '3x3');  
+  game.state.start('Game.v2', true, false, 1);
   // game.state.start('Menu', true, false, 1);
-  game.state.start('NewLvlScreen', true, false, 1);
+  // game.state.start('NewLvlScreen', true, false, 1);
 }
 
 game.state.start('Boot');

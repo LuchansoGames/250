@@ -1,0 +1,126 @@
+{
+  "terrains": [{
+    "x": 0,
+    "y": 0,
+    "borders": {
+      "top": true,
+      "left": true
+    }
+  }, {
+    "x": 1,
+    "y": 0,
+    "borders": {
+      "top": true
+    }
+  }, {
+    "x": 2,
+    "y": 0,
+    "borders": {
+      "top": true,
+      "right": true
+    }
+  }, {
+    "x": 0,
+    "y": 1,
+    "borders": {
+      "left": true
+    }
+  }, {
+    "x": 1,
+    "y": 1,
+    "borders": {}
+  }, {
+    "x": 2,
+    "y": 1,
+    "borders": {
+      "right": true
+    }
+  }, {
+    "x": 0,
+    "y": 2,
+    "borders": {
+      "left": true
+    }
+  }, {
+    "x": 1,
+    "y": 2,
+    "borders": {
+      "bottom": true
+    }
+  }, {
+    "x": 2,
+    "y": 2,
+    "borders": {
+      "bottom": true
+    }
+  }, {
+    "x": 3,
+    "y": 2,
+    "borders": {
+      "bottom": true,
+      "right": true,
+      "top": true
+    }
+  }, {
+    "x": 0,
+    "y": 3,
+    "borders": {
+      "bottom": true,
+      "right": true,
+      "left": true
+    }
+  }],
+  "enemySpawns": [{
+    "x": -1,
+    "y": -1,
+    "speed": 500,
+    "angle": 0,
+    "intervalSpawn": 1000,
+    "randomSpawn": true,
+    "spawnRotationSpeed": 0,
+    "minIntervalSpawn": 1000,
+    "spawnVelocity": {
+      "x": 0,
+      "y": 0
+    }
+  }, {
+    "x": -1,
+    "y": -1,
+    "speed": 100,
+    "angle": 90,
+    "intervalSpawn": 2000,
+    "randomSpawn": false,
+    "spawnRotationSpeed": 0,
+    "minIntervalSpawn": 0,
+    "spawnVelocity": {
+      "x": 50,
+      "y": 0
+    }
+  }, {
+    "x": 1,
+    "y": -2,
+    "speed": 100,
+    "angle": 45,
+    "intervalSpawn": 1500,
+    "randomSpawn": false,
+    "spawnRotationSpeed": 0,
+    "minIntervalSpawn": 0,
+    "spawnVelocity": {
+      "x": 0,
+      "y": 0
+    }
+  }, {
+    "x": 3,
+    "y": 1,
+    "speed": 100,
+    "angle": 90,
+    "intervalSpawn": 1500,
+    "randomSpawn": false,
+    "spawnRotationSpeed": 0,
+    "minIntervalSpawn": 0,
+    "spawnVelocity": {
+      "x": 0,
+      "y": 0
+    }
+  }]
+}
