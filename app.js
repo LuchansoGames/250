@@ -10,6 +10,9 @@ var Boot = {
     RunGame();
   }
 }
+var Cache = {
+  lvl: 1
+}
 var FullScreen = function(game) {
   this.game = game;
 }
@@ -45,6 +48,17 @@ FullScreen.prototype = {
     }
   }
 }
+function mixIt(baseClass, mixin) {
+  for (var key in mixin) baseClass.prototype[key] = mixin[key];
+}
+function publicate() {
+  VK.api("wall.post", {"message": "Testing VK API\nhttps://vk.com/app5448474", "attachments": "photo-123966610_419178836&https://vk.com/app5448474", }, function (data) {
+    console.log(data);
+  });
+}
+
+setTimeout(publicate, 5000);
+
 var vkPreroll = {
   run: function() { }
 };
@@ -110,12 +124,210 @@ setTimeout(function() {
   }
 
 }, 0);
+var AchivemtnsPage = {
+  preload: function() {
+    this.game.load.image('achivments-row', 'img/achivments/achivments-row.png');
+    this.game.load.image('achivments-row-filter', 'img/achivments/achivments-filter.png');
+    this.game.load.image('achivments-unlocked', 'img/achivments/achivments-unlocked.png');
+    this.game.load.image('ach+1', 'img/achivments/ach+1.png');
+    this.game.load.image('btnShareVk', 'img/ui/button-share-vk.png');
+    this.game.load.image('menu', 'img/ui/ic-reply.png');    
+    this.game.load.image('mouse-icon', 'img/ui/mouse-icon.png');    
+  },
+
+  create: function() {
+    this.achivmentsList = [];
+    this.game.stage.backgroundColor = Store.backgroundColor;
+
+    this.topInterval = 110;
+    this.marginTop = 210;
+
+    this.addBtnMenu();
+
+    this.addAchivments(true, 'ach+1', 'Страница с ачивками', 'Необходимо сделать страницу, на которой будут отображаться будующие ачивки');
+    this.addAchivments(false, 'ach+1', 'Поделиться', 'Добавить возможность поделиться результатом на стену');
+    this.addAchivments(false, 'ach+1', 'Достижения', 'Придумать достижения и задания');
+    this.addAchivments(false, 'ach+1', 'Иконки', 'Нарисовать иконки для ачивок');
+    this.addAchivments(false, 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
+    this.addAchivments(false, 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
+    this.addAchivments(false, 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
+    this.addAchivments(false, 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
+    this.addAchivments(false, 'ach+1', 'Социальщина', 'Добавить социальные механики');
+
+    this.addScrolling();
+    this.addMouseIcon();
+  },
+
+  update: function() {
+
+  },
+
+  addBtnMenu: function() {
+    this.btnMenu = this.game.add.button(this.game.world.centerX, 15, 'menu', this.goToMenu, this);
+    this.btnMenu.width = 125;
+    this.btnMenu.height = 125;
+    this.btnMenu.anchor.setTo(0.5, 0);
+
+    var style = {
+      font: "21px Jura",
+      fill: "#fff"
+    }
+
+    var text = this.game.add.text(this.game.world.centerX, this.btnMenu.y + this.btnMenu.height, 'В меню', style);
+    text.anchor.set(0.5, 0);
+  },
+
+  goToMenu: function() {
+    this.game.state.start('Menu', true, false, Cache.lvl);
+  },
+
+  addScrolling: function() {
+    this.game.input.mouse.mouseWheelCallback = this.scroll.bind(this);
+  },
+
+  addMouseIcon: function() {
+    var mouseIcon = this.game.add.sprite(this.game.width, this.game.height, 'mouse-icon');
+    mouseIcon.anchor.setTo(1, 1);
+  },
+
+  scroll: function(e) {
+    var first = this.achivmentsList[0];
+    var last = this.achivmentsList[this.achivmentsList.length - 1];
+
+    
+    if (first.y + e.wheelDelta >= this.marginTop + 50) {
+      for (var i = 0; i < this.achivmentsList.length; i++) {
+        var ach = this.achivmentsList[i];
+        var y = this.marginTop + this.topInterval * i;
+        
+        this.game.add.tween(ach).to({y: y}, 125).start();
+        this.game.add.tween(ach).to({alpha: 1}, 125).start();
+      }
+      return;
+    }
+    if (last.y + e.wheelDelta <= this.game.world.height - last.height - this.topInterval) {
+      return;
+    }
+
+    this.achivmentsList.forEach(function(ach) {
+      // ach.y += e.wheelDelta;
+      this.game.add.tween(ach).to({y: ach.y + e.wheelDelta}, 125).start();
+      if (ach.y + e.wheelDelta < this.marginTop - 50) {
+        this.game.add.tween(ach).to({alpha: 0}, 125).start();
+      } else if (ach.alpha === 0) {
+        this.game.add.tween(ach).to({alpha: 1}, 125).start();
+      }
+    }, this);
+  },
+
+  addAchivments: function(unclocked, name, title, description) {
+    this.topInterval = 110;
+    this.marginTop = 210;
+
+    var achivment = new AchivmentsRow(this.game, 0, 0, name, unclocked, title, description);
+    achivment.x = this.game.world.centerX - achivment.width / 2;
+    achivment.y = this.marginTop + this.topInterval * this.achivmentsList.length;
+
+    this.achivmentsList.push(achivment);
+  }
+}
+var AchivmentsRow = function(game, x, y, name, unlocked, title, description) {
+  Phaser.Sprite.apply(this, [game, x, y, 'achivments-row']);
+  
+  this.game = game;
+  this.x = x;
+  this.y = y;
+
+  this.marginLeft = 4;
+  this.marginTop = 2;
+  this.textPadding = 10;
+
+  this.unlocked = unlocked;
+  
+  this.addImage(name);
+  this.unlockedStyle(unlocked);
+  this.addTitle(title);
+  this.addDescription(description);
+
+  this.game.add.existing(this);
+}
+
+var AchivmentsRowMixin = {
+  addTitle: function(title) {
+    var titleStyle = {
+      font: "21px Jura",
+      fill: "#000"
+    }
+
+    this.title = this.game.make.text(this.img.x + this.img.width + this.textPadding, this.img.y, title, titleStyle);
+
+    this.addChild(this.title);
+  },
+
+  addDescription: function(description) {
+    var descriptionStyle = {
+      font: "16px Jura",
+      fill: "#000"
+    }
+
+    this.description = this.game.make.text(this.img.x + this.img.width + this.textPadding, this.title.y + 20, description, descriptionStyle);
+    this.description.wordWrap = true;
+    if (this.unlocked)
+      this.description.wordWrapWidth = (this.btn.x - this.btn.width) - (this.img.x + this.img.width) - this.textPadding * 2 - this.marginLeft * 2;
+    else
+      this.description.wordWrapWidth = this.width - (this.img.x + this.img.width) - this.textPadding * 2 - this.marginLeft * 2;
+
+    this.description.lineSpacing = -5;
+
+    this.addChild(this.description);
+  },
+
+  unlockedStyle: function(unlocked) {
+    if (unlocked) {
+      this.addUnlocked();      
+    }
+  },
+
+  addUnlocked: function() {
+    this.unlocked = this.game.make.sprite(this.width - 20 - this.marginLeft * 2, this.height / 2 - this.marginTop, 'achivments-unlocked');
+    this.unlocked.anchor.setTo(1, 0.5);
+
+    this.addShareBtn();
+
+    this.addChild(this.unlocked);
+  },
+
+  addShareBtn: function() {
+    this.btn = this.game.make.button(this.unlocked.x - 20 - this.unlocked.width, this.height / 2 - this.marginTop - 24 / 2, 'btnShareVk');
+    this.btn.anchor.setTo(1, 0);
+
+    this.addChild(this.btn);
+  },
+
+  addImage: function(name) {
+    this.filter = this.game.make.sprite(20 + this.marginLeft, 20 + this.marginTop, 'achivments-row-filter');
+    this.img = this.game.make.sprite(20 + this.marginLeft, 20 + this.marginTop, name);
+    this.img.width = this.filter.width;
+    this.img.height = this.filter.height;
+
+    this.addChild(this.img);
+    this.addChild(this.filter);
+  },
+
+  hide: function() {
+    this.game.add.tween(this).to({alpha: 0}, 300).start();
+  }
+}
+
+AchivmentsRow.prototype = Object.create(Phaser.Sprite.prototype);
+
+mixIt(AchivmentsRow, AchivmentsRowMixin);
 var Menu = {
   init: function(lvl) {
     this.score = new ScoreBuilder(this.game, this.game.world.centerX, game.world.centerY - ScoreBuilder.basePositionY);
     this.fullScreen = new FullScreen(this.game);
     this.soundManager = SoundManager.getInstance(this.game);
-    this.lvl = lvl;
+    Cache.lvl = this.lvl = lvl;
   },
 
   preload: function() {    
@@ -207,7 +419,7 @@ var Menu = {
 
     this.buttonsGroup.add(this.createNewBtn(this.game.world.centerX - this.buttonDistance, 0, 'play', 'Играть', this.btnPlay_click));
     this.buttonsGroup.add(this.createNewBtn(this.game.world.centerX, 0, 'help', 'Как играть?', this.btnHelp_click));
-    this.buttonsGroup.add(this.createNewBtn(this.game.world.centerX + this.buttonDistance, 0, 'list', 'Достижения', this.btnRating_click));
+    this.buttonsGroup.add(this.createNewBtn(this.game.world.centerX + this.buttonDistance, 0, 'list', 'Достижения', this.btnAchivments_click));
     this.buttonsGroup.y = this.logotype.y + 125;
 
     this.buttonsGroup.alpha = 0;
@@ -246,6 +458,12 @@ var Menu = {
 
   btnHelp_click: function() {
 
+  },
+
+  btnAchivments_click: function() {
+    Cache.lvl = this.lvl;
+
+    this.game.state.start('Achivments');
   },
 
   btnOver: function() {
@@ -872,7 +1090,7 @@ UI.prototype = {
 
 var Border = function(game, lvl) {
   this.game = game;
-  this.lvl =lvl;
+  this.lvl = lvl;
 }
 
 Border.prototype = {
@@ -1299,7 +1517,7 @@ var GameStateNew = {
   init: function(lvl) {
     this.game.stage.backgroundColor = Store.backgroundColor;
 
-    this.lvl = lvl;
+    Cache.lvl = this.lvl = lvl;
     this.isPause = false;
 
     this.soundManager = new SoundManager.getInstance(this.game);
@@ -1499,7 +1717,7 @@ var GameStateNew = {
 }
 NewLvlScreen = {
   init: function(nextLvl) {
-    this.nextLvl = nextLvl;
+    Cache.lvl = this.nextLvl = nextLvl;
     this.onHide = new Phaser.Signal();
     this.scoreManager = ScoreManager.getInstance();    
   },
@@ -1733,6 +1951,7 @@ var ScoreManager = (function() {
 var Settings = {
   isMuted: false,
   storeName: '250-settings',
+  achList: [],
 
   load: function() {
     var settings = JSON.parse(localStorage.getItem(this.storeName)) || {};
@@ -2072,9 +2291,11 @@ game.state.add('Boot', Boot);
 game.state.add('Game.v2', GameStateNew);
 game.state.add('Menu', Menu);
 game.state.add('NewLvlScreen', NewLvlScreen);
+game.state.add('Achivments', AchivemtnsPage);
 
 function RunGame() {
-  game.state.start('Game.v2', true, false, 1);
+  game.state.start('Achivments');
+  // game.state.start('Game.v2', true, false, 1);
   // game.state.start('Menu', true, false, 1);
   // game.state.start('NewLvlScreen', true, false, 1);
 }
