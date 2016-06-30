@@ -51,13 +51,12 @@ FullScreen.prototype = {
 function mixIt(baseClass, mixin) {
   for (var key in mixin) baseClass.prototype[key] = mixin[key];
 }
-function publicate() {
-  VK.api("wall.post", {"message": "Testing VK API\nhttps://vk.com/app5448474", "attachments": "photo-123966610_419178836&https://vk.com/app5448474", }, function (data) {
-    console.log(data);
+VK.wall = {
+  postAchivment: function(photo) {
+    VK.api("wall.post", {"message": "Открыто новое достижение в игре \"Хватай и Беги!\"\nhttps://vk.com/app5448474", "attachments": photo}, function (data) {
   });
+  }
 }
-
-setTimeout(publicate, 5000);
 
 var vkPreroll = {
   run: function() { }
@@ -131,8 +130,9 @@ var AchivemtnsPage = {
     this.game.load.image('achivments-unlocked', 'img/achivments/achivments-unlocked.png');
     this.game.load.image('ach+1', 'img/achivments/ach+1.png');
     this.game.load.image('btnShareVk', 'img/ui/button-share-vk.png');
-    this.game.load.image('menu', 'img/ui/ic-reply.png');    
-    this.game.load.image('mouse-icon', 'img/ui/mouse-icon.png');    
+    this.game.load.image('menu', 'img/ui/ic-reply.png');
+    this.game.load.image('ic-up', 'img/ui/ic-up.png');
+    this.game.load.image('ic-down', 'img/ui/ic-down.png');
   },
 
   create: function() {
@@ -144,22 +144,17 @@ var AchivemtnsPage = {
 
     this.addBtnMenu();
 
-    this.addAchivments(true, 'ach+1', 'Страница с ачивками', 'Необходимо сделать страницу, на которой будут отображаться будующие ачивки');
-    this.addAchivments(false, 'ach+1', 'Поделиться', 'Добавить возможность поделиться результатом на стену');
-    this.addAchivments(false, 'ach+1', 'Достижения', 'Придумать достижения и задания');
-    this.addAchivments(false, 'ach+1', 'Иконки', 'Нарисовать иконки для ачивок');
-    this.addAchivments(false, 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
-    this.addAchivments(false, 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
-    this.addAchivments(false, 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
-    this.addAchivments(false, 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
-    this.addAchivments(false, 'ach+1', 'Социальщина', 'Добавить социальные механики');
+    this.addAchivments(true, 'photo-123966610_419178836', 'ach+1', 'Страница с ачивками', 'Необходимо сделать страницу, на которой будут отображаться будующие ачивки');
+    this.addAchivments(false, 'photo-123966610_419178836', 'ach+1', 'Поделиться', 'Добавить возможность поделиться результатом на стену');
+    this.addAchivments(false, 'photo-123966610_419178836', 'ach+1', 'Достижения', 'Придумать достижения и задания');
+    this.addAchivments(false, 'photo-123966610_419178836', 'ach+1', 'Иконки', 'Нарисовать иконки для ачивок');
+    this.addAchivments(false, 'photo-123966610_419178836', 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
+    this.addAchivments(false, 'photo-123966610_419178836', 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
+    this.addAchivments(false, 'photo-123966610_419178836', 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
+    this.addAchivments(false, 'photo-123966610_419178836', 'ach+1', 'Скролл', 'Добавить скролл к ачивкам');
+    this.addAchivments(false, 'photo-123966610_419178836', 'ach+1', 'Социальщина', 'Добавить социальные механики');
 
-    this.addScrolling();
-    this.addMouseIcon();
-  },
-
-  update: function() {
-
+    this.addScrollBtns();
   },
 
   addBtnMenu: function() {
@@ -177,17 +172,14 @@ var AchivemtnsPage = {
     text.anchor.set(0.5, 0);
   },
 
+  addScrollBtns: function() {
+    this.game.add.button(this.game.width, this.game.height, 'ic-up', btnUp_click);
+    this.game.add.button(this.game.width, this.game.height, 'ic-down', btnDown_click);
+    
+  },
+
   goToMenu: function() {
     this.game.state.start('Menu', true, false, Cache.lvl);
-  },
-
-  addScrolling: function() {
-    this.game.input.mouse.mouseWheelCallback = this.scroll.bind(this);
-  },
-
-  addMouseIcon: function() {
-    var mouseIcon = this.game.add.sprite(this.game.width, this.game.height, 'mouse-icon');
-    mouseIcon.anchor.setTo(1, 1);
   },
 
   scroll: function(e) {
@@ -220,19 +212,21 @@ var AchivemtnsPage = {
     }, this);
   },
 
-  addAchivments: function(unclocked, name, title, description) {
+  addAchivments: function(unclocked, photo, name, title, description) {
     this.topInterval = 110;
     this.marginTop = 210;
 
-    var achivment = new AchivmentsRow(this.game, 0, 0, name, unclocked, title, description);
+    var achivment = new AchivmentsRow(this.game, 0, 0, name, unclocked, title, description, photo);
     achivment.x = this.game.world.centerX - achivment.width / 2;
     achivment.y = this.marginTop + this.topInterval * this.achivmentsList.length;
 
     this.achivmentsList.push(achivment);
   }
 }
-var AchivmentsRow = function(game, x, y, name, unlocked, title, description) {
+var AchivmentsRow = function(game, x, y, name, unlocked, title, description, photo) {
   Phaser.Sprite.apply(this, [game, x, y, 'achivments-row']);
+
+  this.photo = photo;
   
   this.game = game;
   this.x = x;
@@ -298,7 +292,7 @@ var AchivmentsRowMixin = {
   },
 
   addShareBtn: function() {
-    this.btn = this.game.make.button(this.unlocked.x - 20 - this.unlocked.width, this.height / 2 - this.marginTop - 24 / 2, 'btnShareVk');
+    this.btn = this.game.make.button(this.unlocked.x - 20 - this.unlocked.width, this.height / 2 - this.marginTop - 24 / 2, 'btnShareVk', this.btnShare_click, this);
     this.btn.anchor.setTo(1, 0);
 
     this.addChild(this.btn);
@@ -312,6 +306,10 @@ var AchivmentsRowMixin = {
 
     this.addChild(this.img);
     this.addChild(this.filter);
+  },
+
+  btnShare_click: function() {
+    VK.wall.postAchivment(this.photo);
   },
 
   hide: function() {
