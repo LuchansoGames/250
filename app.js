@@ -173,38 +173,63 @@ var AchivemtnsPage = {
   },
 
   addScrollBtns: function() {
-    this.game.add.button(this.game.width, this.game.height, 'ic-up', btnUp_click);
-    this.game.add.button(this.game.width, this.game.height, 'ic-down', btnDown_click);
+    this.btnUp = this.game.add.button(this.game.width - 25, this.game.height - 50 - 25, 'ic-up', this.btnUp_click, this);
+    this.btnDown = this.game.add.button(this.game.width - 25, this.game.height - 25, 'ic-down', this.btnDown_click, this);
+
+    this.btnUp.anchor.setTo(1);
+    this.btnUp.scale.setTo(0.6);
     
+    this.btnDown.anchor.setTo(1);
+    this.btnDown.scale.setTo(0.6);
+  },
+
+  btnDown_click: function() { 
+    this.scroll(-250);
+  },
+
+  btnUp_click: function() {
+    this.scroll(250);
   },
 
   goToMenu: function() {
     this.game.state.start('Menu', true, false, Cache.lvl);
   },
 
-  scroll: function(e) {
+  render: function() {
+    this.game.debug.spriteBounds(this.btnDown);
+  },
+
+  scroll: function(delta) {
     var first = this.achivmentsList[0];
     var last = this.achivmentsList[this.achivmentsList.length - 1];
 
-    
-    if (first.y + e.wheelDelta >= this.marginTop + 50) {
-      for (var i = 0; i < this.achivmentsList.length; i++) {
-        var ach = this.achivmentsList[i];
-        var y = this.marginTop + this.topInterval * i;
-        
-        this.game.add.tween(ach).to({y: y}, 125).start();
-        this.game.add.tween(ach).to({alpha: 1}, 125).start();
-      }
-      return;
+    // debugger;
+    if (first.y >= this.marginTop && delta > 0) {
+      delta = 0;// first.y - this.marginTop;
+      // first.y = this.marginTop;
     }
-    if (last.y + e.wheelDelta <= this.game.world.height - last.height - this.topInterval) {
-      return;
+    if (last.y <= this.game.height && delta < 0) {
+      delta = 0;
+      // last.y = this.game.height;
     }
 
+    // if (first.y >= this.marginTop + 5) {
+    //   for (var i = 0; i < this.achivmentsList.length; i++) {
+    //     var ach = this.achivmentsList[i];
+    //     var y = this.marginTop + this.topInterval * i;
+        
+    //     this.game.add.tween(ach).to({y: y}, 125).start();
+    //     this.game.add.tween(ach).to({alpha: 1}, 125).start();
+    //   }
+    //   return;
+    // }
+    // if (last.y <= this.game.world.height - last.height - this.topInterval) {
+    //   return;
+    // }
+
     this.achivmentsList.forEach(function(ach) {
-      // ach.y += e.wheelDelta;
-      this.game.add.tween(ach).to({y: ach.y + e.wheelDelta}, 125).start();
-      if (ach.y + e.wheelDelta < this.marginTop - 50) {
+      this.game.add.tween(ach).to({y: ach.y + delta}, 125).start();
+      if (ach.y + delta < this.marginTop - 50) {
         this.game.add.tween(ach).to({alpha: 0}, 125).start();
       } else if (ach.alpha === 0) {
         this.game.add.tween(ach).to({alpha: 1}, 125).start();
