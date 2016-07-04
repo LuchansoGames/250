@@ -203,29 +203,12 @@ var AchivemtnsPage = {
     var first = this.achivmentsList[0];
     var last = this.achivmentsList[this.achivmentsList.length - 1];
 
-    // debugger;
-    if (first.y >= this.marginTop && delta > 0) {
-      delta = 0;// first.y - this.marginTop;
-      // first.y = this.marginTop;
+    if (first.y + delta >= this.marginTop && delta > 0) {
+      delta = this.marginTop - first.y;
     }
-    if (last.y <= this.game.height && delta < 0) {
-      delta = 0;
-      // last.y = this.game.height;
+    if ((last.y + last.height)  + delta <= this.game.height && delta < 0) {
+      delta = -((last.y + last.height) - this.game.height);
     }
-
-    // if (first.y >= this.marginTop + 5) {
-    //   for (var i = 0; i < this.achivmentsList.length; i++) {
-    //     var ach = this.achivmentsList[i];
-    //     var y = this.marginTop + this.topInterval * i;
-        
-    //     this.game.add.tween(ach).to({y: y}, 125).start();
-    //     this.game.add.tween(ach).to({alpha: 1}, 125).start();
-    //   }
-    //   return;
-    // }
-    // if (last.y <= this.game.world.height - last.height - this.topInterval) {
-    //   return;
-    // }
 
     this.achivmentsList.forEach(function(ach) {
       this.game.add.tween(ach).to({y: ach.y + delta}, 125).start();
