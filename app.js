@@ -195,10 +195,6 @@ var AchivemtnsPage = {
     this.game.state.start('Menu', true, false, Cache.lvl);
   },
 
-  render: function() {
-    this.game.debug.spriteBounds(this.btnDown);
-  },
-
   scroll: function(delta) {
     var first = this.achivmentsList[0];
     var last = this.achivmentsList[this.achivmentsList.length - 1];
@@ -2300,9 +2296,9 @@ game.state.add('NewLvlScreen', NewLvlScreen);
 game.state.add('Achivments', AchivemtnsPage);
 
 function RunGame() {
-  game.state.start('Achivments');
+  // game.state.start('Achivments');
   // game.state.start('Game.v2', true, false, 1);
-  // game.state.start('Menu', true, false, 1);
+  game.state.start('Menu', true, false, 1);
   // game.state.start('NewLvlScreen', true, false, 1);
 }
 
